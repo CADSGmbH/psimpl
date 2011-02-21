@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>805</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>psimpl - a generic implementation for n-dimensional polyline simplification</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="psimpl::RenderArea" name="renderArea">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>3</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QGroupBox" name="polyGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Polyline</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="1" column="0">
+          <widget class="QLabel" name="polyTypeLabel">
+           <property name="text">
+            <string>Type</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="polyTypeComboBox">
+           <item>
+            <property name="text">
+             <string>float []</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>QVector &lt;double&gt;</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>std::vector &lt;double&gt;</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>std::list &lt;long long&gt;</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QPushButton" name="generatePushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Generate</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="polyPointCountLabel">
+           <property name="text">
+            <string>Point count</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="polyPointCountSpinBox">
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>10000000</number>
+           </property>
+           <property name="singleStep">
+            <number>10000</number>
+           </property>
+           <property name="value">
+            <number>100000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <spacer name="verticalSpacer_13">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="simplGroupBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Simplification</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="1">
+          <widget class="QComboBox" name="algorithmComboBox">
+           <item>
+            <property name="text">
+             <string>Nth point</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Radial distance</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Perpendicular distance</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Reumann-Witkam</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Opheim</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Lang</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Douglas-Peucker</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Douglas-Peucker (variant)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Douglas-Peucker (reference)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="algorithmLabel">
+           <property name="text">
+            <string>Algorithm</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="simplifyPushButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Simplify</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QStackedWidget" name="editStackedWidget">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="npPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_16">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QSpinBox" name="npSpinBox">
+               <property name="maximum">
+                <number>10000000</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="rdPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="rdLineEdit">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="pdPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_15">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="pdLineEdit">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="pdSpinBox">
+               <property name="maximum">
+                <number>1000000</number>
+               </property>
+               <property name="value">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="rwPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="rwLineEdit">
+               <property name="inputMask">
+                <string/>
+               </property>
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="opPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_18">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="minOpLineEdit">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="maxOpLineEdit">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="laPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_20">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="laLineEdit">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="sizeLaSpinBox">
+               <property name="maximum">
+                <number>10000000</number>
+               </property>
+               <property name="value">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="dpPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="dpLineEdit">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="dpvPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QSpinBox" name="dpvSpinBox">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>10000000</number>
+               </property>
+               <property name="singleStep">
+                <number>10</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="dprPage_2">
+            <layout class="QVBoxLayout" name="verticalLayout_12">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="dprLineEdit">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QStackedWidget" name="labelStackedWidget">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="npPage">
+            <layout class="QVBoxLayout" name="verticalLayout_14">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="npLabel">
+               <property name="text">
+                <string>n</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="rdPage">
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="rdLabel">
+               <property name="text">
+                <string>Radial distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="pdPage">
+            <layout class="QVBoxLayout" name="verticalLayout_13">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="pdLabel">
+               <property name="text">
+                <string>Perpendicular distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="repeatLabel">
+               <property name="text">
+                <string>Repeat count</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="rwPage">
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="rwLabel">
+               <property name="text">
+                <string>Perpendicular distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="opPage">
+            <layout class="QVBoxLayout" name="verticalLayout_17">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="minOpLabel">
+               <property name="text">
+                <string>Minimum distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="maxOpLabel">
+               <property name="text">
+                <string>Maximum distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="laPage">
+            <layout class="QVBoxLayout" name="verticalLayout_19">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="laLabel">
+               <property name="text">
+                <string>Perpendicular distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="sizeLaLabel">
+               <property name="text">
+                <string>Search region size</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="dpPage">
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="dpLabel">
+               <property name="text">
+                <string>Perpendicular distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="dpvPage">
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="dpvLabel">
+               <property name="text">
+                <string>Point count</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="dprPage">
+            <layout class="QVBoxLayout" name="verticalLayout_11">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="dprLabel">
+               <property name="text">
+                <string>Perpendicular distance</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="graphiscGroupBox">
+        <property name="title">
+         <string>Graphics</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QCheckBox" name="generatedPolylineCheckBox">
+           <property name="text">
+            <string>Generated Polyline</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="simplifiedPolylineCheckBox">
+           <property name="text">
+            <string>Simplified Polyline</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="togglePushButton">
+           <property name="text">
+            <string>Toggle</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="keepAspectRatioCheckBox">
+           <property name="text">
+            <string>Keep aspect ratio</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="positionalErrorGroupBox">
+        <property name="toolTip">
+         <string>Positional errors are only calculated for doubles!</string>
+        </property>
+        <property name="title">
+         <string>Positional error</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="sumLabel">
+           <property name="text">
+            <string>Sum</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="maxLabel">
+           <property name="text">
+            <string>Max</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="meanLabel">
+           <property name="text">
+            <string>Mean</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="stdLabel">
+           <property name="text">
+            <string>Std</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="sumValueLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="maxValueLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="meanValueLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="stdValueLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>psimpl::RenderArea</class>
+   <extends>QFrame</extends>
+   <header>renderarea.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>polyPointCountSpinBox</tabstop>
+  <tabstop>polyTypeComboBox</tabstop>
+  <tabstop>generatePushButton</tabstop>
+  <tabstop>algorithmComboBox</tabstop>
+  <tabstop>npSpinBox</tabstop>
+  <tabstop>rdLineEdit</tabstop>
+  <tabstop>pdLineEdit</tabstop>
+  <tabstop>pdSpinBox</tabstop>
+  <tabstop>rwLineEdit</tabstop>
+  <tabstop>dpLineEdit</tabstop>
+  <tabstop>dpvSpinBox</tabstop>
+  <tabstop>dprLineEdit</tabstop>
+  <tabstop>simplifyPushButton</tabstop>
+  <tabstop>generatedPolylineCheckBox</tabstop>
+  <tabstop>simplifiedPolylineCheckBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>togglePushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>generatedPolylineCheckBox</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>674</x>
+     <y>559</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>674</x>
+     <y>504</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>togglePushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>simplifiedPolylineCheckBox</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>674</x>
+     <y>559</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>674</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algorithmComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>labelStackedWidget</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>503</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>210</x>
+     <y>519</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algorithmComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>editStackedWidget</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>281</x>
+     <y>490</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>279</x>
+     <y>512</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

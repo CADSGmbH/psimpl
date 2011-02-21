@@ -46,6 +46,9 @@
 
 #include <queue>
 #include <stack>
+#include <numeric>
+#include <functional>
+#include <algorithm>
 
 
 /*!
@@ -96,15 +99,56 @@ namespace psimpl
         T* array;
     };
 
-    template <class T> inline void swap (scoped_array <T>& a, scoped_array <T>& b) {
+    template <typename T> inline void swap (scoped_array <T>& a, scoped_array <T>& b) {
         a.swap (b);
     }
 
     /*!
-        \brief Contains functions for calculating distances between various geometric entities.
+        \brief Contains functions for calculating statistics and distances between various geometric entities.
     */
     namespace math
     {
+        /*!
+            POD structure for storing several statistical values
+        */
+        template <typename T>
+        struct Statistics
+        {
+            Statistics () :
+                max (0),
+                sum (0),
+                mean (0),
+                variance (0),
+                valid (false)
+            {}
+
+            T max;
+            T sum;
+            T mean;
+            T variance;
+            bool valid;
+        };
+
+        /*!
+            \brief Determines if two points have the exact same coordinates.
+
+            \param[in] p1       the first coordinate of the first point
+            \param[in] p2       the first coordinate of the second point
+            \return             true when the points are equal; false otherwise
+        */
+        template <unsigned DIM, class InputIterator>
+        inline bool equal (
+            InputIterator p1,
+            InputIterator p2)
+        {
+            for (unsigned d = 0; d < DIM; ++d, ++p1, ++p2) {
+                if (*p1 != *p2) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         /*!
             \brief Creates a vector from two points.
 
@@ -261,7 +305,78 @@ namespace psimpl
 
             return point_distance2 <DIM> (p, proj);
         }
-    };
+
+        /*!
+            \brief Computes the squared distance between a ray (r1, r2) and a point p
+
+            \param[in] r1   the first coordinate of the start point of the ray
+            \param[in] r2   the first coordinate of a point on the ray
+            \param[in] p    the first coordinate of the test point
+            \return         the squared distance
+        */
+        template <unsigned DIM, class InputIterator>
+        inline typename std::iterator_traits <InputIterator>::value_type ray_distance2 (
+            InputIterator r1,
+            InputIterator r2,
+            InputIterator p)
+        {
+            typedef typename std::iterator_traits <InputIterator>::value_type value_type;
+
+            value_type v [DIM];        // vector r1 --> r2
+            value_type w [DIM];        // vector r1 --> p
+
+            make_vector <DIM> (r1, r2, v);
+            make_vector <DIM> (r1, p,  w);
+
+            value_type cv = dot <DIM> (v, v);    // squared length of v
+            value_type cw = dot <DIM> (w, v);    // project w onto v
+            
+            if (cw <= 0) {
+                // projection of w lies to the left of r1 (not on the ray)
+                return point_distance2 <DIM> (p, r1);
+            }
+
+            // avoid problems with divisions when value_type is an integer type
+            float fraction = static_cast <float> (cw) / static_cast <float> (cv);
+
+            value_type proj [DIM];    // p projected onto ray (r1, r2)
+            interpolate <DIM> (r1, r2, fraction, proj);
+
+            return point_distance2 <DIM> (p, proj);
+        }
+
+        /*!
+            \brief Computes various statistics for the range [first, last]
+
+            \param[in] first   the first value
+            \param[in] last    one beyond the last value
+            \return            the calculated statistics
+        */
+        template <class InputIterator>
+        inline Statistics <typename std::iterator_traits <InputIterator>::value_type> compute_statistics (
+            InputIterator first,
+            InputIterator last)
+        {
+            typedef typename std::iterator_traits <InputIterator>::value_type value_type;
+            typedef typename std::iterator_traits <InputIterator>::difference_type diff_type;
+
+            Statistics <value_type> stats;
+            
+            diff_type count = std::distance (first, last);
+            if (count == 0) {
+                return stats;
+            }
+
+            value_type init = 0;
+            stats.max = *std::max_element (first, last);
+            stats.sum = std::accumulate (first, last, init);
+            stats.mean = stats.sum / count;
+            std::transform (first, last, first, std::bind2nd (std::minus <value_type> (), stats.mean));
+            stats.variance = std::inner_product (first, last, first, init) / count;
+            stats.valid = true;
+            return stats;
+        }
+    }
 
     /*!
         \brief Provides various simplification algorithms for n-dimensional simple polylines.
@@ -653,6 +768,87 @@ namespace psimpl
         }
 
         /*!
+            \brief Performs Opheim approximation (OP).
+        */
+        OutputIterator Opheim (
+            InputIterator first,
+            InputIterator last,
+            value_type minTol,
+            value_type maxTol,
+            OutputIterator result)
+        {
+            diff_type coordCount = std::distance (first, last);
+            diff_type pointCount = DIM               // protect against zero DIM
+                                   ? coordCount / DIM
+                                   : 0;
+            value_type minTol2 = minTol * minTol;    // squared minimum distance tolerance
+            value_type maxTol2 = maxTol * maxTol;    // squared maximum distance tolerance
+
+            // validate input
+            if (coordCount % DIM || pointCount < 2 || minTol2 == 0 || maxTol2 == 0) {
+                std::copy (first, last, result);
+                return result;
+            }
+
+            // define the ray R(r0, r1)
+            InputIterator r0 = first;  // indicates the current key and start of the ray
+            InputIterator r1 = first;  // indicates a point on the ray
+            bool rayDefined = false;
+
+            // keep track of two test points
+            InputIterator pi = r0;     // the previous test point
+            InputIterator pj = r0;     // the current test point (pi+1)
+            std::advance (pj, DIM);
+
+            // the first point is always part of the simplification
+            CopyKey (r0, result);
+
+            for (diff_type j = 2; j < pointCount; ++j) {
+                pi = pj;
+                std::advance (pj, DIM);
+
+                if (!rayDefined) {
+                    // discard each point within minimum tolerance
+                    if (math::point_distance2 <DIM> (r0, pj) < minTol2) {
+                        continue;
+                    }
+                    // the last point within minimum tolerance pi defines the ray R(r0, r1)
+                    r1 = pi;
+                    rayDefined = true;
+                }
+
+                // check each point pj against R(r0, r1)
+                if (math::point_distance2 <DIM> (r0, pj) < maxTol2 &&
+                    math::ray_distance2 <DIM> (r0, r1, pj) < minTol2)
+                {
+                    continue;
+                }
+                // found the next key at pi
+                CopyKey (pi, result);
+                // define new ray R(pi, pj)
+                r0 = pi;
+                rayDefined = false;
+            }
+            // the last point is always part of the simplification
+            CopyKey (pj, result);
+
+            return result;
+        }
+
+        /*!
+            \brief Performs Lang approximation (LA).
+        */
+        OutputIterator Lang (
+            InputIterator first,
+            InputIterator last,
+            value_type tol,
+            unsigned size,
+            OutputIterator result)
+        {
+            return result;
+        }
+
+        /*!
             \brief Performs Douglas-Peucker approximation (DP).
 
             The DP algorithm uses the RadialDistance (RD) routine O(n) as a preprocessing step.
@@ -801,6 +997,51 @@ namespace psimpl
                 }
             }
             return result;
+        }
+
+        /*!
+            todo
+        */
+        math::Statistics <value_type> ComputePositionalErrors (
+            InputIterator original_first,
+            InputIterator original_last,
+            InputIterator simplified_first,
+            InputIterator simplified_last)
+        {
+            math::Statistics <value_type> invalidStatistics;
+            diff_type original_count = std::distance (original_first, original_last);
+            diff_type simplified_count = std::distance (simplified_first, simplified_last);
+
+            // validate input
+            if (original_count < 2 * DIM ||
+                simplified_count < 2 * DIM ||
+                original_count < simplified_count)
+            {
+                return invalidStatistics;
+            }
+
+            std::vector <value_type> errors;
+
+            // define (simplified) line segment S(simplified_prev, simplified_first)
+            InputIterator simplified_prev = simplified_first;
+            std::advance (simplified_first, DIM);
+
+            // process each simplified line segment
+            while (simplified_first != simplified_last) {
+                while (original_first != original_last && !math::equal <DIM> (original_first, simplified_first)) {
+                    errors.push_back (sqrt (math::segment_distance2 <DIM> (simplified_prev, simplified_first, original_first)));
+                    std::advance (original_first, DIM);
+                }
+                // update line segment S
+                simplified_prev = simplified_first;
+                std::advance (simplified_first, DIM);
+            }
+            errors.push_back (0);
+
+            return
+                original_first == original_last
+                ? invalidStatistics
+                : math::compute_statistics (errors.begin (), errors.end ());
         }
 
     private:
@@ -1112,6 +1353,56 @@ namespace psimpl
     }
 
     /*!
+        \brief Performs Opheim polyline simplification (OP).
+
+        This is a convenience function that provides template type deduction for
+        PolylineSimplification::Opheim.
+
+        \param[in] first    the first coordinate of the first polyline point
+        \param[in] last     one beyond the last coordinate of the last polyline point
+        \param[in] minTol   minimum distance tolerance
+        \param[in] maxTol   maximum distance tolerance
+        \param[out] result  destination of the simplified polyline
+        \return             one beyond the last coordinate of the simplified polyline
+    */
+    template <unsigned DIM, class InputIterator, class OutputIterator>
+    OutputIterator simplify_opheim (
+        InputIterator first,
+        InputIterator last,
+        typename std::iterator_traits <InputIterator>::value_type minTol,
+        typename std::iterator_traits <InputIterator>::value_type maxTol,
+        OutputIterator result)
+    {
+        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        return ps.Opheim (first, last, minTol, maxTol, result);
+    }
+
+    /*!
+        \brief Performs Lang polyline simplification (LA).
+
+        This is a convenience function that provides template type deduction for
+        PolylineSimplification::Lang.
+
+        \param[in] first    the first coordinate of the first polyline point
+        \param[in] last     one beyond the last coordinate of the last polyline point
+        \param[in] tol      perpendicular (segment-to-point) distance tolerance
+        \param[in] size     search region size (in points)
+        \param[out] result  destination of the simplified polyline
+        \return             one beyond the last coordinate of the simplified polyline
+    */
+    template <unsigned DIM, class InputIterator, class OutputIterator>
+    OutputIterator simplify_lang (
+        InputIterator first,
+        InputIterator last,
+        typename std::iterator_traits <InputIterator>::value_type tol,
+        unsigned size,
+        OutputIterator result)
+    {
+        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        return ps.Lang (first, last, tol, size, result);
+    }
+
+    /*!
         \brief Performs Douglas-Peucker polyline simplification (DP).
 
         This is a convenience function that provides template type deduction for
@@ -1156,6 +1447,18 @@ namespace psimpl
         PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
         return ps.DouglasPeuckerAlt (first, last, count, result);
     }
+
+    template <unsigned DIM, class InputIterator>
+    math::Statistics <typename std::iterator_traits <InputIterator>::value_type> compute_positional_errors (
+        InputIterator original_first,
+        InputIterator original_last,
+        InputIterator simplified_first,
+        InputIterator simplified_last)
+    {
+        PolylineSimplification <DIM, InputIterator, InputIterator> ps;
+        return ps.ComputePositionalErrors (original_first, original_last, simplified_first, simplified_last);
+    }
+
 }
 
 #endif // PSIMPL_GENERIC
