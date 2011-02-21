@@ -1,22 +1,39 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is 'psimpl - generic n-dimensional polyline simplification'.
+ *
+ * The Initial Developer of the Original Code is
+ * Elmar de Koning.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
+ 
 /*!
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl.
+    This file is part of psimpl and was originally released as part
+    of the article 'Polyline Simplification' at The Code Project:
+    http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
 
-    psimpl is licensed under The Code Project Open License (CPOL).
-    The main points subject to the terms of the License are:
-    * Source Code and Executable Files can be used in commercial applications;
-    * Source Code and Executable Files can be redistributed; and
-    * Source Code can be modified to create derivative works.
-    * No claim of suitability, guarantee, or any warranty whatsoever is
-      provided. The software is provided "as-is".
-    * The Article(s) accompanying the Work may not be distributed or republished
-      without the Author's consent
-
-    You should have received a copy of the CPOL along with psimpl.
-    If not, see <http://www.codeproject.com/info/cpol10.aspx>.
+    28-09-2010 - Initial version
+    23-10-2010 - Changed license from CPOL to MPL
 */
+
 #ifndef PSIMPL_GENERIC
 #define PSIMPL_GENERIC
 
