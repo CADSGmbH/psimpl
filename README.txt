@@ -8,6 +8,7 @@ Copyright (C) 2010 Elmar de Koning, edekoning@gmail.com
 01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam
              routines; moved all functions related to distance calculations to
              the math namespace
+10-12-2010 - Fixed a bug in the perpendicular distance routine
 --------------------------------------------------------------------------------
 'psimpl' is licensed under the Mozilla Public License Version 1.1 (MPL), see
 the accompanying LICENSE.txt file. Alternatively a copy of this license may be

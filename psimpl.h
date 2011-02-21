@@ -37,6 +37,7 @@
                  behavior of the algorithms under invalid input
     01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam routines;
                  moved all functions related to distance calculations to the math namespace
+    10-12-2010 - Fixed a bug in the perpendicular distance routine
 */
 
 #ifndef PSIMPL_GENERIC
@@ -542,13 +543,17 @@ namespace psimpl
             // the first point is always part of the simplification
             CopyKey (p0, result);
 
-            while (p1 != last && p2 != last) {
+            while (p2 != last) {
                 // test p1 against line segment S(p0, p2)
                 if (math::segment_distance2 <DIM> (p0, p2, p1) < tol2) {
                     CopyKey (p2, result);
                     // move up by two points
                     p0 = p2;
                     std::advance (p1, 2*DIM);
+                    if (p1 == last) {
+                        // protect against advancing p2 beyond last
+                        break;
+                    }
                     std::advance (p2, 2*DIM);
                 }
                 else {
@@ -563,7 +568,6 @@ namespace psimpl
             if (p1 != last) {
                 CopyKey (p1, result);
             }
-
             return result;
         }
 
