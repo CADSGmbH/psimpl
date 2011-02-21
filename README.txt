@@ -3,6 +3,8 @@ Copyright (C) 2010 Elmar de Koning, edekoning@gmail.com
 --------------------------------------------------------------------------------
 28-09-2010 - Initial version
 23-10-2010 - Changed license from CPOL to MPL
+26-10-2010 - Clarified input (type) requirements, and changed the
+             behavior of the algorithms under invalid input.
 --------------------------------------------------------------------------------
 'psimpl' is licensed under the Mozilla Public License Version 1.1 (MPL), see
 the accompanying LICENSE.txt file. Alternatively a copy of this license may be
@@ -26,6 +28,11 @@ All the algorithms have been implemented in a single C++ header using an
 STL-style interface that operates on input and output iterators. Polylines can
 be of any dimension and defined using floating point or signed integer data
 types.
+
+If you decide to use my code for your (commercial) project, let me know! I would
+love to hear where my code ends up and why you chose to use it! If possible, a
+voluntarily donation to my PayPal account (edekoning@gmail.com) would be much
+appreciated.
 ================================================================================
 
 =Vertex Reduction=
@@ -48,13 +55,18 @@ tolerance tol. The resulting simplified polyline is copied to the output range
 [result, result + m*DIM), where m is the number of vertices of the simplified
 polyline. The return value is the end of the output range: result + m*DIM.
 
-* DIM represents the dimension of the polyline.
-* The InputIterator value type is convertible to a value type of the output
-  iterator.
-* The range [first, last) contains only vertex coordinates in multiples of DIM,
-  f.e.: x, y, z, x, y, z, x, y, z when DIM = 3.
-* The range [first, last) contains at least 2 vertices.
-* tol is not zero.
+Input (Type) requirements:
+1- DIM is not zero, where DIM represents the dimension of the polyline.
+2- The InputIterator value type is convertible to a value type of the output
+   iterator.
+3- The range [first, last) contains vertex coordinates in multiples of DIM,
+   f.e.: x, y, z, x, y, z, x, y, z when DIM = 3. If this is not the case, the
+   last (incomplete) vertex is ignored.
+4- The range [first, last) contains at least 2 vertices.
+5- tol is not zero.
+
+In case requirements 1, 4 or 5 are not met, the entire input range [first, last)
+is copied to the output range [result, result + (last - first)).
 
 =Usage=
 
@@ -100,13 +112,18 @@ polyline is copied to the output range [result, result + m*DIM), where m is the
 number of vertices of the simplified polyline. The return value is the end of
 the output range: result + m*DIM.
 
-* DIM represents the dimension of the polyline.
-* The InputIterator value type is convertible to a value type of the output
-  iterator.
-* The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
-  x, y, z, x, y, z, x, y, z when DIM = 3.
-* The range [first, last) contains at least 2 vertices.
-* tol is not zero.
+Input (Type) requirements:
+1- DIM is not zero, where DIM represents the dimension of the polyline.
+2- The InputIterator value type is convertible to a value type of the output
+   iterator.
+3- The range [first, last) contains vertex coordinates in multiples of DIM,
+   f.e.: x, y, z, x, y, z, x, y, z when DIM = 3. If this is not the case, the
+   last (incomplete) vertex is ignored.
+4- The range [first, last) contains at least 2 vertices.
+5- tol is not zero.
+
+In case requirements 4 or 5 are not met, the entire input range [first, last) is
+copied to the output range [result, result + (last - first)).
 
 =Usage=
 
@@ -156,13 +173,18 @@ Applies a variant of the Douglas-Peucker Approximation to the range
 is copied to the output range [result, result + count). The return value is the
 end of the output range: result + count.
 
-* DIM represents the dimension of the polyline.
-* The InputIterator value type is convertible to a value type of the output
-  iterator.
-* The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
-  x, y, z, x, y, z, x, y, z when DIM = 3.
-* The range [first, last) contains a minimum of count vertices.
-* count is at least 2
+Input (Type) requirements:
+1- DIM is not zero, where DIM represents the dimension of the polyline.
+2- The InputIterator value type is convertible to a value type of the output
+   iterator.
+3- The range [first, last) contains vertex coordinates in multiples of DIM,
+   f.e.: x, y, z, x, y, z, x, y, z when DIM = 3. If this is not the case, the
+   last (incomplete) vertex is ignored.
+4- The range [first, last) contains a minimum of count vertices.
+5- count is at least 2
+
+In case requirements 4 or 5 are not met, the entire input range [first, last) is
+copied to the output range [result, result + (last - first))
 
 =Usage=
 

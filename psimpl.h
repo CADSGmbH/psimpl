@@ -32,6 +32,8 @@
 
     28-09-2010 - Initial version
     23-10-2010 - Changed license from CPOL to MPL
+    26-10-2010 - Clarified input (type) requirements, and changed the
+                 behavior of the algorithms under invalid input.
 */
 
 #ifndef PSIMPL_GENERIC
@@ -108,6 +110,23 @@ namespace psimpl
             reduces successive vertices that are clustered too closely to a single vertex,
             called a key. The resulting keys form the simplified polyline.
             
+            Vertex Reduction is applied to the range [first, last) using the specified tolerance
+            tol. The resulting simplified polyline is copied to the output range
+            [result, result + m*DIM), where m is the number of vertices of the simplified polyline.
+            The return value is the end of the output range: result + m*DIM.
+
+            Input (Type) requirements:
+            1- DIM is not zero, where DIM represents the dimension of the polyline.
+            2- The InputIterator value type is convertible to a value type of the output iterator.
+            3- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
+               x, y, z, x, y, z, x, y, z when DIM = 3. If this is not the case, the last
+               (incomplete) vertex is ignored.
+            4- The range [first, last) contains at least 2 vertices.
+            5- tol is not zero.
+            
+            In case requirements 1, 4 or 5 are not met, the entire input range [first, last) is
+            copied to the output range [result, result + (last - first)).
+            
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] tol      maximum allowed distance of any point to the simplified polyline
@@ -123,11 +142,13 @@ namespace psimpl
                 value_type tol,
                 OutputIterator result)
         {
-            value_type tol2 = tol * tol;                            // squared distance tolerance
-            diff_type count = std::distance (first, last) / DIM;    // point count
-
+            value_type tol2 = tol * tol;    // squared distance tolerance
+            diff_type count = DIM           // point count (protect against zero DIM)
+                              ? std::distance (first, last) / DIM
+                              : 0;
             // validate input
             if (count < 2 || tol2 == 0) {
+                std::copy (first, last, result);
                 return result;
             }
 
@@ -170,6 +191,24 @@ namespace psimpl
 
             Note that this algorithm will create a copy of the input polyline during the vertex
             reduction step.
+            
+            Vertex Reduction followed by Douglas-Peucker Approximation is applied to the range
+            [first, last) using the specified tolerance tol. The resulting simplified polyline is
+            copied to the output range [result, result + m*DIM), where m is the number of vertices
+            of the simplified polyline. The return value is the end of the output range:
+            result + m*DIM.
+            
+            Input (Type) requirements:
+            1- DIM is not zero, where DIM represents the dimension of the polyline.
+            2- The InputIterator value type is convertible to a value type of the output iterator.
+            3- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
+               x, y, z, x, y, z, x, y, z when DIM = 3. If this is not the case, the last
+               (incomplete) vertex is ignored.
+            4- The range [first, last) contains at least 2 vertices.
+            5- tol is not zero.
+    
+            In case requirements 4 or 5 are not met, the entire input range [first, last) is copied
+            to the output range [result, result + (last - first)).
 
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
@@ -189,10 +228,12 @@ namespace psimpl
                 OutputIterator result)
         {
             diff_type coordCount = std::distance (first, last);
-            diff_type pointCount = coordCount / DIM;
-
+            diff_type pointCount = DIM      // protect against zero DIM
+                                   ? coordCount / DIM
+                                   : 0;
             // validate input
             if (pointCount < 2 || tol == 0) {
+                std::copy (first, last, result);
                 return result;
             }
             // vertex reduction
@@ -233,6 +274,23 @@ namespace psimpl
             Note that this algorithm will create a copy of the input polyline for performance
             reasons. 
             
+            A variant of the Douglas-Peucker Approximation is applied to the range [first, last).
+            The resulting simplified polyline consists of count vertices and is copied to the
+            output range [result, result + count). The return value is the end of the output range:
+            result + count.
+            
+            Input (Type) requirements:
+            1- DIM is not zero, where DIM represents the dimension of the polyline.
+            2- The InputIterator value type is convertible to a value type of the output iterator.
+            3- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
+               x, y, z, x, y, z, x, y, z when DIM = 3. If this is not the case, the last
+               (incomplete) vertex is ignored.
+            4- The range [first, last) contains a minimum of count vertices.
+            5- count is at least 2
+
+            In case requirements 4 or 5 are not met, the entire input range [first, last) is copied
+            to the output range [result, result + (last - first)).
+            
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] count    the maximum number of points of the simplified polyline
@@ -250,10 +308,12 @@ namespace psimpl
                 OutputIterator result)
         {
             diff_type coordCount = std::distance (first, last);
-            diff_type pointCount = coordCount / DIM;
-
+            diff_type pointCount = DIM      // protect against zero DIM
+                                   ? coordCount / DIM
+                                   : 0;
             // validate input
-            if (count < 2 || pointCount < static_cast <diff_type> (count)) {
+            if (count < 2 || pointCount <= static_cast <diff_type> (count)) {
+                std::copy (first, last, result);
                 return result;
             }
 
