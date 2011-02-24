@@ -62,7 +62,7 @@ namespace psimpl {
         PERPENDICULAR_DISTANCE,
         REUMANN_WITKAM,
         OPHEIM,
-        LANG,
+        //LANG,
         DOUGLAS_PEUCKER,
         DOUGLAS_PEUCKER_VARIANT,
         DOUGLAS_PEUCKER_REFERENCE,
@@ -105,7 +105,7 @@ private slots:
     void SlotCleaningConvertedPolyline ();
     void SlotGeneratedPolyline (int duration, QVector <qreal>& polyline);
     void SlotSimplifiedPolyline (int duration, QVector <qreal>& polyline);
-    void SlotSimplifiedPolyline (int duration, QVector <qreal>& polyline, qreal max, qreal sum, qreal mean, qreal variance);
+    void SlotSimplifiedPolyline (int duration, QVector <qreal>& polyline, double max, double sum, double mean, double std);
 };
 
 } // namespace psimpl

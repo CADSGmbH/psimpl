@@ -77,7 +77,7 @@ namespace psimpl {
         void SimplifyPD (Container cont, QString tol, int repeat);
         void SimplifyRW (Container cont, QString tol);
         void SimplifyOp (Container cont, QString minTol, QString maxTol);
-        void SimplifyLa (Container cont, QString tol, int size);
+        //void SimplifyLa (Container cont, QString tol, int size);
         void SimplifyDP (Container cont, QString tol);
         void SimplifyDP_variant (Container cont, int count);
         void SimplifyDP_reference (QString tol);
@@ -96,7 +96,7 @@ namespace psimpl {
         
         void SignalGeneratedPolyline (int duration, QVector <qreal>& polyline);
         void SignalSimplifiedPolyline (int duration, QVector <qreal>& polyline);
-        void SignalSimplifiedPolyline (int duration, QVector <qreal>& polyline, qreal max, qreal sum, qreal mean, qreal variance);
+        void SignalSimplifiedPolyline (int duration, QVector <qreal>& polyline, double max, double sum, double mean, double std);
 
     private:
         QVector <qreal> mGeneratedCoords;

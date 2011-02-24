@@ -43,6 +43,7 @@
 #include "ui_MainWindow.h"
 #include "DPWorker.h"
 #include <cmath>
+#include <QtGui/QToolButton>
 
 
 namespace psimpl {
@@ -54,6 +55,16 @@ namespace psimpl {
         mWorker = new DPWorker (this);
 
         ui->setupUi (this);
+
+        QToolButton* about = new QToolButton(this);
+        about->setDefaultAction (ui->aboutAction);
+        ui->statusBar->addPermanentWidget(about);
+
+        // Lang not yet implemented
+        int LANG = 5;
+        ui->algorithmComboBox->removeItem (LANG);
+        ui->labelStackedWidget->removeWidget (ui->labelStackedWidget->widget (LANG));
+        ui->editStackedWidget->removeWidget (ui->editStackedWidget->widget (LANG));
 
 #ifndef _DEBUG
         ui->algorithmComboBox->removeItem (DOUGLAS_PEUCKER_REFERENCE);
@@ -71,8 +82,8 @@ namespace psimpl {
                  this, SLOT (SlotGeneratedPolyline (int, QVector <qreal>&)));
         connect (mWorker, SIGNAL (SignalSimplifiedPolyline (int, QVector <qreal>&)),
                  this, SLOT (SlotSimplifiedPolyline (int, QVector <qreal>&)));
-        connect (mWorker, SIGNAL (SignalSimplifiedPolyline (int, QVector <qreal>&, qreal, qreal, qreal, qreal)),
-                 this, SLOT (SlotSimplifiedPolyline (int, QVector <qreal>&, qreal, qreal, qreal, qreal)));
+        connect (mWorker, SIGNAL (SignalSimplifiedPolyline (int, QVector <qreal>&, double, double, double, double)),
+                 this, SLOT (SlotSimplifiedPolyline (int, QVector <qreal>&, double, double, double, double)));
     }
 
     MainWindow::~MainWindow ()
@@ -143,9 +154,9 @@ namespace psimpl {
             mWorker->SimplifyOp ((Container)ui->polyTypeComboBox->currentIndex (), ui->minOpLineEdit->text (), ui->maxOpLineEdit->text ());
             break;
 
-        case LANG:
-            mWorker->SimplifyLa ((Container)ui->polyTypeComboBox->currentIndex (), ui->laLineEdit->text (), ui->sizeLaSpinBox->value ());
-            break;
+        //case LANG:
+        //    mWorker->SimplifyLa ((Container)ui->polyTypeComboBox->currentIndex (), ui->laLineEdit->text (), ui->sizeLaSpinBox->value ());
+        //    break;
 
         case DOUGLAS_PEUCKER:
             mWorker->SimplifyDP ((Container)ui->polyTypeComboBox->currentIndex (), ui->dpLineEdit->text ());
@@ -175,12 +186,18 @@ namespace psimpl {
     void MainWindow::on_generatedPolylineCheckBox_toggled (bool checked)
     {
         ui->renderArea->SetVisibleGeneratedPolyline (checked);
+        ui->togglePushButton->setDisabled(
+            ui->generatedPolylineCheckBox->isChecked () ==
+            ui->simplifiedPolylineCheckBox->isChecked ());
         update();
     }
 
     void MainWindow::on_simplifiedPolylineCheckBox_toggled (bool checked)
     {
         ui->renderArea->SetVisibleSimplifiedPolyline (checked);
+        ui->togglePushButton->setDisabled(
+            ui->generatedPolylineCheckBox->isChecked () ==
+            ui->simplifiedPolylineCheckBox->isChecked ());
         update();
     }
 
@@ -234,13 +251,13 @@ namespace psimpl {
         update();
     }
 
-    void MainWindow::SlotSimplifiedPolyline (int duration, QVector <qreal>& polyline, qreal max, qreal sum, qreal mean, qreal variance)
+    void MainWindow::SlotSimplifiedPolyline (int duration, QVector <qreal>& polyline, double max, double sum, double mean, double std)
     {
         int pointCount = polyline.count () / 2;
         ui->maxValueLabel->setText (QString::number (max));
         ui->sumValueLabel->setText (QString::number (sum));
         ui->meanValueLabel->setText (QString::number (mean));
-        ui->stdValueLabel->setText (QString::number (sqrt (variance)));
+        ui->stdValueLabel->setText (QString::number (std));
         ui->statusBar->showMessage (
             QString ("Simplification took %1 ms; %2 (%3%) points remaining").
                 arg (duration).

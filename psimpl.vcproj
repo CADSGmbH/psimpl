@@ -144,7 +144,7 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -270,7 +270,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\psimpl_classic.h"
+				RelativePath=".\psimpl_reference.h"
 				>
 			</File>
 			<File
@@ -278,10 +278,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ui_AboutDialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ui_MainWindow.h"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\AboutDialog.ui"
+			>
+		</File>
 		<File
 			RelativePath=".\MainWindow.ui"
 			>

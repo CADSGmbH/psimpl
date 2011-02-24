@@ -16,7 +16,7 @@
  *
  * The Initial Developer of the Original Code is
  * Elmar de Koning.
- * Portions created by the Initial Developer are Copyright (C) 2010
+ * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -25,10 +25,11 @@
 
 /*!
     psimpl - generic n-dimensional polyline simplification
-    Copyright (C) 2010 Elmar de Koning, edekoning@gmail.com
+    Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl and was originally released as part
-    of the article 'Polyline Simplification' at The Code Project:
+    This file is part of psimpl, and is hosted at SourceForge:
+    http://sourceforge.net/projects/psimpl/ Originally psimpl was released
+    as part of the article 'Polyline Simplification' at The Code Project:
     http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
 
     28-09-2010 - Initial version
@@ -38,6 +39,9 @@
     01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam routines;
                  moved all functions related to distance calculations to the math namespace
     10-12-2010 - Fixed a bug in the perpendicular distance routine
+    24-02-2010 - Added Opheim simplification, and functions for computing positional errors
+                 after simplification; renamed simplify_douglas_peucker_alt to
+                 simplify_douglas_peucker_n
 */
 
 #ifndef PSIMPL_GENERIC
@@ -111,22 +115,19 @@ namespace psimpl
         /*!
             POD structure for storing several statistical values
         */
-        template <typename T>
         struct Statistics
         {
             Statistics () :
                 max (0),
                 sum (0),
                 mean (0),
-                variance (0),
-                valid (false)
+                std (0)
             {}
 
-            T max;
-            T sum;
-            T mean;
-            T variance;
-            bool valid;
+            double max;
+            double sum;
+            double mean;
+            double std;     //! standard deviation
         };
 
         /*!
@@ -346,21 +347,21 @@ namespace psimpl
         }
 
         /*!
-            \brief Computes various statistics for the range [first, last]
+            \brief Computes various statistics for the range [first, last)
 
             \param[in] first   the first value
             \param[in] last    one beyond the last value
             \return            the calculated statistics
         */
         template <class InputIterator>
-        inline Statistics <typename std::iterator_traits <InputIterator>::value_type> compute_statistics (
+        inline Statistics compute_statistics (
             InputIterator first,
             InputIterator last)
         {
             typedef typename std::iterator_traits <InputIterator>::value_type value_type;
             typedef typename std::iterator_traits <InputIterator>::difference_type diff_type;
 
-            Statistics <value_type> stats;
+            Statistics stats;
             
             diff_type count = std::distance (first, last);
             if (count == 0) {
@@ -368,12 +369,11 @@ namespace psimpl
             }
 
             value_type init = 0;
-            stats.max = *std::max_element (first, last);
-            stats.sum = std::accumulate (first, last, init);
+            stats.max = static_cast <double> (*std::max_element (first, last));
+            stats.sum = static_cast <double> (std::accumulate (first, last, init));
             stats.mean = stats.sum / count;
             std::transform (first, last, first, std::bind2nd (std::minus <value_type> (), stats.mean));
-            stats.variance = std::inner_product (first, last, first, init) / count;
-            stats.valid = true;
+            stats.std = sqrt (static_cast <double> (std::inner_product (first, last, first, init)) / count);
             return stats;
         }
     }
@@ -769,6 +769,40 @@ namespace psimpl
 
         /*!
             \brief Performs Opheim approximation (OP).
+
+            The O(n) OP routine is very similar to the Reumann-Witkam (RW) routine, and can be seen
+            as a constrained version of that RW routine. OP uses both a minimum and a maximum
+            distance tolerance to constrain the search area. For each successive vertex vi, its
+            radial distance to the current key (initially v0) is calculated. The last point
+            within the minimum distance tolerance is used to define a ray R (key, vi). For each
+            successive vertex vj beyond vi its perpendicular distance to the ray R is calculated. A
+            new key is found at vj-1, when this distance exceeds the minimum tolerance Or when the
+            distance between vj and the current key exeed the maximum tolerance. After a new key is
+            found, the process repeats itself.
+
+            OP routine is applied to the range [first, last) using the specified distance tolerances
+            minTol and maxTol. The resulting simplified polyline is copied to the output range
+            [result, result + m*DIM), where m is the number of vertices of the simplified polyline.
+            The return value is the end of the output range: result + m*DIM.
+
+            Input (Type) Requirements:
+            1- DIM is not zero, where DIM represents the dimension of the polyline.
+            2- The InputIterator value type is convertible to a value type of the output iterator.
+            3- The range [first, last) contains vertex coordinates in multiples of DIM,
+               f.e.: x, y, z, x, y, z, x, y, z when DIM = 3.
+            4- The range [first, last) contains at least three vertices.
+            5- minTol is not zero.
+            5- maxTol is not zero.
+
+            In case these requirements are not met, compile errors may occur OR the entire input
+            range [first, last) is copied to the output range [result, result + (last - first))
+
+            \param[in] first    the first coordinate of the first polyline point
+            \param[in] last     one beyond the last coordinate of the last polyline point
+            \param[in] minTol   radial and perpendicular (point-to-ray) distance tolerance
+            \param[in] maxTol   radial distance tolerance
+            \param[out] result  destination of the simplified polyline
+            \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator Opheim (
             InputIterator first,
@@ -832,19 +866,6 @@ namespace psimpl
             // the last point is always part of the simplification
             CopyKey (pj, result);
 
-            return result;
-        }
-
-        /*!
-            \brief Performs Lang approximation (LA).
-        */
-        OutputIterator Lang (
-            InputIterator first,
-            InputIterator last,
-            value_type tol,
-            unsigned size,
-            OutputIterator result)
-        {
             return result;
         }
 
@@ -926,7 +947,7 @@ namespace psimpl
         }
 
         /*!
-            \brief Performs a Douglas-Peucker approximation variant (DPa).
+            \brief Performs a Douglas-Peucker approximation variant (DPn).
 
             This algorithm is a variation of the original implementation. Instead of considering
             one polyline segment at a time, all segments of the current simplified polyline are
@@ -940,7 +961,7 @@ namespace psimpl
             Note that this algorithm will create a copy of the input polyline for performance
             reasons.
 
-            DPa is applied to the range [first, last). The resulting simplified polyline consists
+            DPn is applied to the range [first, last). The resulting simplified polyline consists
             of count vertices and is copied to the output range [result, result + count). The
             return value is the end of the output range: result + count.
 
@@ -1000,27 +1021,66 @@ namespace psimpl
         }
 
         /*!
-            todo
+            \brief Computes the squared positional error between a polyline and its simplification.
+
+            For each point in the range [original_first, original_last) the squared distance to the
+            simplification [simplified_first, simplified_last) is calculated. Each positional error
+            is copied to the output range [result, result + count), where count is the number of
+            points in the original polyline. The return value is the end of the output range:
+            result + count.
+
+            Input (Type) requirements:
+            1- DIM is not zero, where DIM represents the dimension of the polyline.
+            2- The InputIterator value type is convertible to a value type of the output iterator.
+            3- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+               contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
+               when DIM = 3.
+            4- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+               contain a minimum of 2 vertices.
+            5- The range [simplified_first, simplified_last) represents a simplification of the
+               range [original_first, original_last), meaning each point in the simplification
+               has the exact same coordinates as some point from the original polyline.
+
+            In case these requirements are not met, compile errors may occur OR the valid flag is
+            set to false.
+
+            \param[in] original_first   the first coordinate of the first polyline point
+            \param[in] original_last    one beyond the last coordinate of the last polyline point
+            \param[in] simplified_first the first coordinate of the first simplified polyline point
+            \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
+            \param[out] result          destination of the squared positional errors
+            \param[out] valid           indicates if the computed positional errors are valid
+            \return                     one beyond the last computed positional error
         */
-        math::Statistics <value_type> ComputePositionalErrors (
+        OutputIterator ComputePositionalErrors2 (
             InputIterator original_first,
             InputIterator original_last,
             InputIterator simplified_first,
-            InputIterator simplified_last)
+            InputIterator simplified_last,
+            OutputIterator result,
+            bool* valid)
         {
-            math::Statistics <value_type> invalidStatistics;
-            diff_type original_count = std::distance (original_first, original_last);
-            diff_type simplified_count = std::distance (simplified_first, simplified_last);
+            diff_type original_coordCount = std::distance (original_first, original_last);
+            diff_type original_pointCount = DIM     // protect against zero DIM
+                                            ? original_coordCount / DIM
+                                            : 0;
+
+            diff_type simplified_coordCount = std::distance (simplified_first, simplified_last);
+            diff_type simplified_pointCount = DIM   // protect against zero DIM
+                                              ? simplified_coordCount / DIM
+                                              : 0;
 
             // validate input
-            if (original_count < 2 * DIM ||
-                simplified_count < 2 * DIM ||
-                original_count < simplified_count)
+            if (original_coordCount % DIM || original_pointCount < 2 ||
+                simplified_coordCount % DIM || simplified_pointCount < 2 ||
+                original_pointCount < simplified_pointCount ||
+                !math::equal <DIM> (original_first, simplified_first))
             {
-                return invalidStatistics;
+                if (valid) {
+                    *valid = false;
+                }
+                return result;
             }
-
-            std::vector <value_type> errors;
 
             // define (simplified) line segment S(simplified_prev, simplified_first)
             InputIterator simplified_prev = simplified_first;
@@ -1028,20 +1088,77 @@ namespace psimpl
 
             // process each simplified line segment
             while (simplified_first != simplified_last) {
-                while (original_first != original_last && !math::equal <DIM> (original_first, simplified_first)) {
-                    errors.push_back (sqrt (math::segment_distance2 <DIM> (simplified_prev, simplified_first, original_first)));
+                // process each original point until it equals the end of the line segment
+                while (original_first != original_last &&
+                       !math::equal <DIM> (original_first, simplified_first))
+                {
+                    *result++ = math::segment_distance2 <DIM> (simplified_prev, simplified_first,
+                                                               original_first);
                     std::advance (original_first, DIM);
                 }
                 // update line segment S
                 simplified_prev = simplified_first;
                 std::advance (simplified_first, DIM);
             }
-            errors.push_back (0);
+            // check if last original point matched
+            if (original_first != original_last) {
+                *result++ = 0;
+            }
 
-            return
-                original_first == original_last
-                ? invalidStatistics
-                : math::compute_statistics (errors.begin (), errors.end ());
+            if (valid) {
+                *valid = original_first != original_last;
+            }
+            return result;
+        }
+
+        /*!
+            \brief Computes statistics for the positional errors between a polyline and its simplification.
+
+            Various statistics (mean, max, sum, std) are calculated for the positional errors
+            between the range [original_first, original_last) and its simplification the range
+            [simplified_first, simplified_last).
+
+            Input (Type) requirements:
+            1- DIM is not zero, where DIM represents the dimension of the polyline.
+            2- The InputIterator value type is convertible to double.
+            3- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+               contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
+               when DIM = 3.
+            4- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+               contain a minimum of 2 vertices.
+            5- The range [simplified_first, simplified_last) represents a simplification of the
+               range [original_first, original_last), meaning each point in the simplification
+               has the exact same coordinates as some point from the original polyline.
+
+            In case these requirements are not met, compile errors may occur OR the valid flag is
+            set to false.
+
+            \param[in] original_first   the first coordinate of the first polyline point
+            \param[in] original_last    one beyond the last coordinate of the last polyline point
+            \param[in] simplified_first the first coordinate of the first simplified polyline point
+            \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
+            \param[out] valid           indicates if the computed statistics are valid
+            \return                     the computed statistics
+        */
+        math::Statistics ComputePositionalErrorStatistics (
+            InputIterator original_first,
+            InputIterator original_last,
+            InputIterator simplified_first,
+            InputIterator simplified_last,
+            bool* valid)
+        {
+            diff_type pointCount = std::distance (original_first, original_last) / DIM;
+            scoped_array <value_type> errors (pointCount);
+
+            PolylineSimplification <DIM, InputIterator, value_type*> ps;
+            ps.ComputePositionalErrors2 (original_first, original_last,
+                                         simplified_first, simplified_last,
+                                         errors.get (), valid);
+
+            std::transform (errors.get (), errors.get () + pointCount,
+                            errors.get (),
+                            std::ptr_fun <double, double> (sqrt));
+            return math::compute_statistics (errors.get (), errors.get () + pointCount);
         }
 
     private:
@@ -1378,31 +1495,6 @@ namespace psimpl
     }
 
     /*!
-        \brief Performs Lang polyline simplification (LA).
-
-        This is a convenience function that provides template type deduction for
-        PolylineSimplification::Lang.
-
-        \param[in] first    the first coordinate of the first polyline point
-        \param[in] last     one beyond the last coordinate of the last polyline point
-        \param[in] tol      perpendicular (segment-to-point) distance tolerance
-        \param[in] size     search region size (in points)
-        \param[out] result  destination of the simplified polyline
-        \return             one beyond the last coordinate of the simplified polyline
-    */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
-    OutputIterator simplify_lang (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type tol,
-        unsigned size,
-        OutputIterator result)
-    {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
-        return ps.Lang (first, last, tol, size, result);
-    }
-
-    /*!
         \brief Performs Douglas-Peucker polyline simplification (DP).
 
         This is a convenience function that provides template type deduction for
@@ -1426,7 +1518,7 @@ namespace psimpl
     }
 
     /*!
-        \brief Performs a variant of Douglas-Peucker polyline simplification (DPa).
+        \brief Performs a variant of Douglas-Peucker polyline simplification (DPn).
 
         This is a convenience function that provides template type deduction for
         PolylineSimplification::DouglasPeuckerAlt.
@@ -1438,7 +1530,7 @@ namespace psimpl
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class InputIterator, class OutputIterator>
-    OutputIterator simplify_douglas_peucker_alt (
+    OutputIterator simplify_douglas_peucker_n (
         InputIterator first,
         InputIterator last,
         unsigned count,
@@ -1448,15 +1540,56 @@ namespace psimpl
         return ps.DouglasPeuckerAlt (first, last, count, result);
     }
 
-    template <unsigned DIM, class InputIterator>
-    math::Statistics <typename std::iterator_traits <InputIterator>::value_type> compute_positional_errors (
+    /*!
+        \brief Computes the squared positional error between a polyline and its simplification.
+
+        This is a convenience function that provides template type deduction for
+        PolylineSimplification::ComputePositionalErrors2.
+
+        \param[in] original_first   the first coordinate of the first polyline point
+        \param[in] original_last    one beyond the last coordinate of the last polyline point
+        \param[in] simplified_first the first coordinate of the first simplified polyline point
+        \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
+        \param[out] result          destination of the squared positional errors
+        \param[out] valid           indicates if the computed positional errors are valid
+        \return                     one beyond the last computed positional error
+    */
+    template <unsigned DIM, class InputIterator, class OutputIterator>
+    OutputIterator compute_positional_errors2 (
         InputIterator original_first,
         InputIterator original_last,
         InputIterator simplified_first,
-        InputIterator simplified_last)
+        InputIterator simplified_last,
+        OutputIterator result,
+        bool* valid)
     {
         PolylineSimplification <DIM, InputIterator, InputIterator> ps;
-        return ps.ComputePositionalErrors (original_first, original_last, simplified_first, simplified_last);
+        return ps.ComputePositionalErrors2 (original_first, original_last, simplified_first, simplified_last, result, valid);
+    }
+
+    /*!
+        \brief Computes statistics for the positional errors between a polyline and its simplification.
+
+        This is a convenience function that provides template type deduction for
+        PolylineSimplification::ComputePositionalErrorStatistics.
+
+        \param[in] original_first   the first coordinate of the first polyline point
+        \param[in] original_last    one beyond the last coordinate of the last polyline point
+        \param[in] simplified_first the first coordinate of the first simplified polyline point
+        \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
+        \param[out] valid           indicates if the computed statistics are valid
+        \return                     the computed statistics
+    */
+    template <unsigned DIM, class InputIterator>
+    math::Statistics compute_positional_error_statistics (
+        InputIterator original_first,
+        InputIterator original_last,
+        InputIterator simplified_first,
+        InputIterator simplified_last,
+        bool* valid)
+    {
+        PolylineSimplification <DIM, InputIterator, InputIterator> ps;
+        return ps.ComputePositionalErrorStatistics (original_first, original_last, simplified_first, simplified_last, valid);
     }
 
 }
