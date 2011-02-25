@@ -3,7 +3,7 @@
 # -------------------------------------------------
 TARGET = psimpl-demo
 TEMPLATE = app
-VERSION = 5
+VERSION = 6
 SOURCES += main.cpp \
     MainWindow.cpp \
     DPWorker.cpp \
@@ -11,7 +11,7 @@ SOURCES += main.cpp \
 HEADERS += MainWindow.h \
     DPWorker.h \
     RenderArea.h \
-    psimpl_classic.h \
+    psimpl_reference.h \
     psimpl.h
 FORMS += MainWindow.ui
 OTHER_FILES += \
