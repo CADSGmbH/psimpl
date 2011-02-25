@@ -40,7 +40,7 @@
                  moved all functions related to distance calculations to the math namespace
     10-12-2010 - Fixed a bug in the perpendicular distance routine
     24-02-2010 - Added Opheim simplification, and functions for computing positional errors
-                 after simplification; renamed simplify_douglas_peucker_alt to
+                 due to simplification; renamed simplify_douglas_peucker_alt to
                  simplify_douglas_peucker_n
 */
 
@@ -400,6 +400,8 @@ namespace psimpl
             each nth point. As an example, consider any random line of 8 points. Using n = 3 will
             always yield a simplification consisting of points: 1, 4, 7, 8
 
+            \image html psimpl_np.png
+
             NP is applied to the range [first, last). The resulting simplified polyline is copied
             to the output range [result, result + m*DIM), where m is the number of vertices of the
             simplified polyline. The return value is the end of the output range: result + m*DIM.
@@ -465,6 +467,8 @@ namespace psimpl
             RD is a brute-force O(n) algorithm for polyline simplification. It reduces successive
             vertices that are clustered too closely to a single vertex, called a key. The resulting
             keys form the simplified polyline.
+
+            \image html psimpl_rd.png
 
             RD is applied to the range [first, last) using the specified tolerance tol. The
             resulting simplified polyline is copied to the output range [result, result + m*DIM),
@@ -609,6 +613,8 @@ namespace psimpl
             original polyline can only be reduced by a maximum of 50%. Multiple passes are required
             to achieve higher points reductions.
 
+            \image html psimpl_pd.png
+
             PD is applied to the range [first, last) using the specified tolerance tol. The
             resulting simplified polyline is copied to the output range [result, result + m*DIM),
             where m is the number of vertices of the simplified polyline. The return value is the
@@ -695,6 +701,8 @@ namespace psimpl
             vi-1, when this distance exceeds the specified tolerance. The vertices vi and vi+1 are
             then used to define a new line, and the process repeats itself.
 
+            \image html psimpl_rw.png
+
             RW routine is applied to the range [first, last) using the specified perpendicular
             distance tolerance tol. The resulting simplified polyline is copied to the output range
             [result, result + m*DIM), where m is the number of vertices of the simplified polyline.
@@ -779,6 +787,8 @@ namespace psimpl
             new key is found at vj-1, when this distance exceeds the minimum tolerance Or when the
             distance between vj and the current key exeed the maximum tolerance. After a new key is
             found, the process repeats itself.
+
+            \image html psimpl_op.png
 
             OP routine is applied to the range [first, last) using the specified distance tolerances
             minTol and maxTol. The resulting simplified polyline is copied to the output range
@@ -882,6 +892,8 @@ namespace psimpl
             computed distance that is larger than a specified tolerance, will be added to the
             simplification. This process will recurse for each edge in the current simplification,
             untill all vertices of the original polyline are within tolerance.
+
+            \image html psimpl_dp.png
 
             Note that this algorithm will create a copy of the input polyline during the vertex
             reduction step.

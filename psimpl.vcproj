@@ -278,20 +278,20 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ui_AboutDialog.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ui_MainWindow.h"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\AboutDialog.ui"
+			RelativePath=".\LICENSE.txt"
 			>
 		</File>
 		<File
 			RelativePath=".\MainWindow.ui"
+			>
+		</File>
+		<File
+			RelativePath=".\README.txt"
 			>
 		</File>
 	</Files>

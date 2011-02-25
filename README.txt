@@ -1,5 +1,5 @@
 psimpl - generic n-dimensional polyline simplification
-Copyright (C) 2010 Elmar de Koning, edekoning@gmail.com
+Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 --------------------------------------------------------------------------------
 28-09-2010 - Initial version
 23-10-2010 - Changed license from CPOL to MPL
@@ -9,13 +9,17 @@ Copyright (C) 2010 Elmar de Koning, edekoning@gmail.com
              routines; moved all functions related to distance calculations to
              the math namespace
 10-12-2010 - Fixed a bug in the perpendicular distance routine
+24-02-2010 - Added Opheim simplification, and functions for computing positional
+             errors due to simplification; renamed simplify_douglas_peucker_alt
+             to simplify_douglas_peucker_n
 --------------------------------------------------------------------------------
 'psimpl' is licensed under the Mozilla Public License Version 1.1 (MPL), see
 the accompanying LICENSE.txt file. Alternatively a copy of this license may be
 obtained from http://www.mozilla.org/MPL/.
 --------------------------------------------------------------------------------
-'psimpl' was originally released on The Code Project as part of the article
-'Polyline Simplification':
+'psimpl' is hosted at SourceForge: http://sourceforge.net/projects/psimpl/
+Originally psimpl was released as part of the article 'Polyline Simplification'
+at The Code Project: 
 http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
 
 ================================================================================
@@ -23,6 +27,7 @@ http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
 'psimpl' is a polyline simplification library that is generic, easy to use, and
 supports the following algorithms:
 
+Simplification
 * Nth point - A naive algorithm that keeps only each nth point
 * Distance between points - Removes successive points that are clustered
   together
@@ -30,10 +35,14 @@ supports the following algorithms:
   segment defined by their left and right neighbors
 * Reumann-Witkam - Shifts a strip along the polyline and removes points that
   fall outside
+* Opheim - a constrained version of Reumann-Witkam
 * Douglas-Peucker - A classic simplification algorithm that provides an
   excellent approximation of the original line
 * A variation on the Douglas-Peucker algorithm - Slower, but yields better
   results at lower resolutions
+
+Errors
+* positional error - Distance of each polyline point to its simplification
 
 All the algorithms have been implemented in a single standalone C++ header
 using an STL-style interface that operates on input and output iterators.
