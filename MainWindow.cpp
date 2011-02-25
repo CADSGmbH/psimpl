@@ -23,7 +23,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*!
+/*
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
@@ -60,6 +60,7 @@ namespace psimpl {
         mWorker = new DPWorker (this);
 
         ui->setupUi (this);
+        ui->polyTypeComboBox->setCurrentIndex(QVECTOR_DOUBLE);
 
         // Lang not yet implemented
         int LANG = 5;
@@ -111,7 +112,9 @@ namespace psimpl {
     {
         ui->generatePushButton->setEnabled (true);
         ui->simplifyPushButton->setEnabled (true);
-        ui->togglePushButton->setEnabled (true);
+        ui->togglePushButton->setEnabled(
+            ui->generatedPolylineCheckBox->isChecked () !=
+            ui->simplifiedPolylineCheckBox->isChecked ());
     }
 
     void MainWindow::DisableButtons ()

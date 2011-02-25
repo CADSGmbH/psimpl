@@ -283,6 +283,10 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath=".\doc\Doxyfile"
+			>
+		</File>
+		<File
 			RelativePath=".\LICENSE.txt"
 			>
 		</File>

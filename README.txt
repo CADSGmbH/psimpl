@@ -24,8 +24,8 @@ http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
 
 ================================================================================
 
-'psimpl' is a polyline simplification library that is generic, easy to use, and
-supports the following algorithms:
+'psimpl' is a c++ polyline simplification library that is generic, easy to use,
+and supports the following algorithms:
 
 Simplification
 * Nth point - A naive algorithm that keeps only each nth point

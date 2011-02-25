@@ -23,7 +23,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*!
+/*
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 

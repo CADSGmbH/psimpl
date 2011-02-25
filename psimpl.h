@@ -23,7 +23,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*!
+/*
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
@@ -42,6 +42,43 @@
     24-02-2010 - Added Opheim simplification, and functions for computing positional errors
                  due to simplification; renamed simplify_douglas_peucker_alt to
                  simplify_douglas_peucker_n
+*/
+
+/*!
+    \mainpage psimpl - generic n-dimensional polyline simplification
+
+<pre>
+    Contact - edekoning@gmail.com
+    Website - http://sourceforge.net/projects/psimpl
+    Article - http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
+    License - MPL 1.1
+</pre><br/>
+
+    \section sec_psimpl psimpl
+    'psimpl' is a C++ polyline simplification library that is, generic, easy to use,
+    and supports the following algorithms:
+
+    Simplification
+    \li Nth point - A naive algorithm that keeps only each nth point
+    \li Distance between points - Removes successive points that are clustered 
+      together
+    \li Perpendicular distance - Removes points based on their distance to the line
+      segment defined by their left and right neighbors
+    \li Reumann-Witkam - Shifts a strip along the polyline and removes points that
+      fall outside
+    \li Opheim - a constrained version of Reumann-Witkam
+    \li Douglas-Peucker - A classic simplification algorithm that provides an
+      excellent approximation of the original line
+    \li A variation on the Douglas-Peucker algorithm - Slower, but yields better
+      results at lower resolutions
+
+    Errors
+    \li positional error - Distance of each polyline point to its simplification
+
+    All the algorithms have been implemented in a single standalone C++ header
+    using an STL-style interface that operates on input and output iterators.
+    Polylines can be of any dimension, and defined using floating point or signed
+    integer data types.
 */
 
 #ifndef PSIMPL_GENERIC
@@ -155,7 +192,7 @@ namespace psimpl
 
             \param[in] p1       the first coordinate of the first point
             \param[in] p2       the first coordinate of the second point
-            \param[out] vector  the resulting vector (p2-p1)
+            \param[out] result  the resulting vector (p2-p1)
             \return             one beyond the last coordinate of the resulting vector
         */
         template <unsigned DIM, class InputIterator, class OutputIterator>
@@ -538,6 +575,8 @@ namespace psimpl
             The algorithm stops after calling the PD routine 'repeat' times OR when the
             simplification does not improve. Note that this algorithm will need to store
             up to two intermediate simplification results.
+
+            \sa PerpendicularDistance(InputIterator, InputIterator, value_type, OutputIterator)
 
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
@@ -988,6 +1027,8 @@ namespace psimpl
             In case these requirements are not met, compile errors may occur OR the entire input
             range [first, last) is copied to the output range [result, result + (last - first))
 
+            \sa DouglasPeucker
+
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] count    the maximum number of points of the simplified polyline
@@ -1040,6 +1081,8 @@ namespace psimpl
             is copied to the output range [result, result + count), where count is the number of
             points in the original polyline. The return value is the end of the output range:
             result + count.
+
+            \image html psimpl_pe.png
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline.
@@ -1144,6 +1187,8 @@ namespace psimpl
 
             In case these requirements are not met, compile errors may occur OR the valid flag is
             set to false.
+
+            \sa ComputePositionalErrors2
 
             \param[in] original_first   the first coordinate of the first polyline point
             \param[in] original_last    one beyond the last coordinate of the last polyline point
