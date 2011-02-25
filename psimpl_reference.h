@@ -39,7 +39,7 @@
     01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam routines;
                  moved all functions related to distance calculations to the math namespace
     10-12-2010 - Fixed a bug in the perpendicular distance routine
-    24-02-2010 - Added Opheim simplification, and functions for computing positional errors
+    27-02-2011 - Added Opheim simplification, and functions for computing positional errors
                  due to simplification; renamed simplify_douglas_peucker_alt to
                  simplify_douglas_peucker_n
 */

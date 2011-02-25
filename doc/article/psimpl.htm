@@ -1,241 +1,260 @@
-<!-- Start Article --> 
-<span id="ArticleContent"> 
-<ul class="download"> 
-<li><a href="PolylineSimplification/psimpl_demo_v5.zip">Download demo - 4.96 MB</a></li> 
- 
-<li><a href="PolylineSimplification/psimpl_src_v5.zip">Download source - 17.1 KB</a></li> 
-</ul> 
- 
-<p><img width="600" height="466" alt="psimpl.png" src="PolylineSimplification/psimpl.png" complete="true" /></p> 
- 
-<h2>Table of Contents</h2> 
- 
-<ul> 
-<li><a href="#heading0000">Introduction</a></li> 
- 
-<li><a href="#heading0001">Similar Articles</a></li> 
- 
-<li><a href="#heading0002">Nth Point</a></li> 
- 
-<ul> 
-<li><a href="#heading0003">Interface</a></li> 
- 
-<li><a href="#heading0005">Implementation Details</a></li> 
- 
-<li><a href="#heading0006">Usage</a></li> 
-</ul> 
- 
-<li><a href="#heading0007">Distance Between Points</a></li> 
- 
-<ul> 
-<li><a href="#heading0008">Interface</a></li> 
- 
-<li><a href="#heading0010">Implementation Details</a></li> 
- 
-<li><a href="#heading0011">Usage</a></li> 
-</ul> 
- 
-<li><a href="#heading0012">Perpendicular Distance</a></li> 
- 
-<ul> 
-<li><a href="#heading0013">Interface</a></li> 
- 
-<li><a href="#heading0015">Implementation Details</a></li> 
- 
-<li><a href="#heading0016">Usage</a></li> 
-</ul> 
- 
-<li><a href="#heading0017">Reumann-Witkam</a></li> 
- 
-<ul> 
-<li><a href="#heading0018">Interface</a></li> 
- 
-<li><a href="#heading0020">Implementation Details</a></li> 
- 
-<li><a href="#heading0021">Usage</a></li> 
-</ul> 
- 
-<li><a href="#heading0022">Douglas-Peucker</a></li> 
- 
-<ul> 
-<li><a href="#heading0023">Interface</a></li> 
- 
-<li><a href="#heading0025">Implementation Details</a></li> 
- 
-<li><a href="#heading0026">Usage</a></li> 
-</ul> 
- 
-<li><a href="#heading0027">Douglas-Peucker (Variant)</a></li> 
- 
-<ul> 
-<li><a href="#heading0028">Interface</a></li> 
- 
-<li><a href="#heading0030">Implementation Details</a></li> 
- 
-<li><a href="#heading0031">Usage</a></li> 
-</ul> 
- 
-<li><a href="#heading0032">About the Code</a></li> 
- 
-<li><a href="#heading0033">About the Demo Application</a></li> 
- 
-<li><a href="#heading0034">History</a></li> 
-</ul> 
- 
-<h2><a name="heading0000" id="heading0000">Introduction</a></h2> 
- 
-<p>Polyline simplification is the process of reducing the resolution of a polyline. This is achieved by removing vertices and edges, while maintaining a good approximation of the original curve. One area of application for polyline simplification is in computer graphics. When the polyline resolution is higher than that of the display, multiple vertices and edges from that polyline will most likely be mapped onto a single pixel. Meaning, you are spending resources to draw something that will not be visible. This waste of resources is easily avoidable, by reducing the resolution of the polyline before drawing it.</p> 
- 
-<p>This article presents a polyline simplification library that is generic, easy to use, and supports the following algorithms:</p> 
- 
-<ul> 
-<li><em>Nth point</em> - A naive algorithm that keeps only each nth point</li> 
- 
-<li><em>Distance between points</em> - Removes successive points that are clustered together</li> 
- 
-<li><em>Perpendicular distance</em> - Removes points based on their distance to the line segment defined by their left and right neighbors</li> 
- 
-<li><em>Reumann-Witkam</em> - Shifts a strip along the polyline and removes points that fall outside</li> 
- 
-<li><em>Douglas-Peucker</em> - A classic simplification algorithm that provides an excellent approximation of the original line</li> 
- 
-<li>A variation on the <em>Douglas-Peucker</em> algorithm - Slower, but yields better results at lower resolutions</li> 
-</ul> 
- 
-<p>All the algorithms have been implemented in a single standalone C++ header using an STL-style interface that operates on input and output iterators. Polylines can be of any dimension, and defined using floating point or signed integer data types.</p> 
- 
-<p><em><strong>If you decide to use my code for your (commercial) project, let me know! I would love to hear where my code ends up and why you chose to use it!</strong></em></p> 
-<hr /> 
-<h2><a name="heading0001" id="heading0001">Similar Articles</a></h2> 
- 
-<ul> 
-<li>'<em>Polyline Simplification</em>' by Dan Sunday at <a href="http://softsurfer.com/Archive/algorithm_0205/algorithm_0205.htm">softSurfer</a></li> 
- 
-<p>Forms the basis of my work. He clearly explains the principles behind <em>Vertex Reduction</em> and <em>Douglas-Peucker Approximation</em>, and provides a C++ implementation. However, his implementation is based on floats, and limited to 2D-polylines defined as arrays of <code>Point</code> objects. He also uses recursion, which can lead to stack-overflow problems.</p> 
- 
-<li>'<em>A C++ implementation of Douglas-Peucker Line Approximation Algorithm</em>' by Jonathan de Halleux at <a href="dphull.aspx">CodeProject</a></li> 
- 
-<p>Presents an optimized O(n log n) implementation of the <em>Douglas-Peucker Approximation</em> algorithm. Internally, a 2D-convex hull algorithm is used to achieve better performance. As a consequence, only 2D-polylines are supported. The interface itself, while flexible, is overly complex with its points, point containers, key containers, and hull templates.</p> 
- 
-<li>'<em>A C# Implementation of Douglas-Peucker Line Approximation Algorithm</em>' by CraigSelbert at <a href="http://www.codeproject.com/KB/cs/Douglas-Peucker_Algorithm.aspx">CodeProject</a></li> 
- 
-<p>A simple port to C# of the C++ implementation of Jonathan de Halleux.</p> 
-</ul> 
-<hr /> 
-<h2><a name="heading0002" id="heading0002">Nth Point</a></h2> 
- 
-<p>The <em>Nth point</em> routine is a naive O(n) algorithm polyline simplification. It keeps only the <em>first</em>, <em>last</em>, and each <em>nth</em> point. All other points are removed. This process is illustrated below:</p> 
- 
-<p><img name="Nth point routine" width="367" height="292" src="PolylineSimplification/psimpl_np.png" complete="true" /></p> 
- 
-<p>The illustration shows a polyline consisting of 8 vertices: <em>{v<small>1</small>, v<small>2</small> ... v<small>8</small>}</em>. This polyline was simplified using <code>n</code> = 3. The resulting simplification consists of vertices: <em>{v<small>1</small>, v<small>4</small>, v<small>7</small>, v<small>8</small>}</em>.</p> 
- 
-<p>The algorithm is extremely fast, but unfortunately, it not very good at preserving the geometric features of a line.</p> 
- 
-<h3><a name="heading0003" id="heading0003">Interface</a></h3> 
- 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Article Source</title>
+<link rel="stylesheet" type="text/css" href="http://s.codeproject.com/App_Themes/Std/CSS/CodeProject.css?dt=2.3.110222.1" />
+<!--TODO <base href="http://www.codeproject.com/KB/recipes/" />-->
+</head>
+<body>
+<!--
+HTML for article "Polyline Simplification" by Elmar de Koning
+URL: http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
+Copyright 2010 by Elmar de Koning
+All formatting, additions and alterations Copyright © CodeProject, 1999-2011
+-->
+
+
+
+<p><b>Please choose 'View Source' in your browser to view the HTML, or File | Save to save this 
+file to your hard drive for editing.</b></p>
+
+<hr class="Divider subdue" />
+<div>
+
+
+
+
+<!-- Start Article -->
+<span id="ArticleContent">
+<ul class="download">
+<li><a href="PolylineSimplification/psimpl_demo_v6.zip">Download demo - 4.96 MB</a></li>
+
+<li><a href="PolylineSimplification/psimpl_src_v6.zip">Download source - 17.2 KB</a></li>
+</ul>
+
+<p><img width="600" height="453" alt="psimpl.png" src="PolylineSimplification/psimpl.png" complete="true" /></p>
+
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#heading0000">Introduction</a></li>
+<li><a href="#heading0001">Similar Articles</a></li>
+<li><a href="#heading0002">Nth Point</a></li>
+<ul>
+<li><a href="#heading0003">Interface</a></li>
+<li><a href="#heading0005">Implementation Details</a></li>
+<li><a href="#heading0006">Usage</a></li>
+</ul>
+<li><a href="#heading0007">Distance Between Points</a></li>
+<ul>
+<li><a href="#heading0008">Interface</a></li>
+<li><a href="#heading0010">Implementation Details</a></li>
+<li><a href="#heading0011">Usage</a></li>
+</ul>
+<li><a href="#heading0012">Perpendicular Distance</a></li>
+<ul>
+<li><a href="#heading0013">Interface</a></li>
+<li><a href="#heading0015">Implementation Details</a></li>
+<li><a href="#heading0016">Usage</a></li>
+</ul>
+<li><a href="#heading0017">Reumann-Witkam</a></li>
+<ul>
+<li><a href="#heading0018">Interface</a></li>
+<li><a href="#heading0020">Implementation Details</a></li>
+<li><a href="#heading0021">Usage</a></li>
+</ul>
+<li><a href="#heading0022">Opheim</a></li>
+<ul>
+<li><a href="#heading0023">Interface</a></li>
+<li><a href="#heading0025">Implementation Details</a></li>
+<li><a href="#heading0026">Usage</a></li>
+</ul>
+<li><a href="#heading0027">Douglas-Peucker</a></li>
+<ul>
+<li><a href="#heading0028">Interface</a></li>
+<li><a href="#heading0030">Implementation Details</a></li>
+<li><a href="#heading0031">Usage</a></li>
+</ul>
+<li><a href="#heading0032">Douglas-Peucker (Variant)</a></li>
+<ul>
+<li><a href="#heading0033">Interface</a></li>
+<li><a href="#heading0035">Implementation Details</a></li>
+<li><a href="#heading0036">Usage</a></li>
+</ul>
+<li><a href="#heading0037">Positional errors</a></li>
+<ul>
+<li><a href="#heading0038">Interface</a></li>
+<li><a href="#heading0040">Implementation Details</a></li>
+<li><a href="#heading0041">Usage</a></li>
+</ul>
+<li><a href="#heading0042">About the Code</a></li>
+<li><a href="#heading0043">About the Demo Application</a></li>
+<li><a href="#heading0044">History</a></li>
+</ul>
+
+
+<h2><a id="heading0000" name="heading0000">Introduction</a></h2>
+
+<p>Polyline simplification is the process of reducing the resolution of a polyline. This is achieved by removing vertices and edges, while maintaining a good approximation of the original curve. One area of application for polyline simplification is in computer graphics. When the polyline resolution is higher than that of the display, multiple vertices and edges from that polyline will most likely be mapped onto a single pixel. Meaning, you are spending resources to draw something that will not be visible. This waste of resources is easily avoidable, by reducing the resolution of the polyline before drawing it.</p>
+
+<p>This article presents a polyline simplification library that is generic, easy to use, and supports the following algorithms:</p>
+
+<ul>
+<em>Simplification algorithms</em>
+<li><em>Nth point</em> - A naive algorithm that keeps only each n<sup>th</sup> point</li>
+
+<li><em>Distance between points</em> - Removes successive points that are clustered together</li>
+
+<li><em>Perpendicular distance</em> - Removes points based on their distance to the line segment defined by their left and right neighbors</li>
+
+<li><em>Reumann-Witkam</em> - Shifts a strip along the polyline and removes points that fall outside</li>
+
+<li><em>Opheim</em> - Similar to <em>Reumann-Witkam</em>, but constrains the search area using a minimum and maximum tolerance</li>
+
+<li><em>Douglas-Peucker</em> - A classic simplification algorithm that provides an excellent approximation of the original line</li>
+
+<li>A variation on the <em>Douglas-Peucker</em> algorithm - Slower, but yields better results at lower resolutions</li>
+</ul>
+
+<ul>
+<em>Error algorithms</em>
+<li><em>Positional errors</em> - Distance of each point from an original polyline to its simplification</li>
+</ul>
+
+<p>All the algorithms have been implemented in a single standalone C++ header using an STL-style interface that operates on input and output iterators. Polylines can be of any dimension, and defined using floating point or signed integer data types.</p>
+
+<p><em><strong>If you decide to use my code for your (commercial) project, let me know! I would love to hear where my code ends up and why you chose to use it!</strong></em></p>
+<hr />
+<h2><a id="heading0001" name="heading0001">Similar Articles</a></h2>
+
+<ul>
+<li>'<em>Polyline Simplification</em>' by Dan Sunday at <a href="http://softsurfer.com/Archive/algorithm_0205/algorithm_0205.htm">softSurfer</a></li>
+
+<p>Forms the basis of my work. He clearly explains the principles behind <em>Vertex Reduction</em> and <em>Douglas-Peucker Approximation</em>, and provides a C++ implementation. However, his implementation is based on floats, and limited to 2D-polylines defined as arrays of <code>Point</code> objects. He also uses recursion, which can lead to stack-overflow problems.</p>
+
+<li>'<em>A C++ implementation of Douglas-Peucker Line Approximation Algorithm</em>' by Jonathan de Halleux at <a href="dphull.aspx">CodeProject</a></li>
+
+<p>Presents an optimized O(n log n) implementation of the <em>Douglas-Peucker Approximation</em> algorithm. Internally, a 2D-convex hull algorithm is used to achieve better performance. As a consequence, only 2D-polylines are supported. The interface itself, while flexible, is overly complex with its points, point containers, key containers, and hull templates.</p>
+
+<li>'<em>A C# Implementation of Douglas-Peucker Line Approximation Algorithm</em>' by CraigSelbert at <a href="http://www.codeproject.com/KB/cs/Douglas-Peucker_Algorithm.aspx">CodeProject</a></li>
+
+<p>A simple port to C# of the C++ implementation of Jonathan de Halleux.</p>
+</ul>
+<hr />
+<h2><a id="heading0002" name="heading0002">Nth Point</a></h2>
+
+<p>The <em>Nth point</em> routine is a naive O(n) algorithm polyline simplification. It keeps only the <em>first</em>, <em>last</em>, and each <em>nth</em> point. All other points are removed. This process is illustrated below:</p>
+
+<p><img name="Nth point routine" width="367" height="292" src="PolylineSimplification/psimpl_np.png" complete="true" /></p>
+
+<p>The illustration shows a polyline consisting of 8 vertices: <em>{v<small>1</small>, v<small>2</small> ... v<small>8</small>}</em>. This polyline was simplified using <code>n</code> = 3. The resulting simplification consists of vertices: <em>{v<small>1</small>, v<small>4</small>, v<small>7</small>, v<small>8</small>}</em>.</p>
+
+<p>The algorithm is extremely fast, but unfortunately, it not very good at preserving the geometric features of a line.</p>
+
+<h3><a id="heading0003" name="heading0003">Interface</a></h3>
+
 <pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
 OutputIterator simplify_nth_point (
     InputIterator first,
     InputIterator last,
     unsigned n,
-    OutputIterator result)</pre> 
- 
-<p>Applies the <em>nth point</em> routine to the range [<code>first</code>, <code>last</code>) using the specified value for <em>n</em>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p> 
- 
-<h4><a name="heading0004" id="heading0004">Input (Type) Requirements</a></h4> 
- 
-<ol> 
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
- 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains at least 2 vertices</li> 
- 
-<li><code>n</code> is at least 2</li> 
-</ol> 
- 
-<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p> 
- 
-<h3><a name="heading0005" id="heading0005">Implementation Details</a></h3> 
- 
-<p>Algorithms don't get much simpler than this. A loop is used to copy the <em>first</em> point and each following <em>nth</em> point of the input polyline to the simplification result. After the loop, I make sure that the <em>last</em> point is part of the simplification.</p> 
- 
-<h3><a name="heading0006" id="heading0006">Usage</a></h3> 
- 
+    OutputIterator result)</pre>
+
+<p>Applies the <em>nth point</em> routine to the range [<code>first</code>, <code>last</code>) using the specified value for <em>n</em>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
+
+<h4><a id="heading0004" name="heading0004">Input (Type) Requirements</a></h4>
+
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains at least 2 vertices</li>
+
+<li><code>n</code> is at least 2</li>
+</ol>
+
+<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p>
+
+<h3><a id="heading0005" name="heading0005">Implementation Details</a></h3>
+
+<p>Algorithms don't get much simpler than this. A loop is used to copy the <em>first</em> point and each following <em>nth</em> point of the input polyline to the simplification result. After the loop, I make sure that the <em>last</em> point is part of the simplification.</p>
+
+<h3><a id="heading0006" name="heading0006">Usage</a></h3>
+
 <pre lang="C++">unsigned n = 10;                 // reduce to 10%
 std::vector &lt;float&gt; polyline;    // original polyline, assume not empty 
 std::vector &lt;float&gt; result;      // resulting simplified polyline
  
 // simplify the 2d polyline
 psimpl::simplify_nth_point &lt;2&gt; (polyline.begin (), polyline.end (),
-                                n, std::back_inserter (result));</pre> 
-<hr /> 
-<h2><a name="heading0007" id="heading0007">Distance Between Points</a></h2> 
- 
-<p><em>Distance between points</em> is a brute force O(n) algorithm for polyline simplification. It reduces successive vertices that are clustered too closely to a single vertex, called a key. The resulting keys form the simplified polyline. This process is illustrated below:</p> 
- 
-<p><img name="Distance between points routine" width="395" height="390" src="PolylineSimplification/psimpl_rd.png" complete="true" /></p> 
- 
-<p>The first and last vertices are always part of the simplification, and are thus marked as keys. Starting at the first key (the first vertex), the algorithm walks along the polyline. All consecutive vertices that fall within a specified distance tolerance from that key are removed. The first encountered vertex that lies further away than the tolerance is marked as a key. Starting from this new key, the algorithm will start walking again and repeat this process, until it reaches the final key (the last vertex).</p> 
- 
-<h3><a name="heading0008" id="heading0008">Interface</a></h3> 
- 
+                                n, std::back_inserter (result));</pre>
+<hr />
+<h2><a id="heading0007" name="heading0007">Distance Between Points</a></h2>
+
+<p><em>Distance between points</em> is a brute force O(n) algorithm for polyline simplification. It reduces successive vertices that are clustered too closely to a single vertex, called a key. The resulting keys form the simplified polyline. This process is illustrated below:</p>
+
+<p><img name="Distance between points routine" width="395" height="390" src="PolylineSimplification/psimpl_rd.png" complete="true" /></p>
+
+<p>The first and last vertices are always part of the simplification, and are thus marked as keys. Starting at the first key (the first vertex), the algorithm walks along the polyline. All consecutive vertices that fall within a specified distance tolerance from that key are removed. The first encountered vertex that lies further away than the tolerance is marked as a key. Starting from this new key, the algorithm will start walking again and repeat this process, until it reaches the final key (the last vertex).</p>
+
+<h3><a id="heading0008" name="heading0008">Interface</a></h3>
+
 <pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
 OutputIterator simplify_radial_distance (
     InputIterator first,
     InputIterator last,
     typename std::iterator_traits &lt;InputIterator&gt;::value_type tol,
-    OutputIterator result)</pre> 
- 
-<p>Applies the <em>Distance between points</em> routine to the range [<code>first</code>, <code>last</code>) using the specified radial distance tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p> 
- 
-<h4><a name="heading0009" id="heading0009">Input (Type) Requirements</a></h4> 
- 
-<ol> 
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
- 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains at least two vertices</li> 
- 
-<li><code>tol</code> is not zero</li> 
-</ol> 
- 
-<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p> 
- 
-<h3><a name="heading0010" id="heading0010">Implementation Details</a></h3> 
- 
-<p>Nothing special, just a single loop over all vertices that calculates point-point distances. As soon a key is found, it is copied to the output range.</p> 
- 
-<h3><a name="heading0011" id="heading0011">Usage</a></h3> 
- 
-<pre lang="C++">float tolerance = 10;            // point-to-point distance tolerance
+    OutputIterator result)</pre>
+
+<p>Applies the <em>Distance between points</em> routine to the range [<code>first</code>, <code>last</code>) using the specified radial distance tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
+
+<h4><a id="heading0009" name="heading0009">Input (Type) Requirements</a></h4>
+
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains at least two vertices</li>
+
+<li><code>tol</code> is not zero</li>
+</ol>
+
+<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p>
+
+<h3><a id="heading0010" name="heading0010">Implementation Details</a></h3>
+
+<p>Nothing special, just a single loop over all vertices that calculates point-point distances. As soon as a key is found, it is copied to the output range.</p>
+
+<h3><a id="heading0011" name="heading0011">Usage</a></h3>
+
+<pre lang="C++">float tolerance = 10.f;          // point-to-point distance tolerance
 std::vector &lt;float&gt; polyline;    // original polyline, assume not empty 
 std::vector &lt;float&gt; result;      // resulting simplified polyline
  
 // simplify the 2d polyline
 psimpl::simplify_radial_distance &lt;2&gt; (polyline.begin (), polyline.end (),
-                                      tolerance, std::back_inserter (result));</pre> 
- 
-<p>Note that the results container does not need to match the polyline container. You could, for instance, use a C-style <code>double</code> array.</p> 
-<hr /> 
-<h2><a name="heading0012" id="heading0012">Perpendicular Distance</a></h2> 
- 
-<p>Instead of using a point-to-point (radial) distance tolerance as a rejection criterion (see <em>Distance between points</em>), the O(n) <em>Perpendicular distance</em> routine uses a point-to-segment distance tolerance. For each vertex <em>v<small>i</small></em>, its perpendicular distance to the line segment <em>S(v<small>i-1</small>, v<small>i+1</small>)</em> is computed. All vertices whose distance is smaller than the given tolerance will be removed. This process is illustrated below:</p> 
- 
-<p><img name="Perpendicular distance routine" width="399" height="459" src="PolylineSimplification/psimpl_pd.png" complete="true" /></p> 
- 
-<p>Initially, the first three vertices are processed, and the perpendicular distance of the second vertex is calculated. After comparing this distance against the tolerance, the second vertex is considered to be a key (part of the simplification). The algorithm then moves one vertex up the polyline and begins processing the next set of three vertices. This time, the calculated distance falls below the tolerance and thus the intermediate vertex is removed. The algorithm continues by moving two vertices up the polyline.</p> 
- 
-<p>Note that for each vertex <em>v<small>i</small></em> that is removed, the next possible candidate for removal is <em>v<small>i+2</small></em>. This means that the original polyline can only be reduced by a maximum of 50%. Multiple passes are required to achieve higher vertex reduction rates.</p> 
- 
-<h3><a name="heading0013" id="heading0013">Interface</a></h3> 
- 
+                                      tolerance, std::back_inserter (result));</pre>
+
+<p>Note that the results container does not need to match the polyline container. You could, for instance, use a C-style <code>double</code> array.</p>
+<hr />
+<h2><a id="heading0012" name="heading0012">Perpendicular Distance</a></h2>
+
+<p>Instead of using a point-to-point (radial) distance tolerance as a rejection criterion (see <em>Distance between points</em>), the O(n) <em>Perpendicular distance</em> routine uses a point-to-segment distance tolerance. For each vertex <em>v<small>i</small></em>, its perpendicular distance to the line segment <em>S(v<small>i-1</small>, v<small>i+1</small>)</em> is computed. All vertices whose distance is smaller than the given tolerance will be removed. This process is illustrated below:</p>
+
+<p><img name="Perpendicular distance routine" width="399" height="459" src="PolylineSimplification/psimpl_pd.png" complete="true" /></p>
+
+<p>Initially, the first three vertices are processed, and the perpendicular distance of the second vertex is calculated. After comparing this distance against the tolerance, the second vertex is considered to be a key (part of the simplification). The algorithm then moves one vertex up the polyline and begins processing the next set of three vertices. This time, the calculated distance falls below the tolerance and thus the intermediate vertex is removed. The algorithm continues by moving two vertices up the polyline.</p>
+
+<p>Note that for each vertex <em>v<small>i</small></em> that is removed, the next possible candidate for removal is <em>v<small>i+2</small></em>. This means that the original polyline can only be reduced by a maximum of 50%. Multiple passes are required to achieve higher vertex reduction rates.</p>
+
+<h3><a id="heading0013" name="heading0013">Interface</a></h3>
+
 <pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
 OutputIterator simplify_perpendicular_distance (
     InputIterator first,
@@ -249,47 +268,47 @@ OutputIterator simplify_perpendicular_distance (
     InputIterator last,
     typename std::iterator_traits &lt;InputIterator&gt;::value_type tol,
     unsigned repeat,
-    OutputIterator result)</pre> 
- 
-<p>Applies the <em>Perpendicular distance</em> routine (<code>repeat</code> times) to the range [<code>first</code>, <code>last</code>) using the specified perpendicular distance tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p> 
- 
-<h4><a name="heading0014" id="heading0014">Input (Type) Requirements</a></h4> 
- 
-<ol> 
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
- 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains at least 3 vertices</li> 
- 
-<li><code>tol</code> is not zero</li> 
- 
-<li><code>n</code> is at least 1</li> 
-</ol> 
- 
-<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p> 
- 
-<h3><a name="heading0015" id="heading0015">Implementation Details</a></h3> 
- 
-<p>The main function, without the <code>repeat</code> parameter, is a single loop that starts with processing the first three consecutive vertices. Depending on whether the second or third vertex is considered to be part of the simplification (called a key), the algorithm moves one or two vertices up the original polyline. As soon as a key is found, it is copied to the output iterator.</p> 
- 
-<p>The second function, which takes a <code>repeat</code> value as input, is a wrapper around the main function, and consists of three distinct steps:</p> 
- 
-<ol> 
-<li>First iteration: simplify from range [<code>first</code>, <code>last</code>) to a plain C-style array.</li> 
- 
-<li>Intermediate iterations: simplify from and to plain C-style arrays.</li> 
- 
-<li>Last iteration: simplify from a plain C-style array to the output iterator <code>result</code>.</li> 
-</ol> 
- 
-<p>After each iteration, the simplification is checked for improvement. If none was found, the current result is copied directly to the output iterator <code>result</code>. Note that up to two temporary copies may be created: one copy of the input range and the other of the first intermediate simplification result.</p> 
- 
-<h3><a name="heading0016" id="heading0016">Usage</a></h3> 
- 
-<pre lang="C++">double tolerance = 10;           // point-to-segment distance tolerance
+    OutputIterator result)</pre>
+
+<p>Applies the <em>Perpendicular distance</em> routine (<code>repeat</code> times) to the range [<code>first</code>, <code>last</code>) using the specified perpendicular distance tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
+
+<h4><a id="heading0014" name="heading0014">Input (Type) Requirements</a></h4>
+
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains at least 3 vertices</li>
+
+<li><code>tol</code> is not zero</li>
+
+<li><code>n</code> is at least 1</li>
+</ol>
+
+<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p>
+
+<h3><a id="heading0015" name="heading0015">Implementation Details</a></h3>
+
+<p>The main function, without the <code>repeat</code> parameter, is a single loop that starts with processing the first three consecutive vertices. Depending on whether the second or third vertex is considered to be part of the simplification (called a key), the algorithm moves one or two vertices up the original polyline. As soon as a key is found, it is copied to the output iterator.</p>
+
+<p>The second function, which takes a <code>repeat</code> value as input, is a wrapper around the main function, and consists of three distinct steps:</p>
+
+<ol>
+<li>First iteration: simplify from range [<code>first</code>, <code>last</code>) to a plain C-style array.</li>
+
+<li>Intermediate iterations: simplify from and to plain C-style arrays.</li>
+
+<li>Last iteration: simplify from a plain C-style array to the output iterator <code>result</code>.</li>
+</ol>
+
+<p>After each iteration, the simplification is checked for improvement. If none was found, the current result is copied directly to the output iterator <code>result</code>. Note that up to two temporary copies may be created: one copy of the input range, and the other of the first intermediate simplification result.</p>
+
+<h3><a id="heading0016" name="heading0016">Usage</a></h3>
+
+<pre lang="C++">double tolerance = 10.0;         // point-to-segment distance tolerance
 std::deque &lt;double&gt; polyline;    // original polyline, assume not empty 
 std::deque &lt;double&gt; result;      // resulting simplified polyline
  
@@ -297,294 +316,414 @@ std::deque &lt;double&gt; result;      // resulting simplified polyline
 psimpl::simplify_perpendicular_distance &lt;3&gt; (polyline.begin (), polyline.end (),
                                              tolerance, std::back_inserter (result));
  
-double tolerance = 10;           // point-to-segment distance tolerance
+double tolerance = 10.0;         // point-to-segment distance tolerance
 usinged repeat = 5;              // apply the routine 5 times
 std::deque &lt;double&gt; polyline;    // original polyline, assume not empty 
 std::deque &lt;double&gt; result;      // resulting simplified polyline
  
 // simplify the 3d polyline - multi pass
 psimpl::simplify_perpendicular_distance &lt;3&gt; (polyline.begin (), polyline.end (), tolerance,
-                                             repeat, std::back_inserter (result));</pre> 
-<hr /> 
-<h2><a name="heading0017" id="heading0017">Reumann-Witkam</a></h2> 
- 
-<p>Instead of using a point-to-point (radial) distance tolerance as a rejection criterion (see <em>Distance between points</em>), the O(n) <em>Reumann-Witkam</em> routine uses a point-to-line (perpendicular) distance tolerance. It defines a line through the first two vertices of the original polyline. For each successive vertex <em>v<small>i</small></em>, its perpendicular distance to this line is calculated. A new key is found at <em>v<small>i-1</small></em>, when this distance exceeds the specified tolerance. The vertices <em>v<small>i</small></em> and <em>v<small>i+1</small></em> are then used to define a new line, and the process repeats itself. The algorithm is illustrated below:</p> 
- 
-<p><img name="Reumann-Witkam approximation" width="436" height="521" src="PolylineSimplification/psimpl_rw.png" complete="true" /></p> 
- 
-<p>The red strip is constructed from the specified tolerance and a line through the first two vertices of the polyline. The third vertex does not lie within the strip, meaning the second vertex is a key. A new strip is defined using a line through the second and third vertex. The last vertex that is still contained within this strip is considered the next key. All other contained vertices are removed. This process is repeated until a strip is constructed that contains the last vertex of the original polyline.</p> 
- 
-<h3><a name="heading0018" id="heading0018">Interface</a></h3> 
- 
+                                             repeat, std::back_inserter (result));</pre>
+<hr />
+<h2><a id="heading0017" name="heading0017">Reumann-Witkam</a></h2>
+
+<p>Instead of using a point-to-point (radial) distance tolerance as a rejection criterion (see <em>Distance between points</em>), the O(n) <em>Reumann-Witkam</em> routine uses a point-to-line (perpendicular) distance tolerance. It defines a line through the first two vertices of the original polyline. For each successive vertex <em>v<small>i</small></em>, its perpendicular distance to this line is calculated. A new key is found at <em>v<small>i-1</small></em>, when this distance exceeds the specified tolerance. The vertices <em>v<small>i</small></em> and <em>v<small>i+1</small></em> are then used to define a new line, and the process repeats itself. The algorithm is illustrated below:</p>
+
+<p><img name="Reumann-Witkam approximation" width="436" height="521" src="PolylineSimplification/psimpl_rw.png" complete="true" /></p>
+
+<p>The red strip is constructed from the specified tolerance and a line through the first two vertices of the polyline. The third vertex does not lie within the strip, meaning the second vertex is a key. A new strip is defined using a line through the second and third vertices. The last vertex that is still contained within this strip is considered the next key. All other contained vertices are removed. This process is repeated until a strip is constructed that contains the last vertex of the original polyline.</p>
+
+<h3><a id="heading0018" name="heading0018">Interface</a></h3>
+
 <pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
 OutputIterator simplify_reumann_witkam (
     InputIterator begin,
     InputIterator end,
     typename std::iterator_traits &lt;InputIterator&gt;::value_type tol,
-    OutputIterator result)</pre> 
- 
-<p>Applies the <em>Reumann-Witkam</em> routine to the range [<code>first</code>, <code>last</code>) using the specified perpendicular distance tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p> 
- 
-<h4><a name="heading0019" id="heading0019">Input (Type) Requirements</a></h4> 
- 
-<ol> 
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
- 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains at least 3 vertices</li> 
- 
-<li><code>tol</code> is not zero</li> 
-</ol> 
- 
-<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p> 
- 
-<h3><a name="heading0020" id="heading0020">Implementation Details</a></h3> 
- 
-<p>Nothing special, just a single loop over all vertices that calculates their distance against the current strip. As soon as a key is found, it is copied to the output range and the current strip is updated.</p> 
- 
-<h3><a name="heading0021" id="heading0021">Usage</a></h3> 
- 
-<pre lang="C++">float tolerance = 10;            // point-to-line perpendicular distance tolerance
+    OutputIterator result)</pre>
+
+<p>Applies the <em>Reumann-Witkam</em> routine to the range [<code>first</code>, <code>last</code>) using the specified perpendicular distance tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
+
+<h4><a id="heading0019" name="heading0019">Input (Type) Requirements</a></h4>
+
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains at least 3 vertices</li>
+
+<li><code>tol</code> is not zero</li>
+</ol>
+
+<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p>
+
+<h3><a id="heading0020" name="heading0020">Implementation Details</a></h3>
+
+<p>Nothing special, just a single loop over all vertices that calculates their distance against the current strip. As soon as a key is found, it is copied to the output range and the current strip is updated.</p>
+
+<h3><a id="heading0021" name="heading0021">Usage</a></h3>
+
+<pre lang="C++">float tolerance = 10.f;          // point-to-line perpendicular distance tolerance
 std::vector &lt;float&gt; polyline;    // original polyline, assume not empty 
 std::vector &lt;double&gt; result;     // resulting simplified polyline
  
 // simplify the 4d polyline
 psimpl::simplify_reumann_witkam &lt;4&gt; (polyline.begin (), polyline.end (),
-                                     tolerance, std::back_inserter (result));</pre> 
+                                     tolerance, std::back_inserter (result));</pre>
+
+<p>This example demonstrates that the value type of the input and output iterators do not have to be the same.</p>
+<hr />
+
+<h2><a id="heading0022" name="heading0022">Opheim</a></h2>
+
+<p>TODO</p>
+
+<p><img name="Opheim approximation" width="100" height="100" src="PolylineSimplification/psimpl_op.png" complete="true" /></p>
+
+<p>TODO</p>
+
+<h3><a id="heading0023" name="heading0023">Interface</a></h3>
+
+<pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
+OutputIterator simplify_opheim (
+    InputIterator begin,
+    InputIterator end,
+    typename std::iterator_traits &lt;InputIterator&gt;::value_type minTol,
+    typename std::iterator_traits &lt;InputIterator&gt;::value_type maxTol,
+    OutputIterator result)</pre>
+    
+<p>Applies the <em>Opheim</em> routine to the range [<code>first</code>, <code>last</code>) using the specified distance tolerances <code>minTol</code> and <code>maxTol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
+
+<h4><a id="heading0024" name="heading0024">Input (Type) Requirements</a></h4>
+
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains at least 3 vertices</li>
+
+<li><code>minTol</code> is not zero</li>
+
+<li><code>maxTol</code> is not zero</li>
+</ol>
+
+<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p>
+
+<h3><a id="heading0025" name="heading0025">Implementation Details</a></h3>
+
+<p>TODO</p>
+
+<h3><a id="heading0026" name="heading0026">Usage</a></h3>
+
+<pre lang="C++">float minimum = 10.f;            // minimum distance tolerance
+float maximum = 100.f;           // maximum distance tolerance
+std::vector &lt;float&gt; polyline;    // original polyline, assume not empty 
+std::vector &lt;double&gt; result;     // resulting simplified polyline
  
-<p>This example demonstrates that the value type of input and output iterators do not have to be the same.</p> 
-<hr /> 
-<h2><a name="heading0022" id="heading0022">Douglas-Peucker</a></h2> 
- 
-<p>The <em>Douglas-Peucker</em> algorithm uses a point-to-edge distance tolerance. The algorithm starts with a crude simplification that is the single edge joining the first and last vertices of the original polyline. It then computes the distance of all intermediate vertices to that edge. The vertex that is furthest away from that edge, and that has a computed distance that is larger than a specified tolerance, will be marked as a key and added to the simplification. This process will recurse for each edge in the current simplification, until all vertices of the original polyline are within tolerance of the simplification results. This process is illustrated below:</p> 
- 
-<p><img name="Douglas-Peucker Approximation" width="386" height="613" src="PolylineSimplification/psimpl_dp.png" complete="true" /></p> 
- 
-<p>Initially, the simplification consists of a single edge. During the first step, the fourth vertex is marked as a key and the simplification is adjusted accordingly. During the second step, the first edge of the current simplification is processed. The maximum vertex distance to that edge falls below the tolerance threshold, and no new key is added. During the third step, a key is found for the second edge of the current simplification. This edge is split at the key and the simplification is updated. This process continues until no more keys can be found. Note that at each step, only one edge of the current simplification is processed.</p> 
- 
-<p>This algorithm has a worst case running time of O(nm), and O(n log m) on average, where m is the size of the simplified polyline. As such, this is an output dependent algorithm, and will be very fast when m is small. To make it even faster, the <em>Distance between points</em> routine is applied as a pre-processing step.</p> 
- 
-<h3><a name="heading0023" id="heading0023">Interface</a></h3> 
- 
+// simplify the 4d polyline
+psimpl::simplify_opheim &lt;4&gt; (polyline.begin (), polyline.end (),
+                             minimum, maximum, std::back_inserter (result));</pre>
+
+<hr />
+<h2><a id="heading0027" name="heading0027">Douglas-Peucker</a></h2>
+
+<p>The <em>Douglas-Peucker</em> algorithm uses a point-to-edge distance tolerance. The algorithm starts with a crude simplification that is the single edge joining the first and last vertices of the original polyline. It then computes the distance of all intermediate vertices to that edge. The vertex that is furthest away from that edge, and that has a computed distance that is larger than a specified tolerance, will be marked as a key and added to the simplification. This process will recurse for each edge in the current simplification, until all vertices of the original polyline are within tolerance of the simplification results. This process is illustrated below:</p>
+
+<p><img name="Douglas-Peucker Approximation" width="386" height="613" src="PolylineSimplification/psimpl_dp.png" complete="true" /></p>
+
+<p>Initially, the simplification consists of a single edge. During the first step, the fourth vertex is marked as a key and the simplification is adjusted accordingly. During the second step, the first edge of the current simplification is processed. The maximum vertex distance to that edge falls below the tolerance threshold, and no new key is added. During the third step, a key is found for the second edge of the current simplification. This edge is split at the key and the simplification is updated. This process continues until no more keys can be found. Note that at each step, only one edge of the current simplification is processed.</p>
+
+<p>This algorithm has a worst case running time of O(nm), and O(n log m) on average, where m is the size of the simplified polyline. As such, this is an output dependent algorithm, and will be very fast when m is small. To make it even faster, the <em>Distance between points</em> routine is applied as a pre-processing step.</p>
+
+<h3><a id="heading0028" name="heading0028">Interface</a></h3>
+
 <pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
 OutputIterator simplify_douglas_peucker (
     InputIterator begin,
     InputIterator end,
     typename std::iterator_traits &lt;InputIterator&gt;::value_type tol,
-    OutputIterator result)</pre> 
- 
-<p>Applies the <em>Distance between points</em> routine followed by <em>Douglas-Peucker</em> approximation to the range [<code>first</code>, <code>last</code>) using the specified tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p> 
- 
-<h4><a name="heading0024" id="heading0024">Input (Type) Requirements</a></h4> 
- 
-<ol> 
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
- 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains at least 2 vertices</li> 
- 
-<li><code>tol</code> is not zero.</li> 
-</ol> 
- 
-<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p> 
- 
-<h3><a name="heading0025" id="heading0025">Implementation Details</a></h3> 
- 
-<p>Initially, my focus was on limiting the memory usage of the algorithms. So instead of using output iterators, all algorithms returned a <code>std::vector&lt;bool&gt;</code>. One boolean for each vertex that determined if that vertex is a key and thus part of the simplification. This list of key markers could be used as input for another algorithm, allowing different algorithms to be run in sequence. A separate function could optionally copy all keys to some output range.</p> 
- 
-<p>This approach worked, but had some serious drawbacks:</p> 
- 
-<ul> 
-<li>The code was slow, especially for non-random access iterators</li> 
- 
-<li>The code had become too complex with all its bookkeeping</li> 
- 
-<li>When using the code, I always needed a real copy of the simplification results and not a bunch of key markers</li> 
-</ul> 
- 
-<p>The first thing I changed was the interface of each algorithm. Instead of returning key markers, the simplification results were copied to an output range using output iterators. The second change was to store the intermediate result produced by the <em>Distance between points</em> pre-processing step in a plain C-style array. This array is then used during <em>Douglas-Peucker</em> approximation. The advantages of this approach far outweigh the increase in memory usage:</p> 
- 
-<ul> 
-<li>Using the <em>Distance between points</em> routine as a pre-processing step became trivial; I only had to create an array and specify an output iterator for it</li> 
- 
-<li>Less code - lack of specific code for different iterator categories, and less bookkeeping</li> 
- 
-<li>Faster code - working with C-style arrays and value type pointers is generally faster than using iterators, especially when dealing with non-random access iterators</li> 
- 
-<li>Cleaner interface</li> 
-</ul> 
- 
-<p>The algorithm itself is a straightforward loop. The initial edge of the simplification is added to a <code>std::stack</code>. As long as the stack is not empty, an edge is popped and processed. Its key and key-edge distance are calculated. If the computed distance is larger than the tolerance, the key is added to the simplification. The edge is split and both sub-edges are added to the stack. When a vertex is added to the simplification, it is only marked as being a key. When the algorithm has finished, all marked vertices (keys) are copied to the output range.</p> 
- 
-<h3><a name="heading0026" id="heading0026">Usage</a></h3> 
- 
+    OutputIterator result)</pre>
+
+<p>Applies the <em>Distance between points</em> routine followed by <em>Douglas-Peucker</em> approximation to the range [<code>first</code>, <code>last</code>) using the specified tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
+
+<h4><a id="heading0029" name="heading0029">Input (Type) Requirements</a></h4>
+
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains at least 2 vertices</li>
+
+<li><code>tol</code> is not zero.</li>
+</ol>
+
+<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p>
+
+<h3><a id="heading0030" name="heading0030">Implementation Details</a></h3>
+
+<p>Initially, my focus was on limiting the memory usage of the algorithms. So instead of using output iterators, all algorithms returned a <code>std::vector&lt;bool&gt;</code>. One boolean for each vertex that determined if that vertex is a key and thus part of the simplification. This list of key markers could be used as input for another algorithm, allowing different algorithms to be run in sequence. A separate function could optionally copy all keys to some output range.</p>
+
+<p>This approach worked, but had some serious drawbacks:</p>
+
+<ul>
+<li>The code was slow, especially for non-random access iterators</li>
+
+<li>The code had become too complex with all its bookkeeping</li>
+
+<li>When using the code, I always needed a real copy of the simplification results and not a bunch of key markers</li>
+</ul>
+
+<p>The first thing I changed was the interface of each algorithm. Instead of returning key markers, the simplification results were copied to an output range using output iterators. The second change was to store the intermediate result produced by the <em>Distance between points</em> pre-processing step in a plain C-style array. This array is then used during <em>Douglas-Peucker</em> approximation. The advantages of this approach far outweigh the increase in memory usage:</p>
+
+<ul>
+<li>Using the <em>Distance between points</em> routine as a pre-processing step became trivial; I only had to create an array and specify an output iterator for it</li>
+
+<li>Less code - lack of specific code for different iterator categories, and less bookkeeping</li>
+
+<li>Faster code - working with C-style arrays and value type pointers is generally faster than using iterators, especially when dealing with non-random access iterators</li>
+
+<li>Cleaner interface</li>
+</ul>
+
+<p>The algorithm itself is a straightforward loop. The initial edge of the simplification is added to a <code>std::stack</code>. As long as the stack is not empty, an edge is popped and processed. Its key and key-edge distance are calculated. If the computed distance is larger than the tolerance, the key is added to the simplification. The edge is split and both sub-edges are added to the stack. When a vertex is added to the simplification, it is only marked as being a key. When the algorithm has finished, all marked vertices (keys) are copied to the output range.</p>
+
+<h3><a id="heading0031" name="heading0031">Usage</a></h3>
+
 <pre lang="C++">double tolerance = 10;                           // point-to-edge distance tolerance
 std::deque &lt;double&gt; polyline;                    // original polyline, assume not empty 
 double* result = new double [polyline.size ()];  // make sure the result array 
                                                  // is large enough
 // simplify the 3d polyline
 psimpl::simplify_douglas_peucker &lt;3&gt; (polyline.begin (), polyline.end (),
-                                      tolerance, result);</pre> 
- 
-<p>This example demonstrates that input and output containers do not have to be the same.</p> 
-<hr /> 
-<h2><a name="heading0027" id="heading0027">Douglas-Peucker (Variant)</a></h2> 
- 
-<p>This algorithm is a variation of the original implementation. Its key differences are:</p> 
- 
-<ul> 
-<li>A point count tolerance is used instead of a point-to-edge distance tolerance. This allows you to specify the exact number of vertices in the simplified polyline. With the original implementation, you can never be sure how many vertices will remain.</li> 
- 
-<li>Instead of processing a single edge at a time (chosen pseudo random), all edges of the current simplified polyline are considered simultaneously. Each of these edges may define a new key. From all these possible keys, the one with the highest point-to-edge distance is chosen as the new key.</li> 
-</ul> 
- 
-<p>A direct result from always choosing the next key based on all possible keys at any given time, is that the simplification results are of a higher quality. This is most notable when using a very low point-count tolerance. A downside is that we cannot use the <em>Distance between points</em> routine as a pre-processing step to speed up the algorithm.</p> 
- 
-<h3><a name="heading0028" id="heading0028">Interface</a></h3> 
- 
+                                      tolerance, result);</pre>
+
+<p>This example demonstrates that input and output containers do not have to be the same.</p>
+<hr />
+<h2><a id="heading0032" name="heading0032">Douglas-Peucker (Variant)</a></h2>
+
+<p>This algorithm is a variation of the original implementation. Its key differences are:</p>
+
+<ul>
+<li>A point count tolerance is used instead of a point-to-edge distance tolerance. This allows you to specify the exact number of vertices in the simplified polyline. With the original implementation, you can never be sure how many vertices will remain.</li>
+
+<li>Instead of processing a single edge at a time (chosen pseudo random), all edges of the current simplified polyline are considered simultaneously. Each of these edges may define a new key. From all these possible keys, the one with the highest point-to-edge distance is chosen as the new key.</li>
+</ul>
+
+<p>A direct result from always choosing the next key based on all possible keys at any given time, is that the simplification results are of a higher quality. This is most notable when using a very low point-count tolerance. A downside is that we cannot use the <em>Distance between points</em> routine as a pre-processing step to speed up the algorithm.</p>
+
+<h3><a id="heading0033" name="heading0033">Interface</a></h3>
+
 <pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
 OutputIterator simplify_douglas_peucker_alt (
     InputIterator begin,
     InputIterator end,
     unsigned count,
-    OutputIterator result)</pre> 
- 
-<p>Applies a variant of the <em>Douglas-Peucker Approximation</em> to the range [<code>first</code>, <code>last</code>). The resulting simplified polyline consists of <code>count</code> vertices, and is copied to the output range [<code>result</code>, <code>result</code> + <code>count</code>). The return value is the end of the output range: <code>result</code> + <code>count</code>.</p> 
- 
-<h4><a name="heading0029" id="heading0029">Input (Type) Requirements</a></h4> 
- 
-<ol> 
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
- 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
- 
-<li>The range [<code>first</code>, <code>last</code>) contains a minimum of <code>count</code> vertices</li> 
- 
-<li><code>count</code> is at least 2</li> 
-</ol> 
- 
-<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p> 
- 
-<h3><a name="heading0030" id="heading0030">Implementation Details</a></h3> 
- 
-<p>The implementation for this variant varies only slightly from the original implementation. The main differences being that there is no pre-processing step, and in the way the edges of the current simplification are processed.</p> 
- 
-<p>For each edge that is added to the current simplification, its key is calculated. This key, alongside the edge and its distance to that edge, are stored in a <code>std::priority_queue</code>. This queue ensures that its top element contains the key with the maximum point-edge distance. As long as the simplification does not contain the desired amount of points, the top element from the queue is popped and its key is added to the simplification. The corresponding edge is split, and the two sub-edges are processed and stored in the queue.</p> 
- 
-<p>For performance reasons, a copy is made of the input polyline in a plain C-style array. Note that for the original implementation, this copy was made automatically during the <em>Distance between points</em> pre-processing step.</p> 
- 
-<h3><a name="heading0031" id="heading0031">Usage</a></h3> 
- 
+    OutputIterator result)</pre>
+
+<p>Applies a variant of the <em>Douglas-Peucker Approximation</em> to the range [<code>first</code>, <code>last</code>). The resulting simplified polyline consists of <code>count</code> vertices, and is copied to the output range [<code>result</code>, <code>result</code> + <code>count</code>). The return value is the end of the output range: <code>result</code> + <code>count</code>.</p>
+
+<h4><a id="heading0034" name="heading0034">Input (Type) Requirements</a></h4>
+
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The range [<code>first</code>, <code>last</code>) contains a minimum of <code>count</code> vertices</li>
+
+<li><code>count</code> is at least 2</li>
+</ol>
+
+<p>In case these requirements are not met, compile errors may occur, <strong>or</strong> the entire input range [<code>first</code>, <code>last</code>) is copied to the output range [<code>result</code>, <code>result</code> + (<code>last</code> - <code>first</code>)).</p>
+
+<h3><a id="heading0035" name="heading0035">Implementation Details</a></h3>
+
+<p>The implementation for this variant varies only slightly from the original implementation. The main differences being that there is no pre-processing step, and in the way the edges of the current simplification are processed.</p>
+
+<p>For each edge that is added to the current simplification, its key is calculated. This key, alongside the edge and its distance to that edge, are stored in a <code>std::priority_queue</code>. This queue ensures that its top element contains the key with the maximum point-edge distance. As long as the simplification does not contain the desired amount of points, the top element from the queue is popped and its key is added to the simplification. The corresponding edge is split, and the two sub-edges are processed and stored in the queue.</p>
+
+<p>For performance reasons, a copy is made of the input polyline in a plain C-style array. Note that for the original implementation, this copy was made automatically during the <em>Distance between points</em> pre-processing step.</p>
+
+<h3><a id="heading0036" name="heading0036">Usage</a></h3>
+
 <pre lang="C++">unsigned tolerance = 25;          // point count tolerance
 std::list &lt;long long&gt; polyline;   // original polyline, assume not empty 
 std::vector &lt;double&gt; result;      // resulting simplified polyline
  
 // simplify the 4d polyline to 25 points
 psimpl::simplify_douglas_peucker_alt &lt;4&gt; (polyline.begin (), polyline.end (),
-                                          tolerance, std::back_inserter (result));</pre> 
- 
-<p>This example demonstrates the use of a non-random access container with a signed integer data type.</p> 
-<hr /> 
-<h2><a name="heading0032" id="heading0032">About the Code</a></h2> 
- 
-<p>As stated earlier, the implementation of all algorithms are contained within the header file <em>psimpl.h</em>. This file has the following structure:</p> 
- 
-<ul> 
-<li>namespace <code>psimpl</code></li> 
- 
-<ul> 
-<li>class <code>scoped_array &lt;T&gt;</code></li> 
- 
-<li>namespace <code>math</code></li> 
- 
-<ul> 
-<li>function <code>make_vector &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<li>function <code>dot &lt;unsigned, InputIterator&gt;</code></li> 
- 
-<li>function <code>interpolate &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<li>function <code>point_distance2 &lt;unsigned, InputIterator1, InputIterator2&gt;</code></li> 
- 
-<li>function <code>line_distance2 &lt;unsigned, InputIterator&gt;</code></li> 
- 
-<li>function <code>segment_distance2 &lt;unsigned, InputIterator&gt;</code></li> 
-</ul> 
- 
-<li>class <code>PolylineSimplification &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<ul> 
-<li>function <code>NthPoint</code></li> 
- 
-<li>function <code>RadialDistance</code></li> 
- 
-<li>function <code>PerpendicularDistance</code></li> 
- 
-<li>function <code>ReumannWitkam</code></li> 
- 
-<li>function <code>DouglasPeucker</code></li> 
- 
-<li>function <code>DouglasPeuckerAlt</code></li> 
- 
-<li>class <code>DPHelper</code></li> 
-</ul> 
- 
-<li>function <code>simplify_nth_point &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<li>function <code>simplify_radial_distance &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<li>function <code>simplify_perpendicular_distance &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<li>function <code>simplify_reumann_witkam &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<li>function <code>simplify_douglas_peucker &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
- 
-<li>function <code>simplify_douglas_peucker_alt &lt;unsigned, InputIterator, OutputIterator&gt;</code></li> 
-</ul> 
-</ul> 
- 
-<p>All the code is contained within the root namespace <code>psimpl</code>. The class <code>scoped_array</code>, similar to <code>boost::scoped_array</code>, is a smart pointer for holding a dynamically allocated array. <code>math</code> is a namespace containing all functions related to computing the squared distance between various geometric entities. The class <code>PolylineSimplification</code> provides the implementation for each simplification algorithm. It contains only member functions that operate on <code>InputIterator</code> and <code>OutputIterator</code> types. For the <em>Douglas-Peucker</em> routines, the internal class <code>DPHelper</code> is used. This helper class encapsulates all code that operates on value type pointers. The top-level functions are for convenience as they provide template type deduction for their corresponding member functions of <code>PolylineSimplification</code>.</p> 
-<hr /> 
-<h2><a name="heading0033" id="heading0033">About the Demo Application</a></h2> 
- 
-<p><img name="Polyline simplification demo application" width="600" height="466" src="PolylineSimplification/psimpl_demo.png" complete="true" /></p> 
- 
-<p>The demo application allows you to experiment with the different simplification algorithms. It can generate pseudo random 2D-polylines of up to 10,000,000 vertices in various types of containers. The bounding-box of the generated polyline is always n x n, where n is the amount of vertices of the generated polyline. Use this fact to specify a proper distance tolerance.</p> 
- 
-<p>Internally, the generated and simplified polylines are always stored in a <code>QVector&lt;double&gt;</code>. Just before simplification, it is converted to the selected container type. Afterwards, this temporary container is destructed. Normally, you won't notice this, but it seems that creating and destructing a <code>std::list(10.000.000)</code> can take a rather long time. The resulting performance measurements never include these conversion steps. I chose this approach as it allowed me to quickly add new container types.</p> 
- 
-<p>Note that the entire application is single threaded (sorry for being lazy), meaning it could go 'not responding' during a long-running simplification.</p> 
- 
-<p>The demo application was made using <em>Qt 4.7.0</em>, <em>Qt Creator 2.0.1</em>, and <em>Visual Studio 2008 Express</em>. Complete source code is included.</p> 
- 
-<h2><a name="heading0034" id="heading0034">History</a></h2> 
- 
-<ul> 
-<li>28-09-2010 - Initial version.</li> 
- 
-<li>23-10-2010 - Changed license from CPOL to MPL; updated the source and demo packages accordingly, and added a small section about the license.</li> 
- 
-<li>26-10-2010 - Clarified input (type) requirements, and changed the behavior of the algorithms under invalid input.</li> 
- 
-<li>01-12-2010 - Added the Nth Point, Perpendicular Distance, and Reumann-Witkam routines; moved all functions related to distance calculations to the <code>math</code> namespace; refactoring.</li> 
+                                          tolerance, std::back_inserter (result));</pre>
 
-<li>10-12-2010 - Fixed a bug in the perpendicular distance routine.</li> 
-</ul> 
- 
-</span> 
-<!-- End Article --> 
- 
- 
- 
- 
+<p>This example demonstrates the use of a non-random access container with a signed integer data type.</p>
+<hr />
+
+<h2><a id="heading0037" name="heading0037">Positional errors</a></h2>
+
+<p>TODO</p>
+
+<p><img name="Positional errors" width="100" height="100" src="PolylineSimplification/psimpl_pe.png" complete="true" /></p>
+
+<p>TODO</p>
+
+<h3><a id="heading0038" name="heading0038">Interface</a></h3>
+
+<pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
+OutputIterator compute_positional_errors2 (
+    InputIterator original_first,
+    InputIterator original_last,
+    InputIterator simplified_first,
+    InputIterator simplified_last,
+    OutputIterator result,
+    bool* valid)
+     
+template &lt;unsigned DIM, class InputIterator&gt;
+math::Statistics compute_positional_error_statistics (
+    InputIterator original_first,
+    InputIterator original_last,
+    InputIterator simplified_first,
+    InputIterator simplified_last,
+    bool* valid)</pre>
+    
+<p>TODO</p>
+
+<h4><a id="heading0039" name="heading0039">Input (Type) Requirements</a></h4>
+
+<p>TODO</p>
+
+<h3><a id="heading0040" name="heading0040">Implementation Details</a></h3>
+
+<p>TODO</p>
+
+<h3><a id="heading0041" name="heading0041">Usage</a></h3>
+
+<p>TODO</p>
+
+<hr/>
+<h2><a id="heading0042" name="heading0042">About the Code</a></h2>
+
+<p>As stated earlier, the implementation of all algorithms are contained within the header file <em>psimpl.h</em>. This file has the following structure:</p>
+
+<ul>
+<li>namespace <code>psimpl</code></li>
+
+<ul>
+<li>class <code>scoped_array &lt;T&gt;</code></li>
+
+<li>namespace <code>math</code></li>
+
+<ul>
+<li>struct <code>Statistics</code></li>
+
+<li>function <code>equal &lt;unsigned, InputIterator&gt;</code></li>
+
+<li>function <code>make_vector &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>dot &lt;unsigned, InputIterator&gt;</code></li>
+
+<li>function <code>interpolate &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>point_distance2 &lt;unsigned, InputIterator1, InputIterator2&gt;</code></li>
+
+<li>function <code>line_distance2 &lt;unsigned, InputIterator&gt;</code></li>
+
+<li>function <code>segment_distance2 &lt;unsigned, InputIterator&gt;</code></li>
+
+<li>function <code>ray_distance2 &lt;unsigned, InputIterator&gt;</code></li>
+
+<li>function <code>compute_statistics &lt;InputIterator&gt;</code></li>
+</ul>
+
+<li>class <code>PolylineSimplification &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<ul>
+<li>function <code>NthPoint</code></li>
+
+<li>function <code>RadialDistance</code></li>
+
+<li>function <code>PerpendicularDistance</code></li>
+
+<li>function <code>ReumannWitkam</code></li>
+
+<li>function <code>Opheim</code></li>
+
+<li>function <code>DouglasPeucker</code></li>
+
+<li>function <code>DouglasPeuckerAlt</code></li>
+
+<li>function <code>ComputePositionalErrors2</code></li>
+
+<li>function <code>ComputePositionalErrorStatistics</code></li>
+
+<li>class <code>DPHelper</code></li>
+</ul>
+
+<li>function <code>simplify_nth_point &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>simplify_radial_distance &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>simplify_perpendicular_distance &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>simplify_reumann_witkam &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>simplify_opheim &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>simplify_douglas_peucker &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>simplify_douglas_peucker_n &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>compute_positional_errors2 &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+
+<li>function <code>compute_positional_error_statistics &lt;unsigned, InputIterator&gt;</code></li>
+</ul>
+</ul>
+
+<p>All the code is contained within the root namespace <code>psimpl</code>. The class <code>scoped_array</code>, similar to <code>boost::scoped_array</code>, is a smart pointer for holding a dynamically allocated array. <code>math</code> is a namespace containing all functions related to computing the squared distance between various geometric entities. The class <code>PolylineSimplification</code> provides the implementation for each simplification algorithm. It contains only member functions that operate on <code>InputIterator</code> and <code>OutputIterator</code> types. For the <em>Douglas-Peucker</em> routines, the internal class <code>DPHelper</code> is used. This helper class encapsulates all code that operates on value type pointers. The top-level functions are for convenience as they provide template type deduction for their corresponding member functions of <code>PolylineSimplification</code>.</p>
+<hr />
+<h2><a id="heading0043" name="heading0043">About the Demo Application</a></h2>
+
+<p><img name="Polyline simplification demo application" width="600" height="449" src="PolylineSimplification/psimpl_demo.png" complete="true" /></p>
+
+<p>The demo application allows you to experiment with the different simplification algorithms. It can generate pseudo random 2D-polylines of up to 10,000,000 vertices in various types of containers. The bounding-box of the generated polyline is always n x n/2, where n is the amount of vertices of the generated polyline. Use this fact to specify a proper distance tolerance. Comparing the various algorithms can be done visually and by using the computed positional error statistics. These statistics are only available when the <code>value_type</code> of the chosen container is <code>double</code>.</p>
+
+<p>Internally, the generated and simplified polylines are always stored in a <code>QVector&lt;double&gt;</code>. Just before simplification, it is converted to the selected container type. Afterwards, this temporary container is destructed. Normally, you won't notice this, but it seems that creating and destructing a <code>std::list(10.000.000)</code> can take a rather long time. The resulting performance measurements never include these conversion steps. I chose this approach as it allowed me to quickly add new container types.</p>
+
+<p>Note that the entire application is single threaded (sorry for being lazy), meaning it could go 'not responding' during a long-running simplification.</p>
+
+<p>The demo application was made using <em>Qt 4.7.0</em>, <em>Qt Creator 2.0.1</em>, and <em>Visual Studio 2008 Express</em>. Complete source code is included.</p>
+
+<h2><a id="heading0044" name="heading0044">History</a></h2>
+
+<ul>
+<li>28-09-2010 - Initial version.</li>
+
+<li>23-10-2010 - Changed license from CPOL to MPL; updated the source and demo packages accordingly, and added a small section about the license.</li>
+
+<li>26-10-2010 - Clarified input (type) requirements, and changed the behavior of the algorithms under invalid input.</li>
+
+<li>01-12-2010 - Added the Nth Point, Perpendicular Distance, and Reumann-Witkam routines; moved all functions related to distance calculations to the <code>math</code> namespace; refactoring.</li>
+
+<li>10-12-2010 - Fixed a bug in the Perpendicular Distance routine.</li>
+
+<li>27-02-2011 - Added Opheim simplification, and functions for computing positional errors due to simplification; renamed simplify_douglas_peucker_alt to simplify_douglas_peucker_n</li>
+</ul>
+
+</span>
+<!-- End Article -->
+
+
+
+
 </div> 
-</body> 
-</html> 
+</body>
+</html>

@@ -39,7 +39,7 @@
     01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam routines;
                  moved all functions related to distance calculations to the math namespace
     10-12-2010 - Fixed a bug in the perpendicular distance routine
-    24-02-2010 - Added Opheim simplification, and functions for computing positional errors
+    27-02-2011 - Added Opheim simplification, and functions for computing positional errors
                  due to simplification; renamed simplify_douglas_peucker_alt to
                  simplify_douglas_peucker_n
 */
@@ -839,9 +839,9 @@ namespace psimpl
             2- The InputIterator value type is convertible to a value type of the output iterator.
             3- The range [first, last) contains vertex coordinates in multiples of DIM,
                f.e.: x, y, z, x, y, z, x, y, z when DIM = 3.
-            4- The range [first, last) contains at least three vertices.
+            4- The range [first, last) contains at least 3 vertices.
             5- minTol is not zero.
-            5- maxTol is not zero.
+            6- maxTol is not zero.
 
             In case these requirements are not met, compile errors may occur OR the entire input
             range [first, last) is copied to the output range [result, result + (last - first))
