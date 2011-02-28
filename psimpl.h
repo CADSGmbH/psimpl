@@ -817,15 +817,16 @@ namespace psimpl
         /*!
             \brief Performs Opheim approximation (OP).
 
-            The O(n) OP routine is very similar to the Reumann-Witkam (RW) routine, and can be seen
-            as a constrained version of that RW routine. OP uses both a minimum and a maximum
-            distance tolerance to constrain the search area. For each successive vertex vi, its
-            radial distance to the current key (initially v0) is calculated. The last point
-            within the minimum distance tolerance is used to define a ray R (key, vi). For each
-            successive vertex vj beyond vi its perpendicular distance to the ray R is calculated. A
-            new key is found at vj-1, when this distance exceeds the minimum tolerance Or when the
-            distance between vj and the current key exeed the maximum tolerance. After a new key is
-            found, the process repeats itself.
+            The O(n) Opheim routine is very similar to the Reumann-Witkam routine, and can be seen
+            as a constrained version of that Reumann-Witkam routine. Opheim uses both a minimum and
+            a maximum distance tolerance to constrain the search area. For each successive vertex
+            vi, its radial distance to the current key vkey (initially v0) is calculated. The last
+            point within the minimum distance tolerance is used to define a ray R (vkey, vi). If no
+            such vi exists, the ray is defined as R(vkey, vkey+1). For each successive vertex vj
+            beyond vi its perpendicular distance to the ray R is calculated. A new key is found at
+            vj-1, when this distance exceeds the minimum tolerance Or when the radial distance
+            between vj and the vkey exceeds the maximum tolerance. After a new key is found, the
+            process repeats itself.
 
             \image html psimpl_op.png
 
@@ -1081,6 +1082,9 @@ namespace psimpl
             is copied to the output range [result, result + count), where count is the number of
             points in the original polyline. The return value is the end of the output range:
             result + count.
+
+            Note that both the original and simplified polyline must be defined using the same
+            value_type.
 
             \image html psimpl_pe.png
 

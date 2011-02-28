@@ -167,7 +167,7 @@ OutputIterator simplify_nth_point (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 
@@ -216,7 +216,7 @@ OutputIterator simplify_radial_distance (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 
@@ -277,7 +277,7 @@ OutputIterator simplify_perpendicular_distance (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 
@@ -349,7 +349,7 @@ OutputIterator simplify_reumann_witkam (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 
@@ -379,11 +379,20 @@ psimpl::simplify_reumann_witkam &lt;4&gt; (polyline.begin (), polyline.end (),
 
 <h2><a id="heading0022" name="heading0022">Opheim</a></h2>
 
-<p>TODO</p>
+<p>The O(n) <em>Opheim</em> routine is very similar to the <em>Reumann-Witkam</em> routine, and can be seen
+            as a constrained version of that <em>Reumann-Witkam</em> routine. <em>Opheim</em> uses both a minimum and a maximum
+            distance tolerance to constrain the search area. For each successive vertex <em>v<small>i</small></em>, its
+            radial distance to the current key <em>v<small>key</small></em> (initially <em>v<small>0</small></em>) is calculated. The last point
+            within the minimum distance tolerance is used to define a ray R (<em>v<small>key</small></em>, <em>v<small>i</small></em>). If no such <em>v<small>i</small></em> exists, the ray is defined as R(<em>v<small>key</small></em>, <em>v<small>key+1</small></em>). For each
+            successive vertex <em>v<small>j</small></em> beyond <em>v<small>i</small></em> its perpendicular distance to the ray R is calculated. A
+            new key is found at <em>v<small>j-1</small></em>, when this distance exceeds the minimum tolerance Or when the
+            radial distance between <em>v<small>j</small></em> and the <em>v<small>key</small></em> exceeds the maximum tolerance. After a new key is
+            found, the process repeats itself.</p>
 
-<p><img name="Opheim approximation" width="100" height="100" src="PolylineSimplification/psimpl_op.png" complete="true" /></p>
+<p><img name="Opheim approximation" width="500" height="500" src="../images/psimpl_op.png" complete="true" /></p>
 
-<p>TODO</p>
+<p>The <em>Opheim</em> simplification process is illustrated above. Notice how the search area is constrained by a minimum and a maximum tolerance. As a result, during the second step, only a single point is removed.
+The <em>Reumann-Witkam</em> routine, which uses an infinite or unconstrained search area, would have removed two points.</p>
 
 <h3><a id="heading0023" name="heading0023">Interface</a></h3>
 
@@ -402,7 +411,7 @@ OutputIterator simplify_opheim (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 
@@ -417,7 +426,21 @@ OutputIterator simplify_opheim (
 
 <h3><a id="heading0025" name="heading0025">Implementation Details</a></h3>
 
-<p>TODO</p>
+<p>All the articles that I found mentioning or discussing the Opheim algorithm, failed to explain how to define the ray that controls 
+the direction of the search area. As far as I can tell, there are three possible ways of determining this ray R(<em>v<small>key</small></em>, <em>v<small>i</small></em>), where <em>v<small>key</small></em> is the current key.
+<ol>
+<li>The <em>Reumann-Witkam</em> way: <em>i</em>=<em>key+1</em>
+<li>The first point outside: <em>key</em> &lt; <em>i</em> and <em>v<small>i</small></em> is the first point that falls outside the minimum radial distance tolerance</li>
+<li>The last point inside: <em>key</em> &lt; <em>i</em> and <em>v<small>i</small></em> is the last point that falls inside the minimum radial distance tolerance; if no such <em>v<small>i</small></em> exists, fall back to the <em>Reumann-Witkam</em> way</li>
+</ol>
+</p>
+
+<p><img name="Ray definition" width="440" height="220" src="../images/psimpl_op_ray.png" complete="true" /></p>
+
+<p>I compared these three approaches using postitional error statistics and found that '<em>the first point outside</em>' approach,
+ most of the time, produces slightly better results than the '<em>Reumann-Witkam</em>' approach. Furthermore, there did not seem
+ to be any real difference between the '<em>last point inside</em>' and '<em>the first point outside</em>' approaches. I ended up
+ choosing '<em>last point inside</em>' approach, because it was a better fit for the loop that I had already implemented.</p>
 
 <h3><a id="heading0026" name="heading0026">Usage</a></h3>
 
@@ -457,7 +480,7 @@ OutputIterator simplify_douglas_peucker (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 
@@ -523,7 +546,7 @@ psimpl::simplify_douglas_peucker &lt;3&gt; (polyline.begin (), polyline.end (),
 <h3><a id="heading0033" name="heading0033">Interface</a></h3>
 
 <pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
-OutputIterator simplify_douglas_peucker_alt (
+OutputIterator simplify_douglas_peucker_n (
     InputIterator begin,
     InputIterator end,
     unsigned count,
@@ -536,7 +559,7 @@ OutputIterator simplify_douglas_peucker_alt (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to a value type of the output iterator</li>
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 
@@ -562,19 +585,22 @@ std::list &lt;long long&gt; polyline;   // original polyline, assume not empty
 std::vector &lt;double&gt; result;      // resulting simplified polyline
  
 // simplify the 4d polyline to 25 points
-psimpl::simplify_douglas_peucker_alt &lt;4&gt; (polyline.begin (), polyline.end (),
-                                          tolerance, std::back_inserter (result));</pre>
+psimpl::simplify_douglas_peucker_n &lt;4&gt; (polyline.begin (), polyline.end (),
+                                        tolerance, std::back_inserter (result));</pre>
 
 <p>This example demonstrates the use of a non-random access container with a signed integer data type.</p>
 <hr />
 
 <h2><a id="heading0037" name="heading0037">Positional errors</a></h2>
 
-<p>TODO</p>
+<p>Simplifying a polyline introduces shape distortion. The higher the degree of simplification the higher the amount of distortion.
+One way of measuring the error induced by simplification, is by looking at the location difference between the original and the
+simplified line. </p>
 
-<p><img name="Positional errors" width="100" height="100" src="PolylineSimplification/psimpl_pe.png" complete="true" /></p>
+<p><img name="Positional errors" width="560" height="240" src="../images/psimpl_pos_error.png" complete="true" /></p>
 
-<p>TODO</p>
+<p>For each original point the positional error is calculated as the perpendiculer difference between that point and the corresponding
+line segment of the simplification. Better performing simplification algorithms consistently produce lower positional errors. </p>
 
 <h3><a id="heading0038" name="heading0038">Interface</a></h3>
 
@@ -585,9 +611,14 @@ OutputIterator compute_positional_errors2 (
     InputIterator simplified_first,
     InputIterator simplified_last,
     OutputIterator result,
-    bool* valid)
+    bool* valid)</pre>
+    
+<p>For each point in the range [<code>original_first</code>, <code>original_last</code>) the <strong>squared</strong> distance to the simplification
+ [<code>simplified_first</code>, <code>simplified_last</code>)  is calculated. Each positional error is copied to the output range
+ [<code>result</code>, <code>result</code> + (<code>original_last</code> - <code>original_first</code>)).
+Note that both the original and simplified polyline must be defined using the same <code>value_type</code>.</p>
      
-template &lt;unsigned DIM, class InputIterator&gt;
+<pre lang="C++">template &lt;unsigned DIM, class InputIterator&gt;
 math::Statistics compute_positional_error_statistics (
     InputIterator original_first,
     InputIterator original_last,
@@ -595,11 +626,30 @@ math::Statistics compute_positional_error_statistics (
     InputIterator simplified_last,
     bool* valid)</pre>
     
-<p>TODO</p>
+<p>Computes statistics (<i>mean, max, sum, std</i>) for the positional errors between the range [<code>original_first</code>,
+<code>original_last</code>) and its simplification the range [<code>simplified_first</code>, <code>simplified_last</code>).
+All statistics are stored as <code>doubles</code>.</p>
 
 <h4><a id="heading0039" name="heading0039">Input (Type) Requirements</a></h4>
 
-<p>TODO</p>
+<p>
+<ol>
+<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+
+<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code> (only for <i>compute_positional_errors2</i>)</li>
+
+<li>The <code>InputIterator</code> value type is convertible to <code>double</code> (only for <i>compute_positional_error_statistics</i>)</li>
+
+<li>The ranges [<code>original_first</code>, <code>original_last</code>) and [<code>simplified_first</code>, <code>simplified_last</code>) 
+  contain vertex coordinates in multiples of <code>DIM</code>, f.e.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
+
+<li>The ranges [<code>original_first</code>, <code>original_last</code>) and [<code>simplified_first</code>, <code>simplified_last</code>) contain a minimum of 2 vertices</li>
+
+<li>The range [<code>simplified_first</code>, <code>simplified_last</code>) represents a simplification of the range
+ [<code>original_first</code>, <code>original_last</code>), meaning each point in the simplification has the exact same
+ coordinates as some point from the original polyline.</li>
+</ol>
+</p>
 
 <h3><a id="heading0040" name="heading0040">Implementation Details</a></h3>
 
@@ -607,7 +657,22 @@ math::Statistics compute_positional_error_statistics (
 
 <h3><a id="heading0041" name="heading0041">Usage</a></h3>
 
-<p>TODO</p>
+<p><pre lang="C++">
+std::vector &lt;double&gt; original;      // original polyline, assume not empty
+std::vector &lt;double&gt; simplified;    // simplified polyline, assume not empty
+std::vector &lt;double&gt; errors;        // calculated errors
+bool valid = false;                 // indicates if the calculated errors are valid
+
+// compute the squared positional error for each point of the original 2d polyline
+psimpl::compute_positional_errors2 &lt;2&gt; (original.begin (), original.end (),
+                                        simplified.begin (), simplified.end (),
+                                        std::back_inserter (errors), &amp;valid);
+
+// compute positional error statistics for all points of the original 2d polyline
+psimpl::math::Statistics stats =
+    psimpl::compute_positional_error_statistics &lt;2&gt; (original.begin (), original.end (),
+                                                     simplified.begin (), simplified.end (),
+                                                     &amp;valid);</pre>
 
 <hr/>
 <h2><a id="heading0042" name="heading0042">About the Code</a></h2>
