@@ -4,7 +4,7 @@
 <head>
 <title>Article Source</title>
 <link rel="stylesheet" type="text/css" href="http://s.codeproject.com/App_Themes/Std/CSS/CodeProject.css?dt=2.3.110222.1" />
-<!--TODO <base href="http://www.codeproject.com/KB/recipes/" />-->
+<base href="http://www.codeproject.com/KB/recipes/" />
 </head>
 <body>
 <!--
@@ -89,7 +89,8 @@ file to your hard drive for editing.</b></p>
 </ul>
 <li><a href="#heading0042">About the Code</a></li>
 <li><a href="#heading0043">About the Demo Application</a></li>
-<li><a href="#heading0044">History</a></li>
+<li><a href="#heading0044">Upcomming versions</a></li>
+<li><a href="#heading0045">History</a></li>
 </ul>
 
 
@@ -389,7 +390,7 @@ psimpl::simplify_reumann_witkam &lt;4&gt; (polyline.begin (), polyline.end (),
             radial distance between <em>v<small>j</small></em> and the <em>v<small>key</small></em> exceeds the maximum tolerance. After a new key is
             found, the process repeats itself.</p>
 
-<p><img name="Opheim approximation" width="500" height="500" src="../images/psimpl_op.png" complete="true" /></p>
+<p><img name="Opheim approximation" width="500" height="500" src="PolylineSimplification/psimpl_op.png" complete="true" /></p>
 
 <p>The <em>Opheim</em> simplification process is illustrated above. Notice how the search area is constrained by a minimum and a maximum tolerance. As a result, during the second step, only a single point is removed.
 The <em>Reumann-Witkam</em> routine, which uses an infinite or unconstrained search area, would have removed two points.</p>
@@ -426,16 +427,16 @@ OutputIterator simplify_opheim (
 
 <h3><a id="heading0025" name="heading0025">Implementation Details</a></h3>
 
-<p>All the articles that I found mentioning or discussing the Opheim algorithm, failed to explain how to define the ray that controls 
+<p>All the articles that I found mentioning or discussing the <em>Opheim</em> algorithm, failed to explain how to define the ray that controls 
 the direction of the search area. As far as I can tell, there are three possible ways of determining this ray R(<em>v<small>key</small></em>, <em>v<small>i</small></em>), where <em>v<small>key</small></em> is the current key.
 <ol>
-<li>The <em>Reumann-Witkam</em> way: <em>i</em>=<em>key+1</em>
+<li>The <em>Reumann-Witkam</em> way: <em>i</em> = <em>key+1</em>
 <li>The first point outside: <em>key</em> &lt; <em>i</em> and <em>v<small>i</small></em> is the first point that falls outside the minimum radial distance tolerance</li>
 <li>The last point inside: <em>key</em> &lt; <em>i</em> and <em>v<small>i</small></em> is the last point that falls inside the minimum radial distance tolerance; if no such <em>v<small>i</small></em> exists, fall back to the <em>Reumann-Witkam</em> way</li>
 </ol>
 </p>
 
-<p><img name="Ray definition" width="440" height="220" src="../images/psimpl_op_ray.png" complete="true" /></p>
+<p><img name="Ray definition" width="440" height="220" src="PolylineSimplification/psimpl_op_ray.png" complete="true" /></p>
 
 <p>I compared these three approaches using postitional error statistics and found that '<em>the first point outside</em>' approach,
  most of the time, produces slightly better results than the '<em>Reumann-Witkam</em>' approach. Furthermore, there did not seem
@@ -446,7 +447,7 @@ the direction of the search area. As far as I can tell, there are three possible
 
 <pre lang="C++">float minimum = 10.f;            // minimum distance tolerance
 float maximum = 100.f;           // maximum distance tolerance
-std::vector &lt;float&gt; polyline;    // original polyline, assume not empty 
+std::vector &lt;double&gt; polyline;   // original polyline, assume not empty 
 std::vector &lt;double&gt; result;     // resulting simplified polyline
  
 // simplify the 4d polyline
@@ -594,10 +595,10 @@ psimpl::simplify_douglas_peucker_n &lt;4&gt; (polyline.begin (), polyline.end ()
 <h2><a id="heading0037" name="heading0037">Positional errors</a></h2>
 
 <p>Simplifying a polyline introduces shape distortion. The higher the degree of simplification the higher the amount of distortion.
-One way of measuring the error induced by simplification, is by looking at the location difference between the original and the
+One way of measuring this error induced by simplification, is by looking at the location difference between the original and the
 simplified line. </p>
 
-<p><img name="Positional errors" width="560" height="240" src="../images/psimpl_pos_error.png" complete="true" /></p>
+<p><img name="Positional errors" width="560" height="240" src="PolylineSimplification/psimpl_pos_error.png" complete="true" /></p>
 
 <p>For each original point the positional error is calculated as the perpendiculer difference between that point and the corresponding
 line segment of the simplification. Better performing simplification algorithms consistently produce lower positional errors. </p>
@@ -653,7 +654,16 @@ All statistics are stored as <code>doubles</code>.</p>
 
 <h3><a id="heading0040" name="heading0040">Implementation Details</a></h3>
 
-<p>TODO</p>
+<p>The algorithm is implemented using two nested loops. The outer loop processes each line segment from the simplification.
+The inner loop processes each point of the original polyline, computing the perpendicular distance to the current line segment.
+The inner loop ends when a point exactly matches the coordinates of the end point from the line segment.</p>
+
+<p>When the outer loop has finished processing all line segments from the simplification, the last point from that simplified polyline
+should exactly match the last processed point from the original polyline. Only if this condition holds are the calculated
+positional errors considered valid. This means I can only say if the results are valid after I am done computing and copying errors to
+the output range. So I needed some way of letting the caller know this. One option would be to throw an exception. However, I
+designed <em>psimpl</em> to not itself throw any exceptions (see  section <em>About the Code</em>). Instead I opted for
+ an <em>optional</em> boolean <code>valid</code>.</p>
 
 <h3><a id="heading0041" name="heading0041">Usage</a></h3>
 
@@ -754,6 +764,10 @@ psimpl::math::Statistics stats =
 </ul>
 
 <p>All the code is contained within the root namespace <code>psimpl</code>. The class <code>scoped_array</code>, similar to <code>boost::scoped_array</code>, is a smart pointer for holding a dynamically allocated array. <code>math</code> is a namespace containing all functions related to computing the squared distance between various geometric entities. The class <code>PolylineSimplification</code> provides the implementation for each simplification algorithm. It contains only member functions that operate on <code>InputIterator</code> and <code>OutputIterator</code> types. For the <em>Douglas-Peucker</em> routines, the internal class <code>DPHelper</code> is used. This helper class encapsulates all code that operates on value type pointers. The top-level functions are for convenience as they provide template type deduction for their corresponding member functions of <code>PolylineSimplification</code>.</p>
+
+<p><em>psimpl</em> itself does not throw exceptions. The reason for this is that I consider exception handling to be rather
+rare within C++ applications. Unlike the .NET world, a lot of developers just don't use it nor even think much about it.</p>
+
 <hr />
 <h2><a id="heading0043" name="heading0043">About the Demo Application</a></h2>
 
@@ -767,7 +781,30 @@ psimpl::math::Statistics stats =
 
 <p>The demo application was made using <em>Qt 4.7.0</em>, <em>Qt Creator 2.0.1</em>, and <em>Visual Studio 2008 Express</em>. Complete source code is included.</p>
 
-<h2><a id="heading0044" name="heading0044">History</a></h2>
+<hr />
+<h2><a id="heading0044" name="heading0044">Upcomming versions</a></h2>
+
+<p>Algorithms, in no particular order, that I will add at some point in the future:
+<ul>
+<li><em>Random point</em> routine</li>
+<li><em>Jenks</em> simplification</li>
+<li><em>Lang</em> simplification</li>
+<li><em>Visvalingam-Whyatt</em> simplification</li>
+<li><em>Zhao-Saalfeld</em> simplification</li>
+<li>Computing <em>area errors</em> due to simplification</li>
+</ul>
+
+Some other stuff I want to look at:
+<ul>
+<li>Split <em>Douglas-Peucker</em> into two algorithms: a vanilla implementation and one using the <em>Distance between points</em> pre-processing step</li>
+<li>A seperate <em>psimpl</em> version that operates on <em>point</em> containers instead of <em>coordinate</em> containers</li>
+<li><em>Positional error</em> calculation that  work for situations where the data type of a simplification differs from the original polyline</li>
+</ul>
+</p>
+
+
+<hr />
+<h2><a id="heading0045" name="heading0045">History</a></h2>
 
 <ul>
 <li>28-09-2010 - Initial version.</li>
