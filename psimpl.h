@@ -88,8 +88,8 @@
 #include <queue>
 #include <stack>
 #include <numeric>
-#include <functional>
 #include <algorithm>
+#include <cmath>
 
 
 /*!
@@ -410,7 +410,7 @@ namespace psimpl
             stats.sum = static_cast <double> (std::accumulate (first, last, init));
             stats.mean = stats.sum / count;
             std::transform (first, last, first, std::bind2nd (std::minus <value_type> (), stats.mean));
-            stats.std = sqrt (static_cast <double> (std::inner_product (first, last, first, init)) / count);
+            stats.std = std::sqrt (static_cast <double> (std::inner_product (first, last, first, init)) / count);
             return stats;
         }
     }
@@ -1218,7 +1218,7 @@ namespace psimpl
 
             std::transform (errors.get (), errors.get () + pointCount,
                             errors.get (),
-                            std::ptr_fun <double, double> (sqrt));
+                            std::ptr_fun <double, double> (std::sqrt));
             return math::compute_statistics (errors.get (), errors.get () + pointCount);
         }
 
