@@ -60,7 +60,7 @@
 
     Simplification
     \li Nth point - A naive algorithm that keeps only each nth point
-    \li Distance between points - Removes successive points that are clustered 
+    \li Distance between points - Removes successive points that are clustered
       together
     \li Perpendicular distance - Removes points based on their distance to the line
       segment defined by their left and right neighbors
@@ -150,7 +150,7 @@ namespace psimpl
     namespace math
     {
         /*!
-            POD structure for storing several statistical values
+            \brief POD structure for storing several statistical values
         */
         struct Statistics
         {
@@ -368,7 +368,7 @@ namespace psimpl
 
             value_type cv = dot <DIM> (v, v);    // squared length of v
             value_type cw = dot <DIM> (w, v);    // project w onto v
-            
+
             if (cw <= 0) {
                 // projection of w lies to the left of r1 (not on the ray)
                 return point_distance2 <DIM> (p, r1);
@@ -399,7 +399,7 @@ namespace psimpl
             typedef typename std::iterator_traits <InputIterator>::difference_type diff_type;
 
             Statistics stats;
-            
+
             diff_type count = std::distance (first, last);
             if (count == 0) {
                 return stats;
@@ -1086,15 +1086,15 @@ namespace psimpl
             Note that both the original and simplified polyline must be defined using the same
             value_type.
 
-            \image html psimpl_pe.png
+            \image html psimpl_pos_error.png
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline.
             2- The InputIterator value type is convertible to a value type of the output iterator.
-            3- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+            3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
                when DIM = 3.
-            4- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+            4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain a minimum of 2 vertices.
             5- The range [simplified_first, simplified_last) represents a simplification of the
                range [original_first, original_last), meaning each point in the simplification
@@ -1180,10 +1180,10 @@ namespace psimpl
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline.
             2- The InputIterator value type is convertible to double.
-            3- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+            3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
                when DIM = 3.
-            4- The ranges [original_first, original_last) and [simplified_first, simplified_last) 
+            4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain a minimum of 2 vertices.
             5- The range [simplified_first, simplified_last) represents a simplification of the
                range [original_first, original_last), meaning each point in the simplification

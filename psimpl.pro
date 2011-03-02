@@ -17,4 +17,7 @@ FORMS += MainWindow.ui
 OTHER_FILES += \
     doc/Doxyfile \
     README.txt \
-    LICENSE.txt
+    LICENSE.txt \
+    psimpl-demo_resource.rc \
+    resource.rc
+RC_FILE = resource.rc
