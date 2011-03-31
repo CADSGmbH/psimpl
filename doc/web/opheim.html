@@ -1,8 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -13,10 +12,10 @@
         <div id="sub_title"><h2>generic n-dimensional poyline simplification</h2></div>
         <div id="nav">
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="news.html">News</a></li>
-                <li><a href="documentation.html">Documentation</a></li>
-                <li><a href="download.html">Download</a></li>
+                <li><a title="Home" href="index.html">Home</a></li>
+                <li><a title="News" href="news.html">News</a></li>
+                <li><a title="Documentation" href="documentation.html">Documentation</a></li>
+                <li><a title="Downloads" href="downloads.html">Download</a></li>
             </ul>
         </div>
     </div>
@@ -24,18 +23,18 @@
         <div>
             <span>Simplification:</span>
             <ul>
-                <li><a href="nth-point.html">Nth Point</a></li>
-                <li><a href="radial-distance.html">Radial Distance</a></li>
-                <li><a href="perpendicular-distance.html">Perpendicular Distance</a></li>
-                <li><a href="reumann-witkam.html">Reumann-Witkam</a></li>
-                <li><a href="opheim.html">Opheim</a></li>
-                <li><a href="douglas-peucker.html">Douglas-Peucker</a></li>
+                <li><a title="Nth Point" href="nth-point.html">Nth Point</a></li>
+                <li><a title="Radial Distance" href="radial-distance.html">Radial Distance</a></li>
+                <li><a title="Perpendicular Distance" href="perpendicular-distance.html">Perpendicular Distance</a></li>
+                <li><a title="Reumann-Witkam" href="reumann-witkam.html">Reumann-Witkam</a></li>
+                <li><a title="Opheim" href="opheim.html">Opheim</a></li>
+                <li><a title="Douglas-Peucker" href="douglas-peucker.html">Douglas-Peucker</a></li>
             </ul>
         </div>
         <div>
             <span>Errors:</span>
             <ul>
-                <li><a href="positional-errors.html">Positional</a></li>
+                <li><a title="Positional Errors" href="positional-errors.html">Positional</a></li>
             </ul>
         </div>
     </div>
@@ -58,7 +57,7 @@ the minimum tolerance Or when the radial distance between v<sub>j</sub> and the
 v<sub>key</sub> exceeds the maximum tolerance. After a new key is found, the
 process repeats itself.</p>
 
-<p id="img"><img src="../images/psimpl_op.png" complete="true" /></p>
+<div id="img"><img title="Opheim" alt="Opheim example" src="../images/psimpl_op.png" complete="true" /></div>
 
 <p>The <b class="stretchy">Opheim</b> simplification process is illustrated above.
 Notice how the search area is constrained by a minimum and a maximum tolerance.
@@ -111,7 +110,7 @@ this ray R(v<sub>key</sub>, v<sub>i</sub>), where v<sub>key</sub> is the current
 <li>The last point inside: key &lt; i and v<sub>i</sub> is the last point that falls inside the minimum radial distance tolerance; if no such v<sub>i</sub> exists, fall back to the <b class="stretchy">Reumann-Witkam</b> way</li>
 </ol>
 
-<p id="img"><img src="../images/psimpl_op_ray.png" complete="true" /></p>
+<div id="img"><img title="Ray definition" alt="Ray definition example" src="../images/psimpl_op_ray.png" complete="true" /></div>
 
 <p>I compared these three approaches using postitional error statistics and found
 that '<b>the first point outside</b>' approach, most of the time, produces

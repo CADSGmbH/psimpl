@@ -1,6 +1,30 @@
+div:empty, span:empty,
+li:empty, p:empty,
+td:empty, th:empty {padding: 0.5em; background: yellow;}
+
+*[style], font, center {outline: 5px solid red;}
+*[class=""], *[id=""] {outline: 5px dotted red;}
+
+img[alt=""] {border: 3px dotted red;}
+img:not([alt]) {border: 5px solid red;}
+img[title=""] {outline: 3px dotted fuchsia;}
+img:not([title]) {outline: 5px solid fuchsia;}
+
+table:not([summary]) {outline: 5px solid red;}
+table[summary=""] {outline: 3px dotted red;}
+th {border: 2px solid red;}
+th[scope="col"], th[scope="row"] {border: none;}
+
+a[href]:not([title]) {border: 5px solid red;}
+a[title=""] {outline: 3px dotted red;}
+a[href="#"] {background: lime;}
+a[href=""] {background: fuchsia;}
+
 * {
     margin: 0;
     padding: 0;
+    border: 0;
+    vertical-align: baseline;
 }
 
 hr {
@@ -27,21 +51,22 @@ img {
     border: 2px solid #444444;
 }
 
-p#img {
+div#img {
     text-align: center;
+    padding: 20px 0px 20px 0px;
 }
 
 pre {
-    font-family: 'Courier';
     border: 2px solid #444444;
     background-color: #cccccc;
     padding: 5px;
     margin: 10px 0px 10px 0px;
     border-radius: 9px;
+    font-size: 12px;
+    font-family: 'Courier New';
 }
 
 code {
-    font-family: 'Courier';
     color: darkblue;
 }
 
@@ -61,11 +86,38 @@ span.algorithm {
 }
 
 body {
+    #line-height: 1;
     background-color: #666666; 
-    margin: 0;
     text-align: center;
     font-family: 'Trebuchet MS';
     font-size: 62.5%; /* = 10px */
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    font-size: 100%;
+}
+
+td {
+    padding: 0px 5px 0px 5px;
+}
+
+td.key {
+    text-align: right;
+}
+
+td.value {
+    text-align: left;
+}
+
+td.value a {
+    color: black;
+}
+
+td.value a:hover {
+    font-weight: bold;
+    letter-spacing: 1px;
 }
 
 div#main_container {
@@ -87,7 +139,6 @@ div#header {
 
 div#content {
     font-size: 1.4em;
-    #text-align: justify;
     background-color: #f3f3f3;
     padding: 50px 100px 50px 100px;
 }

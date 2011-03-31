@@ -1,8 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -13,10 +12,10 @@
         <div id="sub_title"><h2>generic n-dimensional poyline simplification</h2></div>
         <div id="nav">
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="news.html">News</a></li>
-                <li><a href="documentation.html">Documentation</a></li>
-                <li><a href="download.html">Download</a></li>
+                <li><a title="Home" href="index.html">Home</a></li>
+                <li><a title="News" href="news.html">News</a></li>
+                <li><a title="Documentation" href="documentation.html">Documentation</a></li>
+                <li><a title="Downloads" href="downloads.html">Download</a></li>
             </ul>
         </div>
     </div>
@@ -24,18 +23,18 @@
         <div>
             <span>Simplification:</span>
             <ul>
-                <li><a href="nth-point.html">Nth Point</a></li>
-                <li><a href="radial-distance.html">Radial Distance</a></li>
-                <li><a href="perpendicular-distance.html">Perpendicular Distance</a></li>
-                <li><a href="reumann-witkam.html">Reumann-Witkam</a></li>
-                <li><a href="opheim.html">Opheim</a></li>
-                <li><a href="douglas-peucker.html">Douglas-Peucker</a></li>
+                <li><a title="Nth Point" href="nth-point.html">Nth Point</a></li>
+                <li><a title="Radial Distance" href="radial-distance.html">Radial Distance</a></li>
+                <li><a title="Perpendicular Distance" href="perpendicular-distance.html">Perpendicular Distance</a></li>
+                <li><a title="Reumann-Witkam" href="reumann-witkam.html">Reumann-Witkam</a></li>
+                <li><a title="Opheim" href="opheim.html">Opheim</a></li>
+                <li><a title="Douglas-Peucker" href="douglas-peucker.html">Douglas-Peucker</a></li>
             </ul>
         </div>
         <div>
             <span>Errors:</span>
             <ul>
-                <li><a href="positional-errors.html">Positional</a></li>
+                <li><a title="Positional Errors" href="positional-errors.html">Positional</a></li>
             </ul>
         </div>
     </div>
@@ -53,7 +52,7 @@ This process will recurse for each edge in the current simplification, until all
 vertices of the original polyline are within tolerance of the simplification results.
 This process is illustrated below:</p>
 
-<p id="img"><img src="../images/psimpl_dp.png" complete="true" /></p>
+<div id="img"><img title="Douglas-Peucker" alt="Douglas-Peucker example" src="../images/psimpl_dp.png" complete="true" /></div>
 
 <p>Initially, the simplification consists of a single edge. During the first step,
 the fourth vertex is marked as a key and the simplification is adjusted accordingly.
