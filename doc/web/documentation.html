@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
@@ -11,12 +11,10 @@
         <div id="title"><h1>psimpl</h1></div>
         <div id="sub_title"><h2>generic n-dimensional poyline simplification</h2></div>
         <div id="nav">
-            <ul>
-                <li><a title="Home" href="index.html">Home</a></li>
-                <li><a title="News" href="news.html">News</a></li>
-                <li><a title="Documentation" href="documentation.html">Documentation</a></li>
-                <li><a title="Downloads" href="downloads.html">Download</a></li>
-            </ul>
+            <a title="Home" href="index.html">Home</a>
+            <a title="News" href="news.html">News</a>
+            <a title="Documentation" href="documentation.html">Documentation</a>
+            <a title="Downloads" href="downloads.html">Download</a>
         </div>
     </div>
     <div id="sidebar">
@@ -39,6 +37,98 @@
         </div>
     </div>
     <div id="content">
+        <h1>Algorithms</h1>
+        
+        <p>Each algorithm that <b class="heavy">psimpl</b> provides, is based on 
+        a STL-style like interface with input and output iterators that iterate
+        over vertex coordinates, e.g.: x<sub>1</sub>, y<sub>1</sub>,
+        z<sub>1</sub>, x<sub>2</sub>, y<sub>2</sub>, z<sub>2</sub>, ... They all
+        support n-dimensional polylines defined with either floating point or
+        signed integer data types.</p>
+        
+        <p>For more information about an individual algorithms, click on its
+        name in the sidebar on the left.</p>
+        
+        <hr/>
+        
+        <h1>About the code</h1>
+        
+        <p><b class="heavy">psimpl</b> consists of a single header file: 
+        <code>psimpl.h</code>. This header file in turn relies only on a
+        handfull of standard C++ headers. No additional libraries or files
+        are needed!</p>
+        
+        <p>All code in <code>psimpl.h</code> is organized in the following
+        structure:</p>
+        <ul class="code">
+        <li>namspace <code>psimpl</code></li>
+            <ul>
+            <li>namspace <code>math</code></li>
+                <ul>
+                <li>struct <code>Statistics</code></li>
+                <li>function <code>dot &lt;unsigned, InputIterator&gt;</code></li>
+                <li>function ...</li>
+                
+                </ul>
+            <li>class <code>scoped_array &lt;T&gt;</code></li>
+            <li>class <code>PolylineSimplification &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+                <ul>
+                <li>function <code>NthPoint</code></li>
+                <li>function <code>...</code></li>
+                </ul>
+            <li>function <code>simplify_nth_point &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+            <li>function <code>simplify_...</code></li>
+            <li>function <code>compute_...</code></li>            
+            </ul>
+        </ul>
+        
+        <p>All the code is contained within the root namespace <code>psimpl</code>.
+        The class <code>scoped_array</code>, similar to <code>boost::scoped_array</code>,
+        is a smart pointer for holding a dynamically allocated array. <code>math</code>
+        is a namespace containing all functions related to computing statistics
+        and squared distances between various geometric entities. The class 
+        <code>PolylineSimplification</code> provides the implementation for each
+        simplification algorithm. The top-level functions are for convenience as
+        they provide template type deduction for their corresponding member
+        functions of <code>PolylineSimplification</code>.</p>
+
+        <p><b class="heavy">psimpl</b> itself does not throw exceptions. The
+        reason for this is that I consider exception handling to be rather rare
+        within C++ applications. Unlike the .NET world, a lot of developers just
+        don't use nor even think about exception handling.</p>
+
+        <hr/>
+        
+        <h1>About the demo</h1>
+        
+        <hr/>
+        
+        <h1>Upcomming versions</h1>
+        
+        <p>The following algorithms are planned for upcomming versions:</p>
+        <ul>
+        <li>Random Point routine</li>
+        <li>Jenks simplification</li>
+        <li>Lang simplification</li>
+        <li>Visvalingam-Whyatt simplification</li>
+        <li>Zhao-Saalfeld simplification</li>
+        <li>Computing Area errors due to simplification</li>
+        </ul>
+        
+        <br/>
+       
+        <p>Other things that I want to look into include:</p>
+        <ul>
+        <li>Split <b class="stretchy">Douglas-Peucker</b> into two algorithms:
+        a vanilla implementation and one that uses <b class="stretchy">Radial 
+        Distance</b> as a pre-processing step</li>
+        <li>A seperate version that operates on <i>point</i> containers instead
+        of <i>coordinate</i> containers</li>
+        <li><b class="stretchy">Positional</b> error calculation that works for
+        situations where the data type of a simplification differs from the
+        original polyline</li>
+        </ul>
+                
     </div>
     <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
 </div>

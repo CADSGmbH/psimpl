@@ -34,7 +34,17 @@ hr {
     margin: 30px 0px 30px 0px;
 }
 
+a {
+    color: black;
+}
+
+a:hover {
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
 b.heavy {
+    color: #444444;
     letter-spacing: 1px;
     font-size: 1.2em;
 }
@@ -120,6 +130,14 @@ td.value a:hover {
     letter-spacing: 1px;
 }
 
+ul.code {
+    margin: 0px 0px 0px 20px;
+}
+
+ul.code ul {
+    margin: 0px 0px 0px 20px;
+}
+
 div#main_container {
     margin: 0 auto 0 auto;
     width: 800px;
@@ -131,7 +149,6 @@ div#main_container {
 div#header {
     color: #eeeeee;
     background-color: #444444; 
-    height: 150px;
     text-align: left;
     font-weight: bold;
     border-radius: 15px 15px 0px 0px;
@@ -140,7 +157,7 @@ div#header {
 div#content {
     font-size: 1.4em;
     background-color: #f3f3f3;
-    padding: 50px 100px 50px 100px;
+    padding: 50px 110px 50px 110px;
 }
 
 div#content h1 {
@@ -169,32 +186,22 @@ div#sub_title {
 }
 
 div#nav {
-    padding: 20px 0px 0px 5px;
+    padding: 20px 0px 10px 5px;
 }
 
-div#nav ul{
-    list-style-type: none;
-}
-
-div#nav ul li{
-    display: list-item;
-    padding-right: 5px;
-    float: left;
-}
-
-div#nav ul li a {
-    display: block;
+div#nav a {
     text-decoration: none;
-    background: #666666;
+    background-color: #666666;
     color: #eeeeee;
     padding: 2px 5px 2px 5px;
+    margin: 0px 1px 0px 1px;
     font-size: 1.2em;
     border-radius: 5px;
 }
 
-div#nav ul li a:hover {
+div#nav a:hover {
     color: #444444;
-    background: #eeeeee;
+    background-color: #eeeeee;
 }
 
 div#sidebar {
@@ -235,7 +242,7 @@ div#sidebar ul li a {
 
 div#sidebar ul li a:hover {
     color: #444444;
-    background: #eeeeee;
+    background-color: #eeeeee;
     font-weight: bold;
 }
 
@@ -247,4 +254,49 @@ div#footer {
     padding: 2px 5px 2px 5px;
     clear: both;
     border-radius: 0px 0px 15px 15px;
+}
+
+div#news {
+    padding: 10px;
+    margin: 0px 0px 25px 0px;
+}
+
+div#news div.title {
+    font-size: 1.2em;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+div#news hr {
+    color: #444444;
+    background-color: #444444;
+    height: 2px;
+    padding: 0;
+    margin: 0;
+}
+
+div#news div.date {
+    letter-spacing: 1px;
+    text-align: right;
+}
+
+div#button {
+    margin: 30px 0px 30px 0px;
+    text-align: center;
+}
+
+div#button a {
+    text-decoration: none;
+    background-color: #444444;
+    color: #eeeeee;
+    margin: 0px 10px 0px 10px;
+    padding: 10px 15px 10px 15px;
+    font-size: 1.2em;
+    letter-spacing: 1px;
+    border-radius: 9px;
+}
+
+div#button a:hover {
+    color: black;
+    background-color: #999999;    
 }

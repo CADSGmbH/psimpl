@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
@@ -11,15 +11,86 @@
         <div id="title"><h1>psimpl</h1></div>
         <div id="sub_title"><h2>generic n-dimensional poyline simplification</h2></div>
         <div id="nav">
-            <ul>
-                <li><a title="Home" href="index.html">Home</a></li>
-                <li><a title="News" href="news.html">News</a></li>
-                <li><a title="Documentation" href="documentation.html">Documentation</a></li>
-                <li><a title="Downloads" href="downloads.html">Download</a></li>
-            </ul>
+            <a title="Home" href="index.html">Home</a>
+            <a title="News" href="news.html">News</a>
+            <a title="Documentation" href="documentation.html">Documentation</a>
+            <a title="Downloads" href="downloads.html">Download</a>
         </div>
     </div>
     <div id="content">
+    
+    <p><b class="heavy">psimpl</b> provides a source code only package and a
+    32-bit demo application for Windows:</p>
+
+    <div id="button">
+        <a title="psimpl v6 source code" href="http://sourceforge.net/projects/psimpl/files/v6/psimpl_v6_src.zip/download">source code</a>
+        <a title="psimpl v6 demo application" href="http://sourceforge.net/projects/psimpl/files/v6/psimpl_v6_win32_demo.zip/download">win32 demo</a>
+    </div>
+    
+    <p>The latest version can also be downloaded from <a title="Alternative download location" href="http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx">The Code Project</a>.
+    Older versions are available through the project website at <a title="Browse older versions" href="http://sourceforge.net/projects/psimpl/files/">SourceForge</a>.</p>
+
+    <br/>
+
+    <P>suggestions remarks etc welcome, let me know why what you use it for etc</P>
+    
+    <hr/>
+    
+    <h1>Changelog</h1>
+    
+    <div id="news">
+        <div class="title">v6</div>
+        <hr/>
+        <div class="date">27-02-2011</div>
+        <p>Added <b class="stretchy">Opheim</b> simplification, and functions
+        for computing positional errors due to simplification. Renamed the
+        function <code>simplify_douglas_peucker_alt</code> to
+        <code>simplify_douglas_peucker_n</code>.</p>
+    </div>
+    
+    <div id="news">
+        <div class="title">v5</div>
+        <hr/>
+        <div class="date">10-12-2010</div>
+        <p>Fixed an iterator out of bounds bug in the <b class="stretchy">Perpendicular Distance</b>
+        routine.</p>
+    </div>
+    
+    <div id="news">
+        <div class="title">v4</div>
+        <hr/>
+        <div class="date">01-12-2010</div>
+        <p>Added the <b class="stretchy">Nth Point</b>, <b class="stretchy">Perpendicular Distance</b>,
+        and <b class="stretchy">Reumann-Witkam</b> simplifications algorithms.
+        Moved all functions related to distance calculations to a separate
+        <code>math</code> namespace; Performed general refactoring.</p>
+    </div>
+    
+    <div id="news">
+        <div class="title">v3</div>
+        <hr/>
+        <div class="date">26-10-2010</div>
+        <p>Clarified input (type) requirements, and changed the behavior of all
+        algorithms under invalid input. In these cases the entire input range is
+        copied to the output range, meaning no simplification is performed.
+    </div>
+    
+    <div id="news">
+        <div class="title">v2</div>
+        <hr/>
+        <div class="date">23-10-2010</div>
+        <p>Changed license from the "Code Project Open License" (CPOL) to the
+        "Mozilla Public License 1.1" (MPL 1.1).</p>
+    </div>
+    
+    <div id="news">
+        <div class="title">v1</div>
+        <hr/>
+        <div class="date">28-09-2010</div>
+        <p>Initial release as part of the article "Polyline Simplification"
+        on The Code Project. Provides implementations for <b class="stretchy">Douglas-Peucker</b>
+        and <b class="stretchy">Radial Distance</b> simplification algorithms.</p>
+    </div>
         
     </div>
     <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
