@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
+  <meta name="keywords" content="radial distance, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -40,19 +42,20 @@
     
 <h1>Radial Distance</h1> 
  
-<p><b class="stretchy">Radial Distance</b> is a brute force O(n) algorithm for polyline
-simplification. It reduces successive vertices that are clustered too closely to a single
-vertex, called a key. The resulting keys form the simplified polyline. This process is
-illustrated below:</p> 
+<p><b class="algo">Radial Distance</b> is a brute force O(n) algorithm for
+ polyline simplification. It reduces successive vertices that are clustered too
+ closely to a single vertex, called a key. The resulting keys form the simplified
+ polyline. This process is illustrated below:</p> 
  
-<div id="img"><img title="Radial Distance" alt="Radial Distance example" src="../images/psimpl_rd.png" complete="true" /></div> 
+<div id="img"><img title="Radial Distance simplification" alt="Radial Distance simplification example" src="../images/psimpl_rd.png" /></div> 
  
-<p>The first and last vertices are always part of the simplification, and are thus marked
-as keys. Starting at the first key (the first vertex), the algorithm walks along the polyline.
-All consecutive vertices that fall within a specified distance tolerance from that key are
-removed. The first encountered vertex that lies further away than the tolerance is marked
-as a key. Starting from this new key, the algorithm will start walking again and repeat this
-process, until it reaches the final key (the last vertex).</p> 
+<p>The first and last vertices are always part of the simplification, and are
+ thus marked as keys. Starting at the first key (the first vertex), the algorithm
+ walks along the polyline. All consecutive vertices that fall within a specified
+ distance tolerance from that key are removed. The first encountered vertex that
+ lies further away than the tolerance is marked as a key. Starting from this new
+ key, the algorithm will start walking again and repeat this process, until it
+ reaches the final key (the last vertex).</p> 
  
 <h2>Interface</h2> 
  
@@ -63,11 +66,12 @@ OutputIterator <span class="algorithm">simplify_radial_distance</span> (
     <span class="keyword">typename</span> std::iterator_traits &lt;InputIterator&gt;::value_type tol,
     OutputIterator result)</pre> 
  
-<p>Applies the <b class="stretchy">Radial Distance</b> routine to the range <code>[first, last)</code>
-using the specified radial distance tolerance <code>tol</code>. The resulting simplified polyline
-is copied to the output range <code>[result, result + m * DIM)</code>, where <code>m</code> is the
-number of vertices of the simplified polyline. The return value is the end of the output range:
-<code>result + m * DIM</code>.</p> 
+<p>Applies the <b class="algo">Radial Distance</b> routine to the range
+ <code>[first, last)</code> using the specified radial distance tolerance
+ <code>tol</code>. The resulting simplified polyline is copied to the output
+ range <code>[result, result + m * DIM)</code>, where <code>m</code> is the
+ number of vertices of the simplified polyline. The return value is the end of
+ the output range: <code>result + m * DIM</code>.</p> 
  
 <h2>Input (Type) Requirements</h2> 
  
@@ -100,9 +104,10 @@ psimpl::<span class="algorithm">simplify_radial_distance</span> &lt;2&gt; (
     tolerance, std::back_inserter (result));</pre> 
  
 <p>Note that the results container does not need to match the polyline container.
-You could, for instance, use a C-style <code>double</code> array.</p> 
+You could, for instance, use a C-style <code>double</code> array.</p>
+
 </div>
-    <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
+    <div id="footer">Copyright &copy; 2010-2011 <a title="Contact address" href="mailto:edekoning@gmail.com?subject=psimpl">Elmar de Koning</a>. All Rights Reserved.</div>
 </div>
 </body>
 </html>

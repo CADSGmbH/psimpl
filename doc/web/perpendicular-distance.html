@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
+  <meta name="keywords" content="perpendicular distance, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -40,25 +42,28 @@
     
     <h1>Perpendicular Distance</h1> 
  
-<p>Instead of using a point-to-point (radial) distance tolerance as a rejection criterion 
-(see <b class="stretchy">Radial Distance</b>), the O(n) <b class="stretchy">Perpendicular Distance</b>
-routine uses a point-to-segment distance tolerance. For each vertex v<sub>i</sub>, its
-perpendicular distance to the line segment S(v<sub>i-1</sub>, v<sub>i+1</sub>) is computed.
-All vertices whose distance is smaller than the given tolerance will be removed. This process
-is illustrated below:</p> 
+<p>Instead of using a point-to-point (radial) distance tolerance as a rejection
+ criterion (see <b class="algo">Radial Distance</b>), the O(n)
+ <b class="algo">Perpendicular Distance</b> routine uses a point-to-segment
+ distance tolerance. For each vertex v<sub>i</sub>, its perpendicular distance
+ to the line segment S(v<sub>i-1</sub>, v<sub>i+1</sub>) is computed. All
+ vertices whose distance is smaller than the given tolerance will be removed.
+ This process is illustrated below:</p> 
  
-<div id="img"><img title="Perpendicular Distance" alt="Perpendicular Distance example" src="../images/psimpl_pd.png" complete="true" /></div> 
+<div id="img"><img title="Perpendicular Distance simplification" alt="Perpendicular Distance simplification example" src="../images/psimpl_pd.png" /></div> 
  
-<p>Initially, the first three vertices are processed, and the perpendicular distance of the second
-vertex is calculated. After comparing this distance against the tolerance, the second vertex is
-considered to be a key (part of the simplification). The algorithm then moves one vertex up the
-polyline and begins processing the next set of three vertices. This time, the calculated distance
-falls below the tolerance and thus the intermediate vertex is removed. The algorithm continues
-by moving two vertices up the polyline.</p> 
+<p>Initially, the first three vertices are processed, and the perpendicular
+ distance of the second vertex is calculated. After comparing this distance
+ against the tolerance, the second vertex is considered to be a key (part of
+ the simplification). The algorithm then moves one vertex up the polyline and
+ begins processing the next set of three vertices. This time, the calculated
+ distance falls below the tolerance and thus the intermediate vertex is removed.
+ The algorithm continues by moving two vertices up the polyline.</p> 
  
-<p>Note that for each vertex v<sub>i</sub> that is removed, the next possible candidate for
-removal is v<sub>i+2</sub>. This means that the original polyline can only be reduced by a
-maximum of 50%. Multiple passes are required to achieve higher vertex reduction rates.</p> 
+<p>Note that for each vertex v<sub>i</sub> that is removed, the next possible
+ candidate for removal is v<sub>i+2</sub>. This means that the original polyline
+ can only be reduced by a maximum of 50%. Multiple passes are required to
+ achieve higher vertex reduction rates.</p> 
  
 <h2>Interface</h2> 
  
@@ -77,11 +82,12 @@ OutputIterator <span class="algorithm">simplify_perpendicular_distance</span> (
     <span class="keyword">unsigned</span> repeat,
     OutputIterator result)</pre> 
  
-<p>Applies the <b class="stretchy">Perpendicular Distance</b> routine (<code>repeat</code> times)
-to the range <code>[first, last)</code> using the specified perpendicular distance tolerance
-<code>tol</code>. The resulting simplified polyline is copied to the output range
-<code>[result, result + m * DIM)</code>, where <code>m</code> is the number of vertices of the
-simplified polyline. The return value is the end of the output range: <code>result + m * DIM</code>.</p> 
+<p>Applies the <b class="algo">Perpendicular Distance</b> routine
+ (<code>repeat</code> times) to the range <code>[first, last)</code> using the
+ specified perpendicular distance tolerance <code>tol</code>. The resulting
+ simplified polyline is copied to the output range <code>[result, result + m * DIM)</code>,
+ where <code>m</code> is the number of vertices of the simplified polyline. The
+ return value is the end of the output range: <code>result + m * DIM</code>.</p> 
  
 <h2>Input (Type) Requirements</h2> 
  
@@ -94,32 +100,32 @@ simplified polyline. The return value is the end of the output range: <code>resu
  <li><code>n</code> is at least 1</li> 
 </ol> 
  
-<p>In case these requirements are not met, compile errors may occur, <b>or</b> the entire input
-range <code>[first, last)</code> is copied to the output range <code>[result, result + (last - first))</code>.</p> 
+<p>In case these requirements are not met, compile errors may occur, <b>or</b>
+ the entire input range <code>[first, last)</code> is copied to the output range
+ <code>[result, result + (last - first))</code>.</p> 
  
-<h2><a name="heading0015" id="heading0015"></a>Implementation Details</h2> 
+<h2>Implementation Details</h2> 
  
-<p>The main function, without the <code>repeat</code> parameter, is a single loop that starts with
-processing the first three consecutive vertices. Depending on whether the second or third vertex
-is considered to be part of the simplification (called a key), the algorithm moves one or two
-vertices up the original polyline. As soon as a key is found, it is copied to the output
-iterator.</p> 
+<p>The main function, without the <code>repeat</code> parameter, is a single loop
+ that starts with processing the first three consecutive vertices. Depending on
+ whether the second or third vertex is considered to be part of the simplification
+ (called a key), the algorithm moves one or two vertices up the original polyline.
+ As soon as a key is found, it is copied to the output iterator.</p> 
  
-<p>The second function, which takes a <code>repeat</code> value as input, is a wrapper around
-the main function, and consists of three distinct steps:</p> 
+<p>The second function, which takes a <code>repeat</code> value as input, is a
+ wrapper around the main function, and consists of three distinct steps:</p> 
  
 <ol> 
-<li>First iteration: simplify from range <code>[first, last)</code> to a plain C-style array.</li> 
- 
-<li>Intermediate iterations: simplify from and to plain C-style arrays.</li> 
- 
-<li>Last iteration: simplify from a plain C-style array to the output iterator <code>result</code>.</li> 
+ <li>First iteration: simplify from range <code>[first, last)</code> to a plain C-style array.</li> 
+ <li>Intermediate iterations: simplify from and to plain C-style arrays.</li> 
+ <li>Last iteration: simplify from a plain C-style array to the output iterator <code>result</code>.</li> 
 </ol> 
  
-<p>After each iteration, the simplification is checked for improvement. If none was found,
-the current result is copied directly to the output iterator <code>result</code>. Note that
-up to two temporary copies may be created: one copy of the input range, and the other of the
-first intermediate simplification result.</p> 
+<p>After each iteration, the simplification is checked for improvement. If none
+ was found, the current result is copied directly to the output iterator
+ <code>result</code>. Note that up to two temporary copies may be created: one
+ copy of the input range, and the other of the first intermediate simplification
+ result.</p> 
  
 <h2>Usage</h2> 
  
@@ -143,7 +149,7 @@ psimpl::<span class="algorithm">simplify_perpendicular_distance</span> &lt;3&gt;
     repeat, std::back_inserter (result));</pre>
     
     </div>
-    <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
+    <div id="footer">Copyright &copy; 2010-2011 <a title="Contact address" href="mailto:edekoning@gmail.com?subject=psimpl">Elmar de Koning</a>. All Rights Reserved.</div>
 </div>
 </body>
 </html>

@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
+  <meta name="keywords" content="reumann-witkam, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -41,8 +43,8 @@
 <h1>Reumann-Witkam</h1>
 
 <p>Instead of using a point-to-point (radial) distance tolerance as a rejection
-criterion (see <b class="stretchy">Radial Distance</b>), the O(n)
-<b class="stretchy">Reumann-Witkam</b> routine uses a point-to-line (perpendicular)
+criterion (see <b class="algo">Radial Distance</b>), the O(n)
+<b class="algo">Reumann-Witkam</b> routine uses a point-to-line (perpendicular)
 distance tolerance. It defines a line through the first two vertices of the original
 polyline. For each successive vertex v<sub>i</sub>, its perpendicular distance to
 this line is calculated. A new key is found at v<sub>i-1</sub>, when this distance
@@ -50,7 +52,7 @@ exceeds the specified tolerance. The vertices v<sub>i</sub> and v<sub>i+1</sub> 
 then used to define a new line, and the process repeats itself. The algorithm is
 illustrated below:</p>
 
-<div id="img"><img title="Reumann-Witkam" alt="Reumann-Witkam example" src="../images/psimpl_rw.png" complete="true" /></div>
+<div id="img"><img title="Reumann-Witkam simplification" alt="Reumann-Witkam simplification example" src="../images/psimpl_rw.png" /></div>
 
 <p>The red strip is constructed from the specified tolerance and a line through
 the first two vertices of the polyline. The third vertex does not lie within the
@@ -69,7 +71,7 @@ OutputIterator <span class="algorithm">simplify_reumann_witkam</span> (
     <span class="keyword">typename</span> std::iterator_traits &lt;InputIterator&gt;::value_type tol,
     OutputIterator result)</pre>
 
-<p>Applies the <b class="stretchy">Reumann-Witkam</b> routine to the range
+<p>Applies the <b class="algo">Reumann-Witkam</b> routine to the range
 <code>[first, last)</code> using the specified perpendicular distance tolerance
 <code>tol</code>. The resulting simplified polyline is copied to the output range
 <code>[result, result +  m * DIM)</code>, where <code>m</code> is the number of
@@ -111,7 +113,7 @@ psimpl::<span class="algorithm">simplify_reumann_witkam</span> &lt;4&gt; (
 do not have to be the same.</p>
 
     </div>
-    <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
+    <div id="footer">Copyright &copy; 2010-2011 <a title="Contact address" href="mailto:edekoning@gmail.com?subject=psimpl">Elmar de Koning</a>. All Rights Reserved.</div>
 </div>
 </body>
 </html>

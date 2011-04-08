@@ -1,25 +1,3 @@
-div:empty, span:empty,
-li:empty, p:empty,
-td:empty, th:empty {padding: 0.5em; background: yellow;}
-
-*[style], font, center {outline: 5px solid red;}
-*[class=""], *[id=""] {outline: 5px dotted red;}
-
-img[alt=""] {border: 3px dotted red;}
-img:not([alt]) {border: 5px solid red;}
-img[title=""] {outline: 3px dotted fuchsia;}
-img:not([title]) {outline: 5px solid fuchsia;}
-
-table:not([summary]) {outline: 5px solid red;}
-table[summary=""] {outline: 3px dotted red;}
-th {border: 2px solid red;}
-th[scope="col"], th[scope="row"] {border: none;}
-
-a[href]:not([title]) {border: 5px solid red;}
-a[title=""] {outline: 3px dotted red;}
-a[href="#"] {background: lime;}
-a[href=""] {background: fuchsia;}
-
 * {
     margin: 0;
     padding: 0;
@@ -40,16 +18,15 @@ a {
 
 a:hover {
     font-weight: bold;
-    letter-spacing: 1px;
 }
 
-b.heavy {
+b.proj {
     color: #444444;
     letter-spacing: 1px;
     font-size: 1.2em;
 }
 
-b.stretchy {
+b.algo {
     letter-spacing: 1px;
 }
 
@@ -96,7 +73,6 @@ span.algorithm {
 }
 
 body {
-    #line-height: 1;
     background-color: #666666; 
     text-align: center;
     font-family: 'Trebuchet MS';
@@ -119,15 +95,6 @@ td.key {
 
 td.value {
     text-align: left;
-}
-
-td.value a {
-    color: black;
-}
-
-td.value a:hover {
-    font-weight: bold;
-    letter-spacing: 1px;
 }
 
 ul.code {
@@ -207,7 +174,6 @@ div#nav a:hover {
 div#sidebar {
     float: left;
     margin: 20px 30px 5px 10px;
-    
 }
 
 div#sidebar div {
@@ -243,7 +209,6 @@ div#sidebar ul li a {
 div#sidebar ul li a:hover {
     color: #444444;
     background-color: #eeeeee;
-    font-weight: bold;
 }
 
 div#footer {
@@ -254,6 +219,10 @@ div#footer {
     padding: 2px 5px 2px 5px;
     clear: both;
     border-radius: 0px 0px 15px 15px;
+}
+
+div#footer a {
+    color: #eeeeee;
 }
 
 div#news {
@@ -287,7 +256,7 @@ div#button {
 
 div#button a {
     text-decoration: none;
-    background-color: #444444;
+    background-color: #666666;
     color: #eeeeee;
     margin: 0px 10px 0px 10px;
     padding: 10px 15px 10px 15px;
@@ -297,6 +266,6 @@ div#button a {
 }
 
 div#button a:hover {
-    color: black;
-    background-color: #999999;    
+    background-color: black;
+    color: white;
 }

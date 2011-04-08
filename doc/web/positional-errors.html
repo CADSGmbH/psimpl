@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
+  <meta name="keywords" content="position error, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -45,7 +47,7 @@ simplification the higher the amount of distortion. One way of measuring this
 error induced by simplification, is by looking at the location difference between
 the original and the simplified line.</p>
 
-<div id="img"><img title="Positional Errors" alt="Positional Errors example" src="../images/psimpl_pos_error.png" complete="true" /></div>
+<div id="img"><img title="Positional Errors after simplification" alt="Positional Errors after simplification example" src="../images/psimpl_pos_error.png" /></div>
 
 <p>For each original point the positional error is calculated as the perpendiculer
 difference between that point and the corresponding line segment of the simplification.
@@ -106,10 +108,10 @@ the last processed point from the original polyline. Only if this condition hold
 are the calculated positional errors considered valid. This means I can only say
 if the results are valid after I am done computing and copying errors to the
 output range. So I needed some way of letting the caller know this. One option
-would be to throw an exception. However, I designed <b class="heavy">psimpl</b>
-to not itself throw any exceptions (see section <todo>About the Code</todo>).
-Instead I opted for an <todo>optional</todo> <code><span class="keyword">boolean</span></code>
-<code>valid</code>.</p>
+would be to throw an exception. However, I designed <b class="proj">psimpl</b>
+to not itself throw any exceptions (see documentation section <b>The code</b>).
+Instead I opted for the optional <code><span class="keyword">boolean</span></code>
+ argument.</p>
 
 <h2>Usage</h2>
 
@@ -134,7 +136,7 @@ psimpl::math::Statistics stats =
         &amp;valid);</pre>
 
     </div>
-    <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
+    <div id="footer">Copyright &copy; 2010-2011 <a title="Contact address" href="mailto:edekoning@gmail.com?subject=psimpl">Elmar de Koning</a>. All Rights Reserved.</div>
 </div>
 </body>
 </html>

@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
+  <meta name="keywords" content="douglas-peucker, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -40,7 +42,7 @@
     
 <h1>Douglas-Peucker</h1>
 
-<p>The <b class="stretchy">Douglas-Peucker</b> algorithm uses a point-to-edge
+<p>The <b class="algo">Douglas-Peucker</b> algorithm uses a point-to-edge
 distance tolerance. The algorithm starts with a crude simplification that is the
 single edge joining the first and last vertices of the original polyline. It then
 computes the distance of all intermediate vertices to that edge. The vertex that
@@ -50,7 +52,7 @@ This process will recurse for each edge in the current simplification, until all
 vertices of the original polyline are within tolerance of the simplification results.
 This process is illustrated below:</p>
 
-<div id="img"><img title="Douglas-Peucker" alt="Douglas-Peucker example" src="../images/psimpl_dp.png" complete="true" /></div>
+<div id="img"><img title="Douglas-Peucker simplification" alt="Douglas-Peucker simplification example" src="../images/psimpl_dp.png" /></div>
 
 <p>Initially, the simplification consists of a single edge. During the first step,
 the fourth vertex is marked as a key and the simplification is adjusted accordingly.
@@ -64,7 +66,7 @@ each step, only one edge of the current simplification is processed.</p>
 <p>This algorithm has a worst case running time of O(nm), and O(n log m) on average,
 where m is the size of the simplified polyline. As such, this is an output dependent
 algorithm, and will be very fast when m is small. To make it even faster, the
-<b class="stretchy">Radial Distance</b> routine is applied as a pre-processing step.</p>
+<b class="algo">Radial Distance</b> routine is applied as a pre-processing step.</p>
 
 <h2>Interface</h2>
 
@@ -75,8 +77,8 @@ OutputIterator <span class="algorithm">simplify_douglas_peucker</span> (
     <span class="keyword">typename</span> std::iterator_traits &lt;InputIterator&gt;::value_type tol,
     OutputIterator result)</pre>
 
-<p>Applies the <b class="stretchy">Radial Distance</b> routine followed by
-<b class="stretchy">Douglas-Peucker</b> approximation to the range
+<p>Applies the <b class="algo">Radial Distance</b> routine followed by
+<b class="algo">Douglas-Peucker</b> approximation to the range
 <code>[first, last)</code> using the specified tolerance <code>tol</code>.
 The resulting simplified polyline is copied to the output range
 <code>[result, result + m * DIM)</code>, where <em>m</em> is the number of
@@ -118,12 +120,12 @@ function could optionally copy all keys to some output range.</p>
 <p>The first thing I changed was the interface of each algorithm. Instead of
 returning key markers, the simplification results were copied to an output range
 using output iterators. The second change was to store the intermediate result
-produced by the <b class="stretchy">Radial Distance</b> pre-processing step in a
-plain C-style array. This array is then used during <b class="stretchy">Douglas-Peucker</b>
+produced by the <b class="algo">Radial Distance</b> pre-processing step in a
+plain C-style array. This array is then used during <b class="algo">Douglas-Peucker</b>
 approximation. The advantages of this approach far outweigh the increase in memory usage:</p>
 
 <ul>
-<li>Using the <b class="stretchy">Radial Distance</b> routine as a pre-processing step became trivial; I only had to create an array and specify an output iterator for it</li>
+<li>Using the <b class="algo">Radial Distance</b> routine as a pre-processing step became trivial; I only had to create an array and specify an output iterator for it</li>
 <li>Less code - lack of specific code for different iterator categories, and less bookkeeping</li>
 <li>Faster code - working with C-style arrays and value type pointers is generally faster than using iterators, especially when dealing with non-random access iterators</li>
 <li>Cleaner interface</li>
@@ -167,7 +169,7 @@ psimpl::<span class="algorithm">simplify_douglas_peucker</span> &lt;3&gt; (
 <p>A direct result from always choosing the next key based on all possible keys
 at any given time, is that the simplification results are of a higher quality.
 This is most notable when using a very low point-count tolerance. A downside is
-that we cannot use the <b class="stretchy">Radial Distance</b> routine as a
+that we cannot use the <b class="algo">Radial Distance</b> routine as a
 pre-processing step to speed up the algorithm.</p>
 
 <h2>Interface</h2>
@@ -179,7 +181,7 @@ OutputIterator <span class="algorithm">simplify_douglas_peucker_n</span> (
     <span class="keyword">unsigned</span> count,
     OutputIterator result)</pre>
 
-<p>Applies a variant of the <b class="stretchy">Douglas-Peucker</b> algorithm to
+<p>Applies a variant of the <b class="algo">Douglas-Peucker</b> algorithm to
 the range <code>[first, last)</code>. The resulting simplified polyline consists
 of <code>count</code> vertices, and is copied to the output range
 <code>[result, result + count)</code>. The return value is the end of the output
@@ -215,7 +217,7 @@ the two sub-edges are processed and stored in the queue.</p>
 
 <p>For performance reasons, a copy is made of the input polyline in a plain C-style
 array. Note that for the original implementation, this copy was made automatically
-during the <b class="stretchy">Radial Distance</b> pre-processing step.</p>
+during the <b class="algo">Radial Distance</b> pre-processing step.</p>
 
 <h2>Usage</h2>
 
@@ -232,7 +234,7 @@ psimpl::<span class="algorithm">simplify_douglas_peucker_n</span> &lt;4&gt; (
 signed integer data type.</p>
 
     </div>
-    <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
+    <div id="footer">Copyright &copy; 2010-2011 <a title="Contact address" href="mailto:edekoning@gmail.com?subject=psimpl">Elmar de Koning</a>. All Rights Reserved.</div>
 </div>
 </body>
 </html>

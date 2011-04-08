@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
+  <meta name="keywords" content="opheim, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>psimpl - generic n-dimensional polyline simplification</title>
 </head>
@@ -40,10 +42,10 @@
     
 <h1>Opheim</h1>
 
-<p>The O(n) <b class="stretchy">Opheim</b> routine is very similar to the
-<b class="stretchy">Reumann-Witkam</b> routine, and can be seen as a constrained
-version of that <b class="stretchy">Reumann-Witkam</b> routine.
-<b class="stretchy">Opheim</b> uses both a minimum and a maximum distance tolerance
+<p>The O(n) <b class="algo">Opheim</b> routine is very similar to the
+<b class="algo">Reumann-Witkam</b> routine, and can be seen as a constrained
+version of that <b class="algo">Reumann-Witkam</b> routine.
+<b class="algo">Opheim</b> uses both a minimum and a maximum distance tolerance
 to constrain the search area. For each successive vertex v<sub>i</sub>, its radial
 distance to the current key v<sub>key</sub> (initially v<sub>0</sub>) is calculated.
 The last point within the minimum distance tolerance is used to define a ray
@@ -55,12 +57,12 @@ the minimum tolerance Or when the radial distance between v<sub>j</sub> and the
 v<sub>key</sub> exceeds the maximum tolerance. After a new key is found, the
 process repeats itself.</p>
 
-<div id="img"><img title="Opheim" alt="Opheim example" src="../images/psimpl_op.png" complete="true" /></div>
+<div id="img"><img title="Opheim simplification" alt="Opheim simplification example" src="../images/psimpl_op.png" /></div>
 
-<p>The <b class="stretchy">Opheim</b> simplification process is illustrated above.
+<p>The <b class="algo">Opheim</b> simplification process is illustrated above.
 Notice how the search area is constrained by a minimum and a maximum tolerance.
 As a result, during the second step, only a single point is removed. The
-<b class="stretchy">Reumann-Witkam</b> routine, which uses an infinite or
+<b class="algo">Reumann-Witkam</b> routine, which uses an infinite or
 unconstrained search area, would have removed two points.</p>
 
 <h2>Interface</h2>
@@ -73,7 +75,7 @@ OutputIterator <span class="algorithm">simplify_opheim</span> (
     <span class="keyword">typename</span> std::iterator_traits &lt;InputIterator&gt;::value_type maxTol,
     OutputIterator result)</pre>
 
-<p>Applies the <b class="stretchy">Opheim</b> routine to the range
+<p>Applies the <b class="algo">Opheim</b> routine to the range
 <code>[first, last)</code> using the specified distance tolerances
 <code>minTol</code> and <code>maxTol</code>. The resulting simplified polyline
 is copied to the output range <code>[result, result + m * DIM)</code>, where
@@ -97,24 +99,24 @@ the entire input range <code>[first, last)</code> is copied to the output range
 
 <h2>Implementation Details</h2>
 
-<p>All the articles that I found mentioning or discussing the <b class="stretchy">Opheim</b>
+<p>All the articles that I found mentioning or discussing the <b class="algo">Opheim</b>
 algorithm, failed to explain how to define the ray that controls the direction of
 the search area. As far as I can tell, there are three possible ways of determining
 this ray R(v<sub>key</sub>, v<sub>i</sub>), where v<sub>key</sub> is the current key.</p>
 
 <ol>
-<li>The <b class="stretchy">Reumann-Witkam</b> way: i = key + 1 </li>
+<li>The <b class="algo">Reumann-Witkam</b> way: i = key + 1 </li>
 <li>The first point outside: key &lt; i and v<sub>i</sub> is the first point that falls outside the minimum radial distance tolerance</li>
-<li>The last point inside: key &lt; i and v<sub>i</sub> is the last point that falls inside the minimum radial distance tolerance; if no such v<sub>i</sub> exists, fall back to the <b class="stretchy">Reumann-Witkam</b> way</li>
+<li>The last point inside: key &lt; i and v<sub>i</sub> is the last point that falls inside the minimum radial distance tolerance; if no such v<sub>i</sub> exists, fall back to the <b class="algo">Reumann-Witkam</b> way</li>
 </ol>
 
-<div id="img"><img title="Ray definition" alt="Ray definition example" src="../images/psimpl_op_ray.png" complete="true" /></div>
+<div id="img"><img title="Opheim ray definition" alt="Opheim ray definition example" src="../images/psimpl_op_ray.png" /></div>
 
 <p>I compared these three approaches using postitional error statistics and found
 that '<b>the first point outside</b>' approach, most of the time, produces
 slightly better results than the '<b>Reumann-Witkam</b>' approach. Furthermore,
 there did not seem to be any real difference between the '<b>last point inside</b>'
-and '<b>the first point outside</b>' approaches. I ended up choosing
+and '<b>the first point outside</b>' approaches. I ended up choosing the
 '<b>last point inside</b>' approach, because it was a better fit for the
 loop that I had already implemented.</p>
 
@@ -131,7 +133,7 @@ psimpl::<span class="algorithm">simplify_opheim</span> &lt;4&gt; (
     minimum, maximum, std::back_inserter (result));</pre>
 
     </div>
-    <div id="footer">Copyright &copy; 2010-2011 Elmar de Koning. All Rights Reserved.</div>
+    <div id="footer">Copyright &copy; 2010-2011 <a title="Contact address" href="mailto:edekoning@gmail.com?subject=psimpl">Elmar de Koning</a>. All Rights Reserved.</div>
 </div>
 </body>
 </html>
