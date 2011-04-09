@@ -47,7 +47,7 @@
  closely to a single vertex, called a key. The resulting keys form the simplified
  polyline. This process is illustrated below:</p> 
  
-<div id="img"><img title="Radial Distance simplification" alt="Radial Distance simplification example" src="../images/psimpl_rd.png" /></div> 
+<div class="img"><img title="Radial Distance simplification" alt="Radial Distance simplification example" src="images/psimpl_rd.png"></div> 
  
 <p>The first and last vertices are always part of the simplification, and are
  thus marked as keys. Starting at the first key (the first vertex), the algorithm
@@ -59,7 +59,7 @@
  
 <h2>Interface</h2> 
  
-<pre lang="C++"><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_radial_distance</span> (
     InputIterator first,
     InputIterator last,
@@ -94,7 +94,7 @@ range <code>[first, last)</code> is copied to the output range
  
 <h2>Usage</h2> 
  
-<pre lang="C++"><span class="keyword">float</span> tolerance = 10.f;       <span class="comment">// point-to-point distance tolerance</span>
+<pre><span class="keyword">float</span> tolerance = 10.f;       <span class="comment">// point-to-point distance tolerance</span>
 std::vector &lt;<span class="keyword">float</span>&gt; polyline; <span class="comment">// original polyline, assume not empty</span>
 std::vector &lt;<span class="keyword">float</span>&gt; result;   <span class="comment">// resulting simplified polyline</span>
  

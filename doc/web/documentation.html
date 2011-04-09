@@ -51,7 +51,7 @@
         <p>For more information about an individual algorithms, click on its
         name in the sidebar on the left.</p>
         
-        <hr/>
+        <hr>
         
         <h1>The code</h1>
         
@@ -63,25 +63,27 @@
         <p>All code in <code>psimpl.h</code> is organized in the following
         structure:</p>
         <ul class="code">
-        <li>namspace <code>psimpl</code></li>
+        <li>namspace <code>psimpl</code>
             <ul>
-            <li>namspace <code>math</code></li>
+            <li>namspace <code>math</code>
                 <ul>
                 <li>struct <code>Statistics</code></li>
                 <li>function <code>dot &lt;unsigned, InputIterator&gt;</code></li>
                 <li>function ...</li>
-                
                 </ul>
+            </li>
             <li>class <code>scoped_array &lt;T&gt;</code></li>
-            <li>class <code>PolylineSimplification &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
+            <li>class <code>PolylineSimplification &lt;unsigned, InputIterator, OutputIterator&gt;</code>
                 <ul>
                 <li>function <code>NthPoint</code></li>
                 <li>function <code>...</code></li>
                 </ul>
+            </li>
             <li>function <code>simplify_nth_point &lt;unsigned, InputIterator, OutputIterator&gt;</code></li>
             <li>function <code>simplify_...</code></li>
             <li>function <code>compute_...</code></li>            
             </ul>
+        </li>
         </ul>
         
         <p>All the code is contained within the root namespace <code>psimpl</code>.
@@ -99,11 +101,11 @@
         within C++ applications. Unlike the .NET world, a lot of developers just
         don't use nor even think about exception handling.</p>
 
-        <hr/>
+        <hr>
         
         <h1>The demo</h1>
         
-        <div id="img"><img title="psimpl demo application" alt="psimpl demo application screenshot" src="../images/psimpl_demo.png" /></div>
+        <div class="img"><img title="psimpl demo application" alt="psimpl demo application screenshot" src="images/psimpl_demo.png"></div>
         
         <p><b class="proj">psimpl</b> also provides a 32-bit Windows demo
         application, that allows you to experiment with the different simplification
@@ -130,7 +132,7 @@
         <p>The demo application was made using Qt 4.7.0, Qt Creator 2.0.1, and Visual
         Studio 2008 Express. Complete source code is included.</p>
         
-        <hr/>
+        <hr>
         
         <h1>Upcomming versions</h1>
         
@@ -144,7 +146,7 @@
         <li>Computing Area errors due to simplification</li>
         </ul>
         
-        <br/>
+        <br>
        
         <p>Other things that I want to look into include:</p>
         <ul>

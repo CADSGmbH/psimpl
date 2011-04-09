@@ -52,7 +52,7 @@ This process will recurse for each edge in the current simplification, until all
 vertices of the original polyline are within tolerance of the simplification results.
 This process is illustrated below:</p>
 
-<div id="img"><img title="Douglas-Peucker simplification" alt="Douglas-Peucker simplification example" src="../images/psimpl_dp.png" /></div>
+<div class="img"><img title="Douglas-Peucker simplification" alt="Douglas-Peucker simplification example" src="images/psimpl_dp.png"></div>
 
 <p>Initially, the simplification consists of a single edge. During the first step,
 the fourth vertex is marked as a key and the simplification is adjusted accordingly.
@@ -70,7 +70,7 @@ algorithm, and will be very fast when m is small. To make it even faster, the
 
 <h2>Interface</h2>
 
-<pre lang="C++"><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_douglas_peucker</span> (
     InputIterator begin,
     InputIterator end,
@@ -142,7 +142,7 @@ copied to the output range.</p>
 
 <h2>Usage</h2>
 
-<pre lang="C++"><span class="keyword">double</span> tolerance = 10;        <span class="comment">// point-to-edge distance tolerance</span>
+<pre><span class="keyword">double</span> tolerance = 10;        <span class="comment">// point-to-edge distance tolerance</span>
 std::deque &lt;<span class="keyword">double</span>&gt; polyline; <span class="comment">// original polyline, assume not empty</span>
 
 <span class="comment">// make sure the result array is large enough</span>
@@ -155,7 +155,7 @@ psimpl::<span class="algorithm">simplify_douglas_peucker</span> &lt;3&gt; (
 
 <p>This example demonstrates that input and output containers do not have to be the same.</p>
 
-<hr />
+<hr>
 
 <h1>Douglas-Peucker N</h1>
 
@@ -174,7 +174,7 @@ pre-processing step to speed up the algorithm.</p>
 
 <h2>Interface</h2>
 
-<pre lang="C++"><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_douglas_peucker_n</span> (
     InputIterator begin,
     InputIterator end,
@@ -221,7 +221,7 @@ during the <b class="algo">Radial Distance</b> pre-processing step.</p>
 
 <h2>Usage</h2>
 
-<pre lang="C++"><span class="keyword">unsigned</span> tolerance = 25;     <span class="comment">// point count tolerance</span>
+<pre><span class="keyword">unsigned</span> tolerance = 25;     <span class="comment">// point count tolerance</span>
 std::list &lt;<span class="keyword">long</span>&gt; polyline;   <span class="comment">// original polyline, assume not empty</span>
 std::vector &lt;<span class="keyword">double</span>&gt; result; <span class="comment">// resulting simplified polyline</span>
 

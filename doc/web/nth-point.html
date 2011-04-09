@@ -46,7 +46,7 @@
 simplification. It keeps only the <i>first</i>, <i>last</i>, and each <i>nth</i> point.
 All other points are removed. This process is illustrated below:</p> 
 
-<div id="img"><img title="Nth Point simplification" alt="Nth Point simplification example" src="../images/psimpl_np.png" /></div> 
+<div class="img"><img title="Nth Point simplification" alt="Nth Point simplification example" src="images/psimpl_np.png"></div> 
 
 <p>The illustration shows a polyline consisting of 8 vertices:
 {v<sub>1</sub>, v<sub>2</sub> ... v<sub>8</sub>}. This polyline was simplified
@@ -58,7 +58,7 @@ preserving the geometric features of a line.</p>
 
 <h2>Interface</h2> 
  
-<pre lang="C++"><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_nth_point</span> (
     InputIterator first,
     InputIterator last,
@@ -94,7 +94,7 @@ OutputIterator <span class="algorithm">simplify_nth_point</span> (
  
 <h2>Usage</h2> 
  
-<pre lang="C++"><span class="keyword">unsigned</span> n = 10;              <span class="comment">// reduce to 10%</span>
+<pre><span class="keyword">unsigned</span> n = 10;              <span class="comment">// reduce to 10%</span>
 std::vector &lt;<span class="keyword">float</span>&gt; polyline; <span class="comment">// original polyline, assume not empty</span>
 std::vector &lt;<span class="keyword">float</span>&gt; result;   <span class="comment">// resulting simplified polyline</span>
  

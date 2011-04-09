@@ -52,7 +52,7 @@ exceeds the specified tolerance. The vertices v<sub>i</sub> and v<sub>i+1</sub> 
 then used to define a new line, and the process repeats itself. The algorithm is
 illustrated below:</p>
 
-<div id="img"><img title="Reumann-Witkam simplification" alt="Reumann-Witkam simplification example" src="../images/psimpl_rw.png" /></div>
+<div class="img"><img title="Reumann-Witkam simplification" alt="Reumann-Witkam simplification example" src="images/psimpl_rw.png"></div>
 
 <p>The red strip is constructed from the specified tolerance and a line through
 the first two vertices of the polyline. The third vertex does not lie within the
@@ -64,7 +64,7 @@ last vertex of the original polyline.</p>
 
 <h2>Interface</h2>
 
-<pre lang="C++"><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_reumann_witkam</span> (
     InputIterator begin,
     InputIterator end,
@@ -100,7 +100,7 @@ the output range and the current strip is updated.</p>
 
 <h2>Usage</h2>
 
-<pre lang="C++"><span class="keyword">float</span> tolerance = 10.f;       <span class="comment">// point-to-line distance tolerance</span>
+<pre><span class="keyword">float</span> tolerance = 10.f;       <span class="comment">// point-to-line distance tolerance</span>
 std::vector &lt;<span class="keyword">float</span>&gt; polyline; <span class="comment">// original polyline, assume not empty</span>
 std::vector &lt;<span class="keyword">double</span>&gt; result;  <span class="comment">// resulting simplified polyline</span>
 

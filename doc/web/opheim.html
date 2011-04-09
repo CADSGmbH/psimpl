@@ -57,7 +57,7 @@ the minimum tolerance Or when the radial distance between v<sub>j</sub> and the
 v<sub>key</sub> exceeds the maximum tolerance. After a new key is found, the
 process repeats itself.</p>
 
-<div id="img"><img title="Opheim simplification" alt="Opheim simplification example" src="../images/psimpl_op.png" /></div>
+<div class="img"><img title="Opheim simplification" alt="Opheim simplification example" src="images/psimpl_op.png"></div>
 
 <p>The <b class="algo">Opheim</b> simplification process is illustrated above.
 Notice how the search area is constrained by a minimum and a maximum tolerance.
@@ -67,7 +67,7 @@ unconstrained search area, would have removed two points.</p>
 
 <h2>Interface</h2>
 
-<pre lang="C++"><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_opheim</span> (
     InputIterator begin,
     InputIterator end,
@@ -110,7 +110,7 @@ this ray R(v<sub>key</sub>, v<sub>i</sub>), where v<sub>key</sub> is the current
 <li>The last point inside: key &lt; i and v<sub>i</sub> is the last point that falls inside the minimum radial distance tolerance; if no such v<sub>i</sub> exists, fall back to the <b class="algo">Reumann-Witkam</b> way</li>
 </ol>
 
-<div id="img"><img title="Opheim ray definition" alt="Opheim ray definition example" src="../images/psimpl_op_ray.png" /></div>
+<div class="img"><img title="Opheim ray definition" alt="Opheim ray definition example" src="images/psimpl_op_ray.png"></div>
 
 <p>I compared these three approaches using postitional error statistics and found
 that '<b>the first point outside</b>' approach, most of the time, produces
@@ -122,7 +122,7 @@ loop that I had already implemented.</p>
 
 <h2>Usage</h2>
 
-<pre lang="C++"><span class="keyword">float</span> minimum = 10.f;          <span class="comment">// minimum distance tolerance</span>
+<pre><span class="keyword">float</span> minimum = 10.f;          <span class="comment">// minimum distance tolerance</span>
 <span class="keyword">float</span> maximum = 100.f;         <span class="comment">// maximum distance tolerance</span>
 std::vector &lt;<span class="keyword">double</span>&gt; polyline; <span class="comment">// original polyline, assume not empty</span>
 std::vector &lt;<span class="keyword">double</span>&gt; result;   <span class="comment">// resulting simplified polyline</span>

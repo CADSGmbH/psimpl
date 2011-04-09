@@ -50,7 +50,7 @@
  vertices whose distance is smaller than the given tolerance will be removed.
  This process is illustrated below:</p> 
  
-<div id="img"><img title="Perpendicular Distance simplification" alt="Perpendicular Distance simplification example" src="../images/psimpl_pd.png" /></div> 
+<div class="img"><img title="Perpendicular Distance simplification" alt="Perpendicular Distance simplification example" src="images/psimpl_pd.png"></div> 
  
 <p>Initially, the first three vertices are processed, and the perpendicular
  distance of the second vertex is calculated. After comparing this distance
@@ -67,7 +67,7 @@
  
 <h2>Interface</h2> 
  
-<pre lang="C++"><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_perpendicular_distance</span> (
     InputIterator first,
     InputIterator last,
@@ -129,7 +129,7 @@ OutputIterator <span class="algorithm">simplify_perpendicular_distance</span> (
  
 <h2>Usage</h2> 
  
-<pre lang="C++"><span class="keyword">double</span> tolerance = 10.0;      <span class="comment">// point-to-segment distance tolerance</span>
+<pre><span class="keyword">double</span> tolerance = 10.0;      <span class="comment">// point-to-segment distance tolerance</span>
 std::deque &lt;<span class="keyword">double</span>&gt; polyline; <span class="comment">// original polyline, assume not empty</span>
 std::deque &lt;<span class="keyword">double</span>&gt; result;   <span class="comment">// resulting simplified polyline</span>
  

@@ -38,7 +38,7 @@ img {
     border: 2px solid #444444;
 }
 
-div#img {
+div.img {
     text-align: center;
     padding: 20px 0px 20px 0px;
 }
@@ -54,7 +54,7 @@ pre {
 }
 
 code {
-    color: darkblue;
+    color: navy;
 }
 
 span.keyword {
@@ -225,18 +225,18 @@ div#footer a {
     color: #eeeeee;
 }
 
-div#news {
+div.news {
     padding: 10px;
     margin: 0px 0px 25px 0px;
 }
 
-div#news div.title {
+div.news div.title {
     font-size: 1.2em;
     letter-spacing: 1px;
     font-weight: bold;
 }
 
-div#news hr {
+div.news hr {
     color: #444444;
     background-color: #444444;
     height: 2px;
@@ -244,7 +244,7 @@ div#news hr {
     margin: 0;
 }
 
-div#news div.date {
+div.news div.date {
     letter-spacing: 1px;
     text-align: right;
 }
