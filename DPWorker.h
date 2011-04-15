@@ -82,7 +82,7 @@ namespace psimpl {
         void SimplifyPD (Container cont, QString tol, int repeat);
         void SimplifyRW (Container cont, QString tol);
         void SimplifyOp (Container cont, QString minTol, QString maxTol);
-        //void SimplifyLa (Container cont, QString tol, int size);
+        void SimplifyLa (Container cont, QString tol, int size);
         void SimplifyDP (Container cont, QString tol);
         void SimplifyDP_variant (Container cont, int count);
         void SimplifyDP_reference (QString tol);

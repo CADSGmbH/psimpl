@@ -67,7 +67,7 @@ namespace psimpl {
         PERPENDICULAR_DISTANCE,
         REUMANN_WITKAM,
         OPHEIM,
-        //LANG,
+        LANG,
         DOUGLAS_PEUCKER,
         DOUGLAS_PEUCKER_VARIANT,
         DOUGLAS_PEUCKER_REFERENCE,

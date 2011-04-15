@@ -62,12 +62,6 @@ namespace psimpl {
         ui->setupUi (this);
         ui->polyTypeComboBox->setCurrentIndex(VECTOR_DOUBLE);
 
-        // Lang not yet implemented
-        int LANG = 5;
-        ui->algorithmComboBox->removeItem (LANG);
-        ui->labelStackedWidget->removeWidget (ui->labelStackedWidget->widget (LANG));
-        ui->editStackedWidget->removeWidget (ui->editStackedWidget->widget (LANG));
-
 #ifndef _DEBUG
         ui->algorithmComboBox->removeItem (DOUGLAS_PEUCKER_REFERENCE);
 #endif
@@ -158,9 +152,9 @@ namespace psimpl {
             mWorker->SimplifyOp ((Container)ui->polyTypeComboBox->currentIndex (), ui->minOpLineEdit->text (), ui->maxOpLineEdit->text ());
             break;
 
-        //case LANG:
-        //    mWorker->SimplifyLa ((Container)ui->polyTypeComboBox->currentIndex (), ui->laLineEdit->text (), ui->sizeLaSpinBox->value ());
-        //    break;
+        case LANG:
+            mWorker->SimplifyLa ((Container)ui->polyTypeComboBox->currentIndex (), ui->laLineEdit->text (), ui->lookAheadLaSpinBox->value ());
+            break;
 
         case DOUGLAS_PEUCKER:
             mWorker->SimplifyDP ((Container)ui->polyTypeComboBox->currentIndex (), ui->dpLineEdit->text ());

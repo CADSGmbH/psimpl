@@ -503,86 +503,86 @@ namespace psimpl {
         DoSignalSimplifiedPolyline (duration);
     }
 
-    //void DPWorker::SimplifyLa (Container cont, QString tol, int size) {
-    //    QTime t;
-    //    int duration = 0;
+    void DPWorker::SimplifyLa (Container cont, QString tol, int size) {
+        QTime t;
+        int duration = 0;
 
-    //    mSimplifiedCoords.clear ();
+        mSimplifiedCoords.clear ();
 
-    //    switch (cont) {
-    //    case ARRAY_FLOAT:
-    //    {
-    //        // convert
-    //        emit SignalConvertingPolyline ();
-    //        float* generatedPoints = new float [mGeneratedCoords.size ()];
-    //        for (int c=0; c<mGeneratedCoords.size (); c++) {
-    //            generatedPoints [c] = mGeneratedCoords [c];
-    //        }
-    //        // simplify
-    //        emit SignalSimplifyingPolyline ();
-    //        const float* begin = generatedPoints;
-    //        const float* end = generatedPoints + mGeneratedCoords.size ();
-    //        t.start ();
-    //        simplify_lang <2> (begin, end, tol.toFloat(), size,
-    //                           std::back_inserter (mSimplifiedCoords));
-    //        duration = t.elapsed ();
-    //        // done
-    //        emit SignalCleaningConvertedPolyline ();
-    //        delete [] generatedPoints;
-    //        break;
-    //    }
-    //    case QVECTOR_DOUBLE:
-    //    {
-    //        // simplify
-    //        emit SignalSimplifyingPolyline ();
-    //        QVector <qreal>::const_iterator begin = mGeneratedCoords.constBegin ();
-    //        QVector <qreal>::const_iterator end = mGeneratedCoords.constEnd ();
-    //        t.start ();
-    //        simplify_lang <2> (begin, end, tol.toDouble(), size,
-    //                           std::back_inserter (mSimplifiedCoords));
-    //        duration = t.elapsed ();
-    //        break;
-    //    }
-    //    case VECTOR_DOUBLE:
-    //    {
-    //        // convert
-    //        emit SignalConvertingPolyline ();
-    //        std::vector <double> generatedPoints = mGeneratedCoords.toStdVector ();
-    //        // simplify
-    //        emit SignalSimplifyingPolyline ();
-    //        std::vector <double>::const_iterator begin = generatedPoints.begin ();
-    //        std::vector <double>::const_iterator end = generatedPoints.end ();
-    //        t.start ();
-    //        simplify_lang <2> (begin, end, tol.toDouble(), size,
-    //                           std::back_inserter (mSimplifiedCoords));
-    //        duration = t.elapsed ();
-    //        emit SignalCleaningConvertedPolyline ();
-    //        break;
-    //    }
-    //    case LIST_LONGLONG:
-    //    {
-    //        // convert
-    //        emit SignalConvertingPolyline ();
-    //        std::list <long long> generatedPoints;
-    //        foreach (double coord, mGeneratedCoords) {
-    //            generatedPoints.push_back (coord);
-    //        }
-    //        // simplify
-    //        emit SignalSimplifyingPolyline ();
-    //        std::list <long long>::const_iterator begin = generatedPoints.begin ();
-    //        std::list <long long>::const_iterator end = generatedPoints.end ();
-    //        t.start ();
-    //        simplify_lang <2> (begin, end, tol.toLongLong(), size,
-    //                           std::back_inserter (mSimplifiedCoords));
-    //        duration = t.elapsed ();
-    //        emit SignalCleaningConvertedPolyline ();
-    //        break;
-    //    }
-    //    default:
-    //        break;
-    //    }
-    //    DoSignalSimplifiedPolyline (duration);
-    //}
+        switch (cont) {
+        case ARRAY_FLOAT:
+        {
+            // convert
+            emit SignalConvertingPolyline ();
+            float* generatedPoints = new float [mGeneratedCoords.size ()];
+            for (int c=0; c<mGeneratedCoords.size (); c++) {
+                generatedPoints [c] = mGeneratedCoords [c];
+            }
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            const float* begin = generatedPoints;
+            const float* end = generatedPoints + mGeneratedCoords.size ();
+            t.start ();
+            simplify_lang <2> (begin, end, tol.toFloat(), size,
+                               std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            // done
+            emit SignalCleaningConvertedPolyline ();
+            delete [] generatedPoints;
+            break;
+        }
+        case QVECTOR_DOUBLE:
+        {
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            QVector <qreal>::const_iterator begin = mGeneratedCoords.constBegin ();
+            QVector <qreal>::const_iterator end = mGeneratedCoords.constEnd ();
+            t.start ();
+            simplify_lang <2> (begin, end, tol.toDouble(), size,
+                               std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            break;
+        }
+        case VECTOR_DOUBLE:
+        {
+            // convert
+            emit SignalConvertingPolyline ();
+            std::vector <double> generatedPoints = mGeneratedCoords.toStdVector ();
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            std::vector <double>::const_iterator begin = generatedPoints.begin ();
+            std::vector <double>::const_iterator end = generatedPoints.end ();
+            t.start ();
+            simplify_lang <2> (begin, end, tol.toDouble(), size,
+                               std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            emit SignalCleaningConvertedPolyline ();
+            break;
+        }
+        case LIST_LONGLONG:
+        {
+            // convert
+            emit SignalConvertingPolyline ();
+            std::list <long long> generatedPoints;
+            foreach (double coord, mGeneratedCoords) {
+                generatedPoints.push_back (coord);
+            }
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            std::list <long long>::const_iterator begin = generatedPoints.begin ();
+            std::list <long long>::const_iterator end = generatedPoints.end ();
+            t.start ();
+            simplify_lang <2> (begin, end, tol.toLongLong(), size,
+                               std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            emit SignalCleaningConvertedPolyline ();
+            break;
+        }
+        default:
+            break;
+        }
+        DoSignalSimplifiedPolyline (duration);
+    }
 
     void DPWorker::SimplifyDP (Container cont, QString tol) {
         QTime t;
