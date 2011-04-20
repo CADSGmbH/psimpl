@@ -6,10 +6,10 @@
 
 #define TEST_INIT() psimpl::test::TestRun::Init()
 
-#define TEST_RUN(name, function)                            \
+#define TEST_RUN(name, function)                        \
     try {                                               \
         psimpl::test::TestRun run (name);               \
-        function ();                                    \
+        function;                                       \
     }                                                   \
     catch (std::exception& e) {                         \
         psimpl::test::TestRun::Exception (e.what ());   \
@@ -28,72 +28,33 @@
 #define ASSERT_FALSE(condition) if (condition) { ABORT(#condition) } else { PASS() }
 
 
-namespace psimpl
-{
+namespace psimpl {
     namespace test
+{
+    class TestRun
     {
-        struct TestRun
-        {
-            static int sDepth;
-            static int sTestsPassed;
-            static int sTestsFailed;
-            static int sErrors;
-            static int sExceptions;
-            
-            TestRun (const std::string& name) :
-                mCount (sErrors + sExceptions)
-            {
-                std::cout << Offset () << "-" << name << std::endl;
-                ++sDepth;
-            }
-            
-            ~TestRun () {
-                --sDepth;
+    public:
+        TestRun (const std::string& name);
+        ~TestRun ();
 
-                if (mCount == sErrors + sExceptions)
-                    ++sTestsPassed;
-                else
-                    ++sTestsFailed;
+        static void Error (const char* file, int line, const char* condition);
+        static void Exception (const std::string& msg);
+        static void Init ();
+        static int Result ();
 
-            }
+    private:
+        static std::string Offset ();
 
-            int mCount;
+    private:
+        static int sDepth;
+        static int sTestsPassed;
+        static int sTestsFailed;
+        static int sErrors;
+        static int sExceptions;
 
-            static std::string Offset () {
-                return std::string (sDepth * 2, ' ');
-            }
+        int mCount;
+    };
+}}
 
-            static void Error (const char* file, int line, const char* condition) {
-                std::cout << Offset () << file << "(" << line << ") error in: " << condition << std::endl;
-                ++sErrors;
-            }
-
-            static void Exception (const std::string& msg) {
-                std::cout << Offset () << "unhandeled exception: " << msg << std::endl;
-                ++sExceptions;
-            }
-
-            static void Init () {
-                std::cout << std::string(80, '_') << std::endl;
-                sTestsPassed = sTestsFailed = sErrors = sExceptions = 0;
-            }
-
-            static int Result () {
-                std::cout << std::string(80, '_') << std::endl;
-                std::cout << "Tests passed: " << sTestsPassed << std::endl;
-                std::cout << "Tests failed: " << sTestsFailed << std::endl;
-                std::cout << "Total errors: " << sErrors << std::endl;
-                std::cout << "Total unhandeled exceptions: " << sExceptions << std::endl;
-                return sTestsFailed;
-            }
-        };
-
-        int TestRun::sDepth = 0;
-        int TestRun::sTestsPassed = 0;
-        int TestRun::sTestsFailed = 0;
-        int TestRun::sErrors = 0;
-        int TestRun::sExceptions = 0;
-    }
-}
 
 #endif // PSIMPL_TEST

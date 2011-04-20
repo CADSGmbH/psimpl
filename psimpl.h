@@ -213,9 +213,9 @@ namespace psimpl
         {
             for (unsigned d = 0; d < DIM; ++d) {
                 *result = *p2 - *p1;
+                ++result;
                 ++p1;
                 ++p2;
-                ++result;
             }
             return result;
         }
@@ -258,7 +258,8 @@ namespace psimpl
             OutputIterator result)
         {
             for (unsigned d = 0; d < DIM; ++d) {
-                *result++ = *p1 + fraction * (*p2 - *p1);
+                *result = *p1 + fraction * (*p2 - *p1);
+                ++result;
                 ++p1;
                 ++p2;
             }
@@ -486,7 +487,7 @@ namespace psimpl
             OutputIterator result)
         {
             diff_type coordCount = std::distance (first, last);
-            diff_type pointCount = DIM      // protect against zero DIM
+            diff_type pointCount = DIM              // protect against zero DIM
                                    ? coordCount / DIM
                                    : 0;
 
@@ -497,7 +498,7 @@ namespace psimpl
             }
 
             unsigned remaining = pointCount - 1;    // the number of points remaining after key
-            InputIterator key = first;                // indicates the current key
+            InputIterator key = first;              // indicates the current key
 
             // the first point is always part of the simplification
             Copy (key, result);
@@ -1345,8 +1346,8 @@ namespace psimpl
         {
             for (unsigned d = 0; d < DIM; ++d) {
                 *result = *p;
-                ++p;
                 ++result;
+                ++p;
             }
             return result;
         }

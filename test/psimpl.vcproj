@@ -15,7 +15,7 @@
 	</Platforms>
 	<ToolFiles>
 		<ToolFile
-			RelativePath=".\QTRules.rules"
+			RelativePath="..\QTRules.rules"
 		/>
 	</ToolFiles>
 	<Configurations>
@@ -195,135 +195,59 @@
 	</References>
 	<Files>
 		<Filter
-			Name="doc"
-			>
-			<File
-				RelativePath=".\doc\Doxyfile"
-				>
-			</File>
-			<File
-				RelativePath=".\LICENSE.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\README.txt"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="test"
 			>
 			<File
-				RelativePath=".\test\main.cpp"
+				RelativePath=".\helper.h"
 				>
-			</File>
-			<File
-				RelativePath=".\test\test.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestError.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestMath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestNthPoint.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestSimplification.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestUtil.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="demo"
-			>
-			<File
-				RelativePath=".\DPWorker.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DPWorker.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="MOC"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="MOC"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\MainWindow.cpp"
+				RelativePath=".\test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\MainWindow.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="MOC"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="MOC"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\MainWindow.ui"
+				RelativePath=".\test.h"
 				>
 			</File>
 			<File
-				RelativePath=".\moc_DPWorker.cpp"
+				RelativePath=".\TestError.h"
 				>
 			</File>
 			<File
-				RelativePath=".\moc_MainWindow.cpp"
+				RelativePath=".\TestMath.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\psimpl_reference.h"
+				RelativePath=".\TestMath.h"
 				>
 			</File>
 			<File
-				RelativePath=".\RenderArea.cpp"
+				RelativePath=".\TestNthPoint.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\RenderArea.h"
+				RelativePath=".\TestNthPoint.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ui_MainWindow.h"
+				RelativePath=".\TestSimplification.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TestUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestUtil.h"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\psimpl.h"
+			RelativePath="..\psimpl.h"
 			>
 		</File>
 	</Files>
