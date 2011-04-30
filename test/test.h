@@ -15,6 +15,12 @@
         psimpl::test::TestRun::Exception (e.what ());   \
     }
 
+#define TEST_DISABLED(name, function)                   \
+    {                                                   \
+        psimpl::test::TestRun run (name);               \
+        run.Disable ();                                 \
+    }
+
 #define TEST_RESULT() psimpl::test::TestRun::Result()
 
 #define PASS() // do nothing
@@ -37,6 +43,8 @@ namespace psimpl {
         TestRun (const std::string& name);
         ~TestRun ();
 
+        void Disable ();
+
         static void Error (const char* file, int line, const char* condition);
         static void Exception (const std::string& msg);
         static void Init ();
@@ -49,10 +57,12 @@ namespace psimpl {
         static int sDepth;
         static int sTestsPassed;
         static int sTestsFailed;
+        static int sTestsDisabled;
         static int sErrors;
         static int sExceptions;
 
         int mCount;
+        bool mDisabled;
     };
 }}
 

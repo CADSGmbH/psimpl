@@ -257,8 +257,10 @@ namespace psimpl
             float fraction,
             OutputIterator result)
         {
+            typedef typename std::iterator_traits <InputIterator>::value_type value_type;
+
             for (unsigned d = 0; d < DIM; ++d) {
-                *result = *p1 + fraction * (*p2 - *p1);
+                *result = *p1 + static_cast <value_type> (fraction * (*p2 - *p1));
                 ++result;
                 ++p1;
                 ++p2;
@@ -303,19 +305,19 @@ namespace psimpl
         {
             typedef typename std::iterator_traits <InputIterator>::value_type value_type;
 
-            value_type v [DIM];                    // vector l1 --> l2
-            value_type w [DIM];                    // vector l1 --> p
+            value_type v [DIM];                 // vector l1 --> l2
+            value_type w [DIM];                 // vector l1 --> p
 
             make_vector <DIM> (l1, l2, v);
             make_vector <DIM> (l1, p,  w);
 
-            value_type cv = dot <DIM> (v, v);    // squared length of v
-            value_type cw = dot <DIM> (w, v);    // project w onto v
+            value_type cv = dot <DIM> (v, v);   // squared length of v
+            value_type cw = dot <DIM> (w, v);   // project w onto v
 
             // avoid problems with divisions when value_type is an integer type
-            float fraction = static_cast <float> (cw) / static_cast <float> (cv);
+            float fraction = cv == 0 ? 0 : static_cast <float> (cw) / static_cast <float> (cv);
 
-            value_type proj [DIM];    // p projected onto line (l1, l2)
+            value_type proj [DIM];              // p projected onto line (l1, l2)
             interpolate <DIM> (l1, l2, fraction, proj);
 
             return point_distance2 <DIM> (p, proj);
@@ -343,20 +345,20 @@ namespace psimpl
             make_vector <DIM> (s1, s2, v);
             make_vector <DIM> (s1, p,  w);
 
-            value_type cw = dot <DIM> (w, v);    // project w onto v
+            value_type cw = dot <DIM> (w, v);   // project w onto v
             if (cw <= 0) {
                 // projection of w lies to the left of s1
                 return point_distance2 <DIM> (p, s1);
             }
 
-            value_type cv = dot <DIM> (v, v);    // squared length of v
+            value_type cv = dot <DIM> (v, v);   // squared length of v
             if (cv <= cw) {
                 // projection of w lies to the right of s2
                 return point_distance2 <DIM> (p, s2);
             }
 
             // avoid problems with divisions when value_type is an integer type
-            float fraction = static_cast <float> (cw) / static_cast <float> (cv);
+            float fraction = cv == 0 ? 0 : static_cast <float> (cw) / static_cast <float> (cv);
 
             value_type proj [DIM];    // p projected onto segement (s1, s2)
             interpolate <DIM> (s1, s2, fraction, proj);
@@ -395,7 +397,7 @@ namespace psimpl
             }
 
             // avoid problems with divisions when value_type is an integer type
-            float fraction = static_cast <float> (cw) / static_cast <float> (cv);
+            float fraction = cv == 0 ? 0 : static_cast <float> (cw) / static_cast <float> (cv);
 
             value_type proj [DIM];    // p projected onto ray (r1, r2)
             interpolate <DIM> (r1, r2, fraction, proj);

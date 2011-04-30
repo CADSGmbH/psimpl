@@ -3,11 +3,15 @@
 
 
 #include <vector>
+#include <cmath>
 
 
 namespace psimpl {
     namespace test
 {
+
+    static float float_epsilon = 0.001f;
+    static double double_epsilon = 0.00001;
 
     template <typename T, unsigned DIM>
     class StraightLine {
@@ -33,11 +37,23 @@ namespace psimpl {
         unsigned mDimension;
     };
 
+    template <class T>
+    inline bool CompareValue (T a, T b) {
+        return a == b;
+    }
+
+    inline bool CompareValue (float a, float b) {
+        return fabs (a - b) < float_epsilon;
+    }
+    
+    inline bool CompareValue (double a, double b) {
+        return fabs (a - b) < double_epsilon;
+    }
 
     template <unsigned DIM, class InputIterator1, class InputIterator2>
     bool ComparePoint (InputIterator1 p1, InputIterator2 p2) {
         for (unsigned d=0; d <DIM; ++d) {
-            if (*p1 != *p2) {
+            if (!CompareValue (*p1, *p2)) {
                 return false;
             }
             ++p1;
@@ -45,7 +61,6 @@ namespace psimpl {
         }
         return true;
     }
-
 
     template <unsigned DIM, class InputIterator1, class InputIterator2>
     bool CompareEndPoints (InputIterator1 polyline_begin, InputIterator1 polyline_end, InputIterator2 simplification_begin, InputIterator1 simplification_end) {
@@ -63,13 +78,13 @@ namespace psimpl {
 
     template <unsigned DIM, class InputIterator1, class InputIterator2>
     bool ComparePoints(InputIterator1 polyline, InputIterator2 simplification, const std::vector<int>& keys) {
-        for (int i=0; i<keys.size (); ++i) {
+        for (size_t i=0; i<keys.size (); ++i) {
             InputIterator1 it = polyline;
             std::advance (it, keys [i] * DIM);
             if (!ComparePoint <DIM> (it, simplification)) {
                 return false;
             }
-            ++simplification;
+            std::advance (simplification, DIM);
         }
         return true;
     }

@@ -8,6 +8,7 @@
 namespace psimpl {
     namespace test
 {
+    //! Tests function psimpl::simplify_nth_point
     class TestNthPoint
     {
     public:

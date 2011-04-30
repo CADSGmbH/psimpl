@@ -2,6 +2,8 @@
 #include "helper.h"
 #include "../psimpl.h"
 #include <vector>
+#include <deque>
+#include <list>
 
 
 namespace psimpl {
@@ -14,7 +16,7 @@ namespace psimpl {
         TEST_RUN("valid n", TestValidN ());
         TEST_RUN("random iterator", TestRandomIterator ());
         TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
-        TEST_RUN("forward iterator", TestForwardIterator ());
+        TEST_DISABLED("forward iterator", TestForwardIterator ());
     }
 
     // incomplete point: coord count % DIM > 1
@@ -191,51 +193,69 @@ namespace psimpl {
 
     // different random access iterators, different value types, different dimensions
     void TestNthPoint::TestRandomIterator () {
-        //unsigned count = 5;
-        //unsigned n = 2;
-        //float[] polyline1 = new float[count];
-        //    std::generate_n (polyline1, count*2, StraightLine<float, 2>());
-        //float[] result1 = new float[count];
+        const unsigned n = 2;
+        const unsigned count = 5;
+        {
+            const unsigned DIM = 2;
 
-        //psimpl::simplify_nth_point (
-        //        polyline1, polyline1+count*2, n,
-        //        result1);
+            float polyline [count*DIM];
+                std::generate_n (polyline, count*DIM, StraightLine <float, DIM> ());
+            float result [count*DIM];
 
-        //int keys[] = {0, 2, 4};
-        //VERIFY_TRUE(ComparePoints <2> (polyline1, polyline1 + count*2, result1, result1 + 3*2, keys, 3));
+            psimpl::simplify_nth_point <DIM> (
+                    polyline, polyline + count*DIM, n,
+                    result);
 
-        //std::vector<double> polyline2, result2;
-        //    std::generate_n (std::back_inserter (polyline2), count*3, StraightLine<double, 3>());
+            int keys [] = {0, 2, 4};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline, result, std::vector <int> (keys, keys + 3)));
+        }
+        {
+            const unsigned DIM = 3;
+            std::vector <double> polyline, result;
+                std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <double, DIM>());
 
-        //psimpl::simplify_nth_point (
-        //        polyline2.begin (), polyline2.end (), n,
-        //        std::back_inserter (result2));
+            psimpl::simplify_nth_point <DIM> (
+                polyline.begin (), polyline.end (), n,
+                std::back_inserter (result));
 
-        //int keys[] = {0, 2, 4};
-        //VERIFY_TRUE(ComparePoints <2> (polyline2.begin (), polyline2.end (), result2.begin (), result2.end (), keys, 3));
+            int keys [] = {0, 2, 4};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
+        }
+        {
+            const unsigned DIM = 4;
+            std::deque <int> polyline, result;
+                std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <int, DIM> ());
 
-        //std::deque<int> polyline3, result3;
-        //    std::generate_n (std::back_inserter (polyline3), count*4, StraightLine<int, 4>());
+            psimpl::simplify_nth_point <DIM> (
+                    polyline.begin (), polyline.end (), n,
+                    std::back_inserter (result));
 
-        //psimpl::simplify_nth_point (
-        //        polyline3.begin (), polyline3.end (), n,
-        //        std::back_inserter (result3));
-
-        ////todo expect points 0, 2, 4
-        //int keys[] = {0, 2, 4};
-        //VERIFY_TRUE(ComparePoints <2> (polyline3.begin (), polyline3.end (), result3.begin (), result3.end (), keys, 3));
+            int keys [] = {0, 2, 4};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
+        }
     }
 
     // different bidirectional iterators, different value types, different dimensions
     void TestNthPoint::TestBidirectionalIterator () {
-        // TODO
-        // list<float>
-        // set<short>
+        const unsigned n = 4;
+        const unsigned count = 10;
+        {
+            const unsigned DIM = 2;
+            std::list <float> polyline, result;
+                std::generate_n (std::inserter (polyline, polyline.begin ()), count*DIM, StraightLine <float, DIM>());
+
+            psimpl::simplify_nth_point <DIM> (
+                polyline.begin (), polyline.end (), n,
+                std::inserter (result, result.begin ()));
+
+            int keys [] = {0, 4, 8, 9};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
+        }
     }
 
     // forward iterator, different value types, different dimensions
     void TestNthPoint::TestForwardIterator () {
-        // todo
+        ASSERT_TRUE(false); // TODO
     }
 }}
 
