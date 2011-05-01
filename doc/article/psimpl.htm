@@ -154,10 +154,10 @@ file to your hard drive for editing.</b></p>
 
 <h3><a id="heading0003" name="heading0003">Interface</a></h3>
 
-<pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
+<pre lang="C++">template &lt;unsigned DIM, class ForwardIterator, class OutputIterator&gt;
 OutputIterator simplify_nth_point (
-    InputIterator first,
-    InputIterator last,
+    ForwardIterator first,
+    ForwardIterator last,
     unsigned n,
     OutputIterator result)</pre>
 
@@ -168,7 +168,7 @@ OutputIterator simplify_nth_point (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
+<li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 

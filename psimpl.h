@@ -467,7 +467,7 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
+            2- The ForwardIterator value type is convertible to a value type of the output iterator
             3- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
             4- The range [first, last) contains at least 2 vertices
@@ -483,8 +483,8 @@ namespace psimpl
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator NthPoint (
-            InputIterator first,
-            InputIterator last,
+            ForwardIterator first,
+            ForwardIterator last,
             unsigned n,
             OutputIterator result)
         {
@@ -500,7 +500,7 @@ namespace psimpl
             }
 
             unsigned remaining = pointCount - 1;    // the number of points remaining after key
-            InputIterator key = first;              // indicates the current key
+            ForwardIterator key = first;            // indicates the current key
 
             // the first point is always part of the simplification
             Copy (key, result);
@@ -1609,14 +1609,14 @@ namespace psimpl
         \param[out] result  destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class ForwardIterator>
     OutputIterator simplify_nth_point (
-        InputIterator first,
-        InputIterator last,
+        ForwardIterator first,
+        ForwardIterator last,
         unsigned n,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.NthPoint (first, last, n, result);
     }
 

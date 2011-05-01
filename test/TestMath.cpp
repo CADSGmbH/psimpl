@@ -12,6 +12,9 @@
 namespace psimpl {
     namespace test
 {
+
+    // todo point dist, line dist -> check what happens when points are almost the same (within 1.5
+    // epsilon of each other) and how the fraction calc can reach inf or nan
     TestMath::TestMath () {
         TEST_RUN("equal | random iterator", TestEqual_RandomIterator ());
         TEST_RUN("equal | bidirectional iterator", TestEqual_BidirectionalIterator ());
