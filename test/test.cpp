@@ -31,7 +31,7 @@ namespace psimpl {
     }
 
     void TestRun::Disable () {
-        std::cout << Offset () << "!!!DISABLED!!!" << std::endl;
+        std::cout << Offset () << "- DISABLED!!!" << std::endl;
         mDisabled = true;
     }
 

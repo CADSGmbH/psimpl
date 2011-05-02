@@ -467,7 +467,8 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The ForwardIterator value type is convertible to a value type of the output iterator
+            2- The InputIterator models the concept of a forward iterator
+            3- The InputIterator value type is convertible to a value type of the OutputIterator
             3- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
             4- The range [first, last) contains at least 2 vertices
@@ -483,8 +484,8 @@ namespace psimpl
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator NthPoint (
-            ForwardIterator first,
-            ForwardIterator last,
+            InputIterator first,
+            InputIterator last,
             unsigned n,
             OutputIterator result)
         {
@@ -500,7 +501,7 @@ namespace psimpl
             }
 
             unsigned remaining = pointCount - 1;    // the number of points remaining after key
-            ForwardIterator key = first;            // indicates the current key
+            InputIterator key = first;            // indicates the current key
 
             // the first point is always part of the simplification
             Copy (key, result);
@@ -1609,7 +1610,7 @@ namespace psimpl
         \param[out] result  destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class ForwardIterator, class ForwardIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_nth_point (
         ForwardIterator first,
         ForwardIterator last,
@@ -1632,14 +1633,14 @@ namespace psimpl
         \param[out] result  destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_radial_distance (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type tol,
+        ForwardIterator first,
+        ForwardIterator last,
+        typename std::iterator_traits <ForwardIterator>::value_type tol,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.RadialDistance (first, last, tol, result);
     }
 

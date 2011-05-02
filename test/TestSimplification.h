@@ -4,6 +4,7 @@
 
 #include "test.h"
 #include "TestNthPoint.h"
+#include "TestRadialDistance.h"
 
 
 namespace psimpl {
@@ -14,6 +15,7 @@ namespace psimpl {
     public:
         TestSimplification () {
             TEST_RUN("nth point", TestNthPoint ());
+            TEST_RUN("radial distance", TestRadialDistance ());
         }
     };
 }}

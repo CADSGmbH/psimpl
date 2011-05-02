@@ -45,7 +45,7 @@ file to your hard drive for editing.</b></p>
 <li><a href="#heading0005">Implementation Details</a></li>
 <li><a href="#heading0006">Usage</a></li>
 </ul>
-<li><a href="#heading0007">Distance Between Points</a></li>
+<li><a href="#heading0007">Radial Distance</a></li>
 <ul>
 <li><a href="#heading0008">Interface</a></li>
 <li><a href="#heading0010">Implementation Details</a></li>
@@ -193,7 +193,7 @@ std::vector &lt;float&gt; result;      // resulting simplified polyline
 psimpl::simplify_nth_point &lt;2&gt; (polyline.begin (), polyline.end (),
                                 n, std::back_inserter (result));</pre>
 <hr />
-<h2><a id="heading0007" name="heading0007">Distance Between Points</a></h2>
+<h2><a id="heading0007" name="heading0007">Radial Distance</a></h2>
 
 <p><em>Distance between points</em> is a brute force O(n) algorithm for polyline simplification. It reduces successive vertices that are clustered too closely to a single vertex, called a key. The resulting keys form the simplified polyline. This process is illustrated below:</p>
 
@@ -203,11 +203,11 @@ psimpl::simplify_nth_point &lt;2&gt; (polyline.begin (), polyline.end (),
 
 <h3><a id="heading0008" name="heading0008">Interface</a></h3>
 
-<pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
+<pre lang="C++">template &lt;unsigned DIM, class ForwardIterator, class OutputIterator&gt;
 OutputIterator simplify_radial_distance (
-    InputIterator first,
-    InputIterator last,
-    typename std::iterator_traits &lt;InputIterator&gt;::value_type tol,
+    ForwardIterator first,
+    ForwardIterator last,
+    typename std::iterator_traits &lt;ForwardIterator&gt;::value_type tol,
     OutputIterator result)</pre>
 
 <p>Applies the <em>Distance between points</em> routine to the range [<code>first</code>, <code>last</code>) using the specified radial distance tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
@@ -217,7 +217,7 @@ OutputIterator simplify_radial_distance (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
+<li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 

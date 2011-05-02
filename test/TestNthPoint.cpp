@@ -235,7 +235,7 @@ namespace psimpl {
         }
     }
 
-    // different bidirectional iterators, different value types, different dimensions
+    // bidirectional iterator, different value types, different dimensions
     void TestNthPoint::TestBidirectionalIterator () {
         const unsigned n = 4;
         const unsigned count = 10;

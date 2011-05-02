@@ -234,6 +234,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestRadialDistance.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestRadialDistance.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TestSimplification.h"
 				>
 			</File>

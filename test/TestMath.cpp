@@ -432,11 +432,11 @@ namespace psimpl {
         // tiny line
         {
             float l1 [] = {0.f, 0.f};
-            float l2 [] = {0.f, std::numeric_limits <float>::epsilon ()};
-            float p1 [] = {std::numeric_limits <float>::epsilon (), 0.f};
+            float l2 [] = {0.f, std::numeric_limits <float>::min ()};
+            float p1 [] = {std::numeric_limits <float>::min (), 0.f};
             VERIFY_TRUE(CompareValue(0.f, psimpl::math::line_distance2 <dim> (l1, l2, p1)));
             float p2 [] = {4.f, 3.f};
-            VERIFY_TRUE(CompareValue(16.f, psimpl::math::line_distance2 <dim> (l1, l2, p2)));
+            VERIFY_TRUE(CompareValue(25.f, psimpl::math::line_distance2 <dim> (l1, l2, p2)));
         }
         // end points
         {
@@ -532,14 +532,149 @@ namespace psimpl {
         ASSERT_TRUE(false); // TODO
     }
 
-    void TestMath::TestSegmentDistance () {}
-    void TestMath::TestSegmentDistance_RandomIterator () {}
-    void TestMath::TestSegmentDistance_BidirectionalIterator () {}
-    void TestMath::TestSegmentDistance_ForwardIterator () {}
+    void TestMath::TestSegmentDistance () {
+        const unsigned dim = 2;
+        // zero length segment
+        {
+            float l1 [] = {0.f, 0.f};
+            float l2 [] = {0.f, 0.f};
+            float p1 [] = {0.f, 0.f};
+            VERIFY_TRUE(CompareValue(0.f, psimpl::math::segment_distance2 <dim> (l1, l2, p1)));
+            float p2 [] = {4.f, 3.f};
+            VERIFY_TRUE(CompareValue(25.f, psimpl::math::segment_distance2 <dim> (l1, l2, p2)));
+        }
+        // tiny segment
+        {
+            float l1 [] = {0.f, 0.f};
+            float l2 [] = {0.f, std::numeric_limits <float>::min ()};
+            float p1 [] = {std::numeric_limits <float>::min (), 0.f};
+            VERIFY_TRUE(CompareValue(0.f, psimpl::math::segment_distance2 <dim> (l1, l2, p1)));
+            float p2 [] = {4.f, 3.f};
+            VERIFY_TRUE(CompareValue(25.f, psimpl::math::segment_distance2 <dim> (l1, l2, p2)));
+        }
+        // end points
+        {
+            float l1 [] = {4.f, 2.f};
+            float l2 [] = {1.f, 7.f};
+            float p1 [] = {4.f, 2.f};    // start
+            VERIFY_TRUE(CompareValue(0.f, psimpl::math::segment_distance2 <dim> (l1, l2, p1)));
+            float p2 [] = {1.f, 7.f};    // end
+            VERIFY_TRUE(CompareValue(0.f, psimpl::math::segment_distance2 <dim> (l1, l2, p2)));
+        }
+        // vertical segment
+        {
+            float l1 [] = {0.f, 1.f};
+            float l2 [] = {0.f, 3.f};
+            float p1 [] = {0.f, 0.f};    // below
+            VERIFY_TRUE(CompareValue(1.f, psimpl::math::segment_distance2 <dim> (l1, l2, p1)));
+            float p2 [] = {0.f, 9.f};    // above
+            VERIFY_TRUE(CompareValue(36.f, psimpl::math::segment_distance2 <dim> (l1, l2, p2)));
+            float p3 [] = {10.f, 2.f};   // to the right
+            VERIFY_TRUE(CompareValue(100.f, psimpl::math::segment_distance2 <dim> (l1, l2, p3)));
+            float p4 [] = {-4.f, 2.f};   // to the left
+            VERIFY_TRUE(CompareValue(16.f, psimpl::math::segment_distance2 <dim> (l1, l2, p4)));
 
-    void TestMath::TestRayDistance () {}
-    void TestMath::TestRayDistance_RandomIterator () {}
-    void TestMath::TestRayDistance_BidirectionalIterator () {}
-    void TestMath::TestRayDistance_ForwardIterator () {}
+            float p5 [] = {2.f, 0.f};    // below right
+            VERIFY_TRUE(CompareValue(5.f, psimpl::math::segment_distance2 <dim> (l1, l2, p5)));
+            float p6 [] = {-2.f, 0.f};   // below left
+            VERIFY_TRUE(CompareValue(5.f, psimpl::math::segment_distance2 <dim> (l1, l2, p6)));
+            float p7 [] = {3.f, 5.f};    // above right
+            VERIFY_TRUE(CompareValue(13.f, psimpl::math::segment_distance2 <dim> (l1, l2, p7)));
+            float p8 [] = {-3.f, 5.f};   // above left
+            VERIFY_TRUE(CompareValue(13.f, psimpl::math::segment_distance2 <dim> (l1, l2, p8)));
+        }
+        // horizontal segment
+        {
+            float l1 [] = {2.f, 0.f};
+            float l2 [] = {5.f, 0.f};
+            float p1 [] = {1.f, 0.f};    // to the left
+            VERIFY_TRUE(CompareValue(1.f, psimpl::math::segment_distance2 <dim> (l1, l2, p1)));
+            float p2 [] = {7.f, 0.f};    // to the right
+            VERIFY_TRUE(CompareValue(4.f, psimpl::math::segment_distance2 <dim> (l1, l2, p2)));
+            float p3 [] = {4.f, 2.f};    // above
+            VERIFY_TRUE(CompareValue(4.f, psimpl::math::segment_distance2 <dim> (l1, l2, p3)));
+            float p4 [] = {3.f, -3.f};   // below
+            VERIFY_TRUE(CompareValue(9.f, psimpl::math::segment_distance2 <dim> (l1, l2, p4)));
+
+            float p5 [] = {1.f, 2.f};    // left above
+            VERIFY_TRUE(CompareValue(5.f, psimpl::math::segment_distance2 <dim> (l1, l2, p5)));
+            float p6 [] = {1.f, -2.f};   // left below
+            VERIFY_TRUE(CompareValue(5.f, psimpl::math::segment_distance2 <dim> (l1, l2, p6)));
+            float p7 [] = {7.f, 2.f};    // right above
+            VERIFY_TRUE(CompareValue(8.f, psimpl::math::segment_distance2 <dim> (l1, l2, p7)));
+            float p8 [] = {7.f, -2.f};   // right below
+            VERIFY_TRUE(CompareValue(8.f, psimpl::math::segment_distance2 <dim> (l1, l2, p8)));
+        }
+    }
+
+    void TestMath::TestSegmentDistance_RandomIterator () {
+        {
+            const unsigned dim = 2;
+            float l1 [] = {1.f, 1.f};
+            float l2 [] = {2.f, 2.f};
+            float p [] = {1.f, 3.f};
+            VERIFY_TRUE(CompareValue(2.f, psimpl::math::segment_distance2 <dim> (l1, l2, p)));
+        }
+        {
+            const unsigned dim = 3;
+            double v [] = {1.0, 0.0, 1.0};
+            double w [] = {2.0, 0.0, 2.0};
+            double u [] = {1.0, 0.0, 3.0};
+            std::vector <double> l1 (v, v + dim);
+            std::vector <double> l2 (w, w + dim);
+            std::vector <double> p (u, u + dim);
+            VERIFY_TRUE(CompareValue(2.0, psimpl::math::segment_distance2 <dim> (l1.begin (), l2.begin (), p.begin ())));
+        }
+        {
+            const unsigned dim = 4;
+            int v [] = {1, 0, 3, 0};
+            int w [] = {0, 0, 0, 0};
+            int u [] = {4, 0, 2, 0};
+            std::deque  <int> l1 (v, v + dim);
+            std::deque  <int> l2 (w, w + dim);
+            std::deque  <int> p (u, u + dim);
+            VERIFY_TRUE(CompareValue(10, psimpl::math::segment_distance2 <dim> (l1.begin (), l2.begin (), p.begin ())));
+        }
+    }
+
+    void TestMath::TestSegmentDistance_BidirectionalIterator () {
+        {
+            const unsigned dim = 2;
+            float v [] = {1.f, 1.f};
+            float w [] = {2.f, 2.f};
+            float u [] = {1.f, 3.f};
+            std::list <float> l1 (v, v + dim);
+            std::list <float> l2 (w, w + dim);
+            std::list <float> p (u, u + dim);
+            VERIFY_TRUE(CompareValue(2.f, psimpl::math::segment_distance2 <dim> (l1.begin (), l2.begin (), p.begin ())));
+        }
+        {
+            const unsigned dim = 3;
+            double v [] = {1.0, 0.0, 2.0};
+            double w [] = {2.0, 0.0, 3.0};
+            double u [] = {1.0, 0.0, 4.0};
+            std::set <double> l1 (v, v + dim);
+            std::set <double> l2 (w, w + dim);
+            std::set <double> p (u, u + dim);
+            VERIFY_TRUE(CompareValue(2.0, psimpl::math::segment_distance2 <dim> (l1.begin (), l2.begin (), p.begin ())));
+        }
+    }
+
+    void TestMath::TestSegmentDistance_ForwardIterator () {
+        ASSERT_TRUE(false); // TODO
+    }
+
+    void TestMath::TestRayDistance () {
+    }
+
+    void TestMath::TestRayDistance_RandomIterator () {
+    }
+
+    void TestMath::TestRayDistance_BidirectionalIterator () {
+    }
+
+    void TestMath::TestRayDistance_ForwardIterator () {
+        ASSERT_TRUE(false); // TODO
+    }
 
 }}
