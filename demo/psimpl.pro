@@ -3,7 +3,7 @@
 # -------------------------------------------------
 TARGET = psimpl-demo
 TEMPLATE = app
-VERSION = 6
+VERSION = 7
 SOURCES += main.cpp \
     MainWindow.cpp \
     DPWorker.cpp \
@@ -12,12 +12,15 @@ HEADERS += MainWindow.h \
     DPWorker.h \
     RenderArea.h \
     psimpl_reference.h \
-    psimpl.h
+    psimpl.h \
+    ../lib/psimpl.h
 FORMS += MainWindow.ui
 OTHER_FILES += \
     doc/Doxyfile \
     README.txt \
     LICENSE.txt \
     psimpl-demo_resource.rc \
-    resource.rc
+    resource.rc \
+    ../README.txt \
+    ../LICENSE.txt
 RC_FILE = resource.rc

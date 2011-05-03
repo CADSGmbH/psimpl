@@ -5,8 +5,8 @@
 # endif
 
 VS_VERSION_INFO VERSIONINFO
-	FILEVERSION 6,0,0,0
-	PRODUCTVERSION 6,0,0,0
+        FILEVERSION 7,0,0,0
+        PRODUCTVERSION 7,0,0,0
 	FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 	FILEFLAGS VS_FF_DEBUG
@@ -23,7 +23,7 @@ VS_VERSION_INFO VERSIONINFO
 			BEGIN
 				VALUE "CompanyName", "Elmar de Koning\0"
 				VALUE "FileDescription", "psimpl demo application\0"
-				VALUE "FileVersion", "6.0.0.0\0"
+                                VALUE "FileVersion", "7.0.0.0\0"
 				VALUE "LegalCopyright", "Copyright (C) 2010-2011 Elmar de Koning\0"
 				VALUE "OriginalFilename", "psimpl-demo.exe\0"
 				VALUE "ProductName", "psimpl - generic n-dimensional polyline simplification\0"
