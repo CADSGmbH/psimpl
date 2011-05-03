@@ -1,6 +1,6 @@
 #include "TestUtil.h"
 #include "test.h"
-#include "../psimpl.h"
+#include "../lib/psimpl.h"
 
 
 namespace psimpl {

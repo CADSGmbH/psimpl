@@ -1,7 +1,7 @@
 #include "TestMath.h"
 #include "test.h"
 #include "helper.h"
-#include "../psimpl.h"
+#include "../lib/psimpl.h"
 #include <vector>
 #include <deque>
 #include <list>
@@ -13,8 +13,6 @@ namespace psimpl {
     namespace test
 {
 
-    // todo point dist, line dist -> check what happens when points are almost the same (within 1.5
-    // epsilon of each other) and how the fraction calc can reach inf or nan
     TestMath::TestMath () {
         TEST_RUN("equal | random iterator", TestEqual_RandomIterator ());
         TEST_RUN("equal | bidirectional iterator", TestEqual_BidirectionalIterator ());
@@ -109,8 +107,7 @@ namespace psimpl {
     }
 
     void TestMath::TestEqual_ForwardIterator () {
-        // TODO
-        ASSERT_TRUE(false);
+        ASSERT_TRUE(false); // TODO
     }
 
     void TestMath::TestMakeVector_RandomIterator () {
@@ -186,8 +183,7 @@ namespace psimpl {
     }
 
     void TestMath::TestMakeVector_ForwardIterator () {
-        // TODO
-        ASSERT_TRUE(false);
+        ASSERT_TRUE(false); // TODO
     }
 
     void TestMath::TestDot_RandomIterator () {
@@ -235,8 +231,7 @@ namespace psimpl {
     }
 
     void TestMath::TestDot_ForwardIterator () {
-        // TODO
-        ASSERT_TRUE(false);
+        ASSERT_TRUE(false); // TODO
     }
 
 
@@ -343,8 +338,7 @@ namespace psimpl {
     }
 
     void TestMath::TestInterpolate_ForwardIterator () {
-        // TODO
-        ASSERT_TRUE(false);
+        ASSERT_TRUE(false); // TODO
     }
 
     void TestMath::TestPointDistance () {
@@ -422,12 +416,12 @@ namespace psimpl {
         const unsigned dim = 2;
         // zero length line
         {
-            float l1 [] = {0.f, 0.f};
-            float l2 [] = {0.f, 0.f};
-            float p1 [] = {0.f, 0.f};
-            VERIFY_TRUE(CompareValue(0.f, psimpl::math::line_distance2 <dim> (l1, l2, p1)));
-            float p2 [] = {4.f, 3.f};
-            VERIFY_TRUE(CompareValue(25.f, psimpl::math::line_distance2 <dim> (l1, l2, p2)));
+            int l1 [] = {0, 0};
+            int l2 [] = {0, 0};
+            int p1 [] = {0, 0};
+            VERIFY_TRUE(CompareValue(0, psimpl::math::line_distance2 <dim> (l1, l2, p1)));
+            int p2 [] = {4, 3};
+            VERIFY_TRUE(CompareValue(25, psimpl::math::line_distance2 <dim> (l1, l2, p2)));
         }
         // tiny line
         {
@@ -536,12 +530,12 @@ namespace psimpl {
         const unsigned dim = 2;
         // zero length segment
         {
-            float l1 [] = {0.f, 0.f};
-            float l2 [] = {0.f, 0.f};
-            float p1 [] = {0.f, 0.f};
-            VERIFY_TRUE(CompareValue(0.f, psimpl::math::segment_distance2 <dim> (l1, l2, p1)));
-            float p2 [] = {4.f, 3.f};
-            VERIFY_TRUE(CompareValue(25.f, psimpl::math::segment_distance2 <dim> (l1, l2, p2)));
+            int l1 [] = {0, 0};
+            int l2 [] = {0, 0};
+            int p1 [] = {0, 0};
+            VERIFY_TRUE(CompareValue(0, psimpl::math::segment_distance2 <dim> (l1, l2, p1)));
+            int p2 [] = {4, 3};
+            VERIFY_TRUE(CompareValue(25, psimpl::math::segment_distance2 <dim> (l1, l2, p2)));
         }
         // tiny segment
         {

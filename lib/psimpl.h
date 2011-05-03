@@ -469,10 +469,10 @@ namespace psimpl
             1- DIM is not zero, where DIM represents the dimension of the polyline
             2- The InputIterator models the concept of a forward iterator
             3- The InputIterator value type is convertible to a value type of the OutputIterator
-            3- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
+            4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains at least 2 vertices
-            5- n is not zero
+            5- The range [first, last) contains at least 2 vertices
+            6- n is not zero
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -504,12 +504,12 @@ namespace psimpl
             InputIterator key = first;            // indicates the current key
 
             // the first point is always part of the simplification
-            Copy (key, result);
+            CopyKey (key, result);
             
             // copy each nth point
             while (remaining) {
                 Forward (key, n, remaining);
-                Copy (key, result);
+                CopyKey (key, result);
             }
 
             return result;
@@ -531,11 +531,12 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
+            3- The InputIterator models the concept of a forward iterator
+            4- The InputIterator value type is convertible to a value type of the output iterator
+            5- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains at least 2 vertices
-            5- tol is not 0
+            6- The range [first, last) contains at least 2 vertices
+            7- tol is not 0
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -568,7 +569,7 @@ namespace psimpl
             InputIterator next = first;     // used to find the next key
 
             // the first point is always part of the simplification
-            Copy (current, result);
+            CopyKey (next, result);
 
             // Skip first and last point, because they are always part of the simplification
             for (diff_type index = 1; index < pointCount - 1; ++index) {
@@ -577,11 +578,11 @@ namespace psimpl
                     continue;
                 }
                 current = next;
-                Copy (current, result);
+                CopyKey (current, result);
             }
             // the last point is always part of the simplification
             std::advance (next, DIM);
-            Copy (next, result);
+            CopyKey (next, result);
 
             return result;
         }
@@ -718,12 +719,12 @@ namespace psimpl
             std::advance (p2, DIM);
 
             // the first point is always part of the simplification
-            Copy (p0, result);
+            CopyKey (p0, result);
 
             while (p2 != last) {
                 // test p1 against line segment S(p0, p2)
                 if (math::segment_distance2 <DIM> (p0, p2, p1) < tol2) {
-                    Copy (p2, result);
+                    CopyKey (p2, result);
                     // move up by two points
                     p0 = p2;
                     std::advance (p1, 2*DIM);
@@ -734,7 +735,7 @@ namespace psimpl
                     std::advance (p2, 2*DIM);
                 }
                 else {
-                    Copy (p1, result);
+                    CopyKey (p1, result);
                     // move up by one point
                     p0 = p1;
                     p1 = p2;
@@ -743,7 +744,7 @@ namespace psimpl
             }
             // make sure the last point is part of the simplification
             if (p1 != last) {
-                Copy (p1, result);
+                CopyKey (p1, result);
             }
             return result;
         }
@@ -809,7 +810,7 @@ namespace psimpl
             InputIterator pj = p1;     // the current test point (pi+1)
 
             // the first point is always part of the simplification
-            Copy (p0, result);
+            CopyKey (p0, result);
 
             // check each point pj against L(p0, p1)
             for (diff_type j = 2; j < pointCount; ++j) {
@@ -820,13 +821,13 @@ namespace psimpl
                     continue;
                 }
                 // found the next key at pi
-                Copy (pi, result);
+                CopyKey (pi, result);
                 // define new line L(pi, pj)
                 p0 = pi;
                 p1 = pj;
             }
             // the last point is always part of the simplification
-            Copy (pj, result);
+            CopyKey (pj, result);
 
             return result;
         }
@@ -902,7 +903,7 @@ namespace psimpl
             std::advance (pj, DIM);
 
             // the first point is always part of the simplification
-            Copy (r0, result);
+            CopyKey (r0, result);
 
             for (diff_type j = 2; j < pointCount; ++j) {
                 pi = pj;
@@ -925,13 +926,13 @@ namespace psimpl
                     continue;
                 }
                 // found the next key at pi
-                Copy (pi, result);
+                CopyKey (pi, result);
                 // define new ray R(pi, pj)
                 r0 = pi;
                 rayDefined = false;
             }
             // the last point is always part of the simplification
-            Copy (pj, result);
+            CopyKey (pj, result);
 
             return result;
         }
@@ -996,7 +997,7 @@ namespace psimpl
                 ForwardCopy (first, look_ahead, remaining);
 
             // the first point is always part of the simplification
-            Copy (current, result);
+            CopyKey (current, result);
 
             while (remaining) {
                 value_type d2 = 0;
@@ -1012,11 +1013,11 @@ namespace psimpl
 
                 if (d2 < tol2) {
                     current = next;
-                    Copy (current, result);
+                    CopyKey (current, result);
                     Forward (next, look_ahead, remaining);
                 }
                 else {
-                    // Backward(next, current, l); advance next by -1 and update remaining
+                    --next;// Backward(next, current, l); advance next by -1 and update remaining
                 }
             }
 
@@ -1343,7 +1344,7 @@ namespace psimpl
             \param[out] result  destination of the copied point
             \return             one beyond beyond the last coordinate of the copied point
         */
-        inline OutputIterator Copy (
+        inline OutputIterator CopyKey (
             InputIterator p,
             OutputIterator& result)
         {

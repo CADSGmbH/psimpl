@@ -46,7 +46,7 @@
 
 #include "DPWorker.h"
 #include "psimpl_reference.h"
-#include "psimpl.h"
+#include "../lib/psimpl.h"
 #include <cmath>
 #include <QtCore/QTime>
 

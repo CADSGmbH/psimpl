@@ -1,6 +1,6 @@
 #include "TestNthPoint.h"
 #include "helper.h"
-#include "../psimpl.h"
+#include "../lib/psimpl.h"
 #include <vector>
 #include <deque>
 #include <list>

@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="qtmaind.lib qtcored4.lib qtguid4.lib"
-				OutputFile="$(OutDir)\$(ProjectName)-demo.exe"
+				OutputFile="$(OutDir)\$(ProjectName)-demod.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(QTDIR)/lib"
 				GenerateDebugInformation="true"
@@ -201,46 +201,6 @@
 				RelativePath=".\doc\Doxyfile"
 				>
 			</File>
-			<File
-				RelativePath=".\LICENSE.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\README.txt"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="test"
-			>
-			<File
-				RelativePath=".\test\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\test\test.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestError.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestMath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestNthPoint.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestSimplification.h"
-				>
-			</File>
-			<File
-				RelativePath=".\test\TestUtil.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="demo"
@@ -322,8 +282,20 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="lib"
+			>
+			<File
+				RelativePath="..\lib\psimpl.h"
+				>
+			</File>
+		</Filter>
 		<File
-			RelativePath=".\psimpl.h"
+			RelativePath="..\LICENSE.txt"
+			>
+		</File>
+		<File
+			RelativePath="..\README.txt"
 			>
 		</File>
 	</Files>
