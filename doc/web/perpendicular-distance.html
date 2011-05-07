@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
+  <meta name="description" content="psimpl - perpendicular distance routine for polyline simplification">
   <meta name="keywords" content="perpendicular distance, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
-  <title>psimpl - generic n-dimensional polyline simplification</title>
+  <title>psimpl - perpendicular distance routine</title>
 </head>
 <body>
 <div id="main_container">
@@ -67,18 +67,18 @@
  
 <h2>Interface</h2> 
  
-<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> ForwardIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_perpendicular_distance</span> (
-    InputIterator first,
-    InputIterator last,
-    <span class="keyword">typename</span> std::iterator_traits &lt;InputIterator&gt;::value_type tol,
+    ForwardIterator first,
+    ForwardIterator last,
+    <span class="keyword">typename</span> std::iterator_traits &lt;ForwardIterator&gt;::value_type tol,
     OutputIterator result)
  
-<span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> ForwardIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_perpendicular_distance</span> (
-    InputIterator first,
-    InputIterator last,
-    <span class="keyword">typename</span> std::iterator_traits &lt;InputIterator&gt;::value_type tol,
+    ForwardIterator first,
+    ForwardIterator last,
+    <span class="keyword">typename</span> std::iterator_traits &lt;ForwardIterator&gt;::value_type tol,
     <span class="keyword">unsigned</span> repeat,
     OutputIterator result)</pre> 
  
@@ -93,7 +93,7 @@ OutputIterator <span class="algorithm">simplify_perpendicular_distance</span> (
  
 <ol> 
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
- <li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li> 
+ <li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li> 
  <li>The range <code>[first, last)</code> contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
  <li>The range <code>[first, last)</code> contains at least 3 vertices</li> 
  <li><code>tol</code> is not zero</li> 

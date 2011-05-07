@@ -43,7 +43,9 @@
                  due to simplification; renamed simplify_douglas_peucker_alt to
                  simplify_douglas_peucker_n
     ??-??-???? - Added Lang simplification; minor changes to input type requirements to improve
-                 consistency among all algorithms; refactored nth point routine
+                 consistency among all algorithms; refactored all algos; fixed divide by zero
+                 bug when using intergers; fixed a bug where incorrect output iterator was being
+                 returned under invalid input; documented input iterator requirements for each algo
 */
 
 /*!
@@ -467,7 +469,7 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator models the concept of a forward iterator
+            2- The InputIterator type models the concept of a forward iterator
             3- The InputIterator value type is convertible to a value type of the OutputIterator
             4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
@@ -496,16 +498,15 @@ namespace psimpl
 
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || n < 2) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
 
             unsigned remaining = pointCount - 1;    // the number of points remaining after key
-            InputIterator key = first;            // indicates the current key
+            InputIterator key = first;              // indicates the current key
 
             // the first point is always part of the simplification
             CopyKey (key, result);
-            
+
             // copy each nth point
             while (remaining) {
                 Forward (key, n, remaining);
@@ -531,7 +532,7 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            3- The InputIterator models the concept of a forward iterator
+            3- The InputIterator type models the concept of a forward iterator
             4- The InputIterator value type is convertible to a value type of the output iterator
             5- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
@@ -561,28 +562,26 @@ namespace psimpl
 
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
 
             InputIterator current = first;  // indicates the current key
             InputIterator next = first;     // used to find the next key
 
             // the first point is always part of the simplification
-            CopyKey (next, result);
+            CopyKeyAdvance (next, result);
 
             // Skip first and last point, because they are always part of the simplification
             for (diff_type index = 1; index < pointCount - 1; ++index) {
-                std::advance (next, DIM);
                 if (math::point_distance2 <DIM> (current, next) < tol2) {
+                    Advance (next);
                     continue;
                 }
                 current = next;
-                CopyKey (current, result);
+                CopyKeyAdvance (next, result);
             }
             // the last point is always part of the simplification
-            std::advance (next, DIM);
-            CopyKey (next, result);
+            CopyKeyAdvance (next, result);
 
             return result;
         }
@@ -616,8 +615,7 @@ namespace psimpl
             }
             // only validate repeat; other input is validated by simplify_perpendicular_distance
             if (repeat < 1) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
             diff_type coordCount = std::distance (first, last);
 
@@ -629,8 +627,7 @@ namespace psimpl
 
             // check if simplification did not improved
             if (coordCount == tempCoordCount) {
-                std::copy (tempPoly.get (), tempPoly.get () + coordCount, result);
-                return result;
+                return std::copy (tempPoly.get (), tempPoly.get () + coordCount, result);
             }
             std::swap (coordCount, tempCoordCount);
             --repeat;
@@ -647,8 +644,7 @@ namespace psimpl
 
                     // check if simplification did not improved
                     if (coordCount == tempCoordCount) {
-                        std::copy (tempPoly.get (), tempPoly.get () + coordCount, result);
-                        return result;
+                        return std::copy (tempPoly.get (), tempPoly.get () + coordCount, result);
                     }
                     util::swap (tempPoly, tempResult);
                     std::swap (coordCount, tempCoordCount);
@@ -679,11 +675,12 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
+            2- The InputIterator type models the concept of a forward iterator
+            3- The InputIterator value type is convertible to a value type of the output iterator
+            4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains at least 2 vertices
-            5- tol is not 0
+            5- The range [first, last) contains at least 2 vertices
+            6- tol is not 0
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -708,15 +705,12 @@ namespace psimpl
 
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
 
             InputIterator p0 = first;
-            InputIterator p1 = p0;
-            std::advance (p1, DIM);
-            InputIterator p2 = p1;
-            std::advance (p2, DIM);
+            InputIterator p1 = AdvanceCopy(p0);
+            InputIterator p2 = AdvanceCopy(p1);
 
             // the first point is always part of the simplification
             CopyKey (p0, result);
@@ -727,19 +721,19 @@ namespace psimpl
                     CopyKey (p2, result);
                     // move up by two points
                     p0 = p2;
-                    std::advance (p1, 2*DIM);
+                    Advance (p1, 2);
                     if (p1 == last) {
                         // protect against advancing p2 beyond last
                         break;
                     }
-                    std::advance (p2, 2*DIM);
+                    Advance (p2, 2);
                 }
                 else {
                     CopyKey (p1, result);
                     // move up by one point
                     p0 = p1;
                     p1 = p2;
-                    std::advance (p2, DIM);
+                    Advance (p2);
                 }
             }
             // make sure the last point is part of the simplification
@@ -1338,27 +1332,45 @@ namespace psimpl
 
     private:
         /*!
-            \brief Copies a point to the output destination.
+            \brief Copies the key to the output destination, and increments the iterator.
 
-            \param[in] key      the first coordinate of the point
-            \param[out] result  destination of the copied point
-            \return             one beyond beyond the last coordinate of the copied point
+            \sa CopyKey
+
+            \param[in] key      the first coordinate of the key
+            \param[out] result  destination of the copied key
+            \return             one beyond beyond the last coordinate of the copied key
         */
-        inline OutputIterator CopyKey (
-            InputIterator p,
+        inline void CopyKeyAdvance (
+            InputIterator& key,
             OutputIterator& result)
         {
             for (unsigned d = 0; d < DIM; ++d) {
-                *result = *p;
+                *result = *key;
                 ++result;
-                ++p;
+                ++key;
             }
-            return result;
+        }
+
+        /*!
+            \brief Copies the key to the output destination.
+
+            \sa CopyKeyAdvance
+
+            \param[in] key      the first coordinate of the key
+            \param[out] result  destination of the copied key
+        */
+        inline void CopyKey (
+            InputIterator key,
+            OutputIterator& result)
+        {
+            CopyKeyAdvance (key, result);
         }
 
         /*!
             \brief Increments the iterator by n points.
-            
+
+            \sa AdvanceCopy
+
             \param[in,out]    it    iterator to be advanced
             \param[in]        n    number of points to advance
         */
@@ -1371,7 +1383,9 @@ namespace psimpl
         
         /*!
             \brief Increments a copy of the iterator by n points.
-            
+
+            \sa Advance
+
             \param[in] it    iterator to be advanced
             \param[in] n     number of points to advance
             \return            an incremented copy of the input iterator
@@ -1386,10 +1400,12 @@ namespace psimpl
 
         /*!
             \brief Increments the iterator by n points if possible.
-            
+
             If there are fewer than n point remaining the iterator will be incremented to the last
             point.
-            
+
+            \sa ForwardCopy
+
             \param[in,out]    it            iterator to be advanced
             \param[in]        n             number of points to advance
             \param[in,out]    remaining    number of points remaining
@@ -1408,10 +1424,12 @@ namespace psimpl
 
         /*!
             \brief Increments a copy of the iterator by n points if possible.
-            
+
             If there are fewer than n point remaining the iterator will be incremented to the last
             point.
-            
+
+            \sa Forward
+
             \param[in]        it            iterator to be advanced
             \param[in]        n             number of points to advance
             \param[in,out]    remaining    number of points remaining
@@ -1658,15 +1676,15 @@ namespace psimpl
         \param[out] result  destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_perpendicular_distance (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type tol,
+        ForwardIterator first,
+        ForwardIterator last,
+        typename std::iterator_traits <ForwardIterator>::value_type tol,
         unsigned repeat,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.PerpendicularDistance (first, last, tol, repeat, result);
     }
 

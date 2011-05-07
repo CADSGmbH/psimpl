@@ -211,6 +211,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestPerpendicularDistance.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestPerpendicularDistance.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TestRadialDistance.cpp"
 				>
 			</File>

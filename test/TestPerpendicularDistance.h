@@ -24,29 +24,42 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#ifndef PSIMPL_TEST_SIMPLIFICATION
-#define PSIMPL_TEST_SIMPLIFICATION
+#ifndef PSIMPL_TEST_PERPENDICULAR_DISTANCE
+#define PSIMPL_TEST_PERPENDICULAR_DISTANCE
 
 
 #include "test.h"
-#include "TestNthPoint.h"
-#include "TestRadialDistance.h"
-#include "TestPerpendicularDistance.h"
 
 
 namespace psimpl {
     namespace test
 {
-    class TestSimplification
+    //! Tests function psimpl::simplify_perpendicular_distance
+    class TestPerpendicularDistance
     {
     public:
-        TestSimplification () {
-            TEST_RUN("nth point", TestNthPoint ());
-            TEST_RUN("radial distance", TestRadialDistance ());
-            TEST_RUN("perpendicular distance", TestPerpendicularDistance ());
-        }
+        TestPerpendicularDistance ();
+
+    private:
+        void TestIncompletePoint_sp ();
+        void TestNotEnoughPoints_sp ();
+        void TestInvalidTol_sp ();
+        void TestValidTol_sp ();
+        void TestBasicSanity ();
+        void TestRandomIterator_sp ();
+        void TestBidirectionalIterator_sp ();
+        void TestForwardIterator_sp ();
+        void TestReturnValue_sp ();
+
+        void TestIncompletePoint_mp ();
+        void TestNotEnoughPoints_mp ();
+        void TestInvalidTol_mp ();
+        void TestValidTol_mp ();
+        void TestInvalidRepeat_mp ();
+        void TestValidRepeat_mp ();
+        void TestReturnValue_mp ();
     };
 }}
 
 
-#endif // PSIMPL_TEST_SIMPLIFICATION
+#endif // PSIMPL_TEST_PERPENDICULAR_DISTANCE
