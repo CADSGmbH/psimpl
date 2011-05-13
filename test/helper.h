@@ -95,6 +95,66 @@ namespace psimpl {
         bool mToggle;
     };
 
+    template <typename T, unsigned DIM>
+    class SquareToothLine {
+    public:
+        SquareToothLine () :
+            mToothSize (1),
+            mCurrentSize (0),
+            mDimension (0),
+            mDirection (0)
+        {
+            for (unsigned d=0; d<DIM; ++d) {
+                mPosition [d] = 0;
+            }
+        }
+            
+        T operator () () {
+            mDimension = mDimension % DIM;
+            mDirection = mDirection % 4;
+            
+            T value = mPosition [mDimension];
+
+            if (mDirection == 0 || mDirection == 2) {   // foward
+                if (mDimension == 0) {
+                    mPosition [mDimension] += 1;
+                }
+            }
+            else if (mDirection == 1) {                 // up
+                if (mDimension == 1) {
+                    mPosition [mDimension] += 1;
+                }
+            }
+            else {                                      // down
+                if (mDimension == 1) {
+                    mPosition [mDimension] -= 1;
+                }
+            }
+            ++mDimension;
+
+            if (mDimension == DIM) {
+                ++mCurrentSize;
+                if (mCurrentSize == mToothSize) {
+                    if (mDirection == 3) {                  // down
+                        // end of tooth
+                        ++mToothSize;
+                    }
+                    // change direction
+                    mCurrentSize = 0;
+                    ++mDirection;
+                }
+            }
+            return value;
+        }
+            
+    private:
+        T mPosition [DIM];
+        T mToothSize;
+        T mCurrentSize;
+        unsigned mDimension;
+        unsigned mDirection;
+    };
+
     template <class T>
     inline bool CompareValue (T a, T b) {
         return a == b;

@@ -227,6 +227,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestReumannWitkam.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestReumannWitkam.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TestSimplification.h"
 				>
 			</File>

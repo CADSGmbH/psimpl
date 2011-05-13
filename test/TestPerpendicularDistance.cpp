@@ -293,7 +293,7 @@ namespace psimpl {
     }
 
     void TestPerpendicularDistance::TestForwardIterator_sp () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
     void TestPerpendicularDistance::TestReturnValue_sp () {

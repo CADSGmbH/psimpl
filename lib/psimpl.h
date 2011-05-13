@@ -761,11 +761,12 @@ namespace psimpl
 
             Input (Type) Requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The range [first, last) contains vertex coordinates in multiples of DIM,
+            2- The InputIterator type models the concept of a forward iterator
+            3- The InputIterator value type is convertible to a value type of the output iterator
+            4- The range [first, last) contains vertex coordinates in multiples of DIM,
                f.e.: x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains at least 2 vertices
-            5- tol is not 0
+            5- The range [first, last) contains at least 2 vertices
+            6- tol is not 0
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -790,14 +791,12 @@ namespace psimpl
 
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
 
             // define the line L(p0, p1)
-            InputIterator p0 = first;  // indicates the current key
-            InputIterator p1 = first;  // indicates the next point after p0
-            std::advance (p1, DIM);
+            InputIterator p0 = first;               // indicates the current key
+            InputIterator p1 = AdvanceCopy (first); // indicates the next point after p0
 
             // keep track of two test points
             InputIterator pi = p1;     // the previous test point
@@ -809,7 +808,7 @@ namespace psimpl
             // check each point pj against L(p0, p1)
             for (diff_type j = 2; j < pointCount; ++j) {
                 pi = pj;
-                std::advance (pj, DIM);
+                Advance (pj);
 
                 if (math::line_distance2 <DIM> (p0, p1, pj) < tol2) {
                     continue;
@@ -981,12 +980,11 @@ namespace psimpl
             
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || look_ahead < 2 || tol2 == 0) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
 
             unsigned remaining = pointCount - 1;    // the number of points remaining after key
-            InputIterator current = first;            // indicates the current key
+            InputIterator current = first;          // indicates the current key
             InputIterator next =                    // used to find the next key
                 ForwardCopy (first, look_ahead, remaining);
 
@@ -996,7 +994,7 @@ namespace psimpl
             while (remaining) {
                 value_type d2 = 0;
                 InputIterator p = AdvanceCopy (current);
-                
+
                 while (p != next) {
                     d2 = std::max (d2, math::segment_distance2 <DIM> (current, next, p));
                     if (tol2 < d2) {
@@ -1004,17 +1002,15 @@ namespace psimpl
                     }
                     Advance (p);
                 }
-
                 if (d2 < tol2) {
                     current = next;
                     CopyKey (current, result);
                     Forward (next, look_ahead, remaining);
                 }
                 else {
-                    --next;// Backward(next, current, l); advance next by -1 and update remaining
+                    --next;
                 }
             }
-
             return result;
         }
 
@@ -1700,14 +1696,14 @@ namespace psimpl
         \param[out] result  destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_perpendicular_distance (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type tol,
+        ForwardIterator first,
+        ForwardIterator last,
+        typename std::iterator_traits <ForwardIterator>::value_type tol,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.PerpendicularDistance (first, last, tol, result);
     }
 
@@ -1723,14 +1719,14 @@ namespace psimpl
         \param[out] result  destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_reumann_witkam (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type tol,
+        ForwardIterator first,
+        ForwardIterator last,
+        typename std::iterator_traits <ForwardIterator>::value_type tol,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.ReumannWitkam (first, last, tol, result);
     }
 

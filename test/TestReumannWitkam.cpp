@@ -24,7 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#include "TestRadialDistance.h"
+#include "TestReumannWitkam.h"
 #include "helper.h"
 #include "../lib/psimpl.h"
 #include <vector>
@@ -35,19 +35,20 @@
 namespace psimpl {
     namespace test
 {
-    TestRadialDistance::TestRadialDistance () {
+    TestReumannWitkam::TestReumannWitkam () {
         TEST_RUN("incomplete point", TestIncompletePoint ());
         TEST_RUN("not enough points", TestNotEnoughPoints ());
         TEST_RUN("invalid tol", TestInvalidTol ());
         TEST_RUN("valid tol", TestValidTol ());
+        TEST_RUN("basic sanity", TestBasicSanity ());
         TEST_RUN("random iterator", TestRandomIterator ());
         TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
         TEST_DISABLED("forward iterator", TestForwardIterator ());
         TEST_RUN("return value", TestReturnValue ());
     }
-
+    
     // incomplete point: coord count % DIM > 1
-    void TestRadialDistance::TestIncompletePoint () {
+    void TestReumannWitkam::TestIncompletePoint () {
         const unsigned DIM = 2;
         const float tol = 2.f;
 
@@ -66,15 +67,15 @@ namespace psimpl {
         polyline.push_back (4.f);
         result.clear ();
 
-        psimpl::simplify_radial_distance <DIM> (
+        psimpl::simplify_reumann_witkam <DIM> (
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
         ASSERT_FALSE(polyline == result);
     }
-
+    
     // not enough points: point count < 3
-    void TestRadialDistance::TestNotEnoughPoints () {
+    void TestReumannWitkam::TestNotEnoughPoints () {
         const unsigned DIM = 2;
         const float tol = 2.f;
 
@@ -82,7 +83,7 @@ namespace psimpl {
         std::vector <float> polyline;
         std::vector <float> result;
 
-        psimpl::simplify_radial_distance <DIM> (
+        psimpl::simplify_reumann_witkam <DIM> (
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
@@ -93,7 +94,7 @@ namespace psimpl {
         polyline.push_back(1.f);
         result.clear ();
 
-        psimpl::simplify_radial_distance <DIM> (
+        psimpl::simplify_reumann_witkam <DIM> (
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
@@ -104,15 +105,26 @@ namespace psimpl {
         polyline.push_back(2.f);
         result.clear ();
 
-        psimpl::simplify_radial_distance <DIM> (
+        psimpl::simplify_reumann_witkam <DIM> (
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
         ASSERT_TRUE(polyline == result);
-    }
+        
+        // 3 points
+        polyline.push_back(2.f);
+        polyline.push_back(2.f);
+        result.clear ();
 
+        psimpl::simplify_reumann_witkam <DIM> (
+            polyline.begin (), polyline.end (), tol,
+            std::back_inserter (result));
+
+        ASSERT_TRUE(polyline != result);
+    }
+    
     // invalid: tol == 0
-    void TestRadialDistance::TestInvalidTol () {
+    void TestReumannWitkam::TestInvalidTol () {
         const unsigned DIM = 3;
         const unsigned count = 10;
 
@@ -121,7 +133,7 @@ namespace psimpl {
         std::vector <float> result;
 
         float tol = 0;
-        psimpl::simplify_radial_distance <DIM> (
+        psimpl::simplify_reumann_witkam <DIM> (
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
@@ -129,139 +141,172 @@ namespace psimpl {
     }
 
     // valid: tol != 0
-    void TestRadialDistance::TestValidTol () {
+    void TestReumannWitkam::TestValidTol () {
         const unsigned DIM = 3;
-        const unsigned count = 11;
+        const unsigned count = 25;
 
-        // tiny tol, no points removed
+        std::vector <float> polyline;
+        std::generate_n (std::back_inserter (polyline), count*DIM, SquareToothLine <float, DIM> ());
+
+        // tiny tol, only collinear points removed
         {
-            std::vector <float> polyline;
-            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <float, DIM> ());
             std::vector <float> result;
             float tol = 0.01f;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            ASSERT_TRUE(polyline == result);
+            VERIFY_TRUE(result.size () == 13*DIM);
+            int keys [] = {0, 1, 2, 3, 4, 6, 8, 10, 12, 15, 18, 21, 24};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 13)));
         }
-        // large tol, all internal points removed
+        // large tol, removes all internal points
         {
-            std::vector <float> polyline;
-            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <float, DIM> ());
             std::vector <float> result;
             float tol = 100.f;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
             VERIFY_TRUE(result.size () == 2*DIM);
             VERIFY_TRUE(CompareEndPoints <DIM> (polyline.begin (), polyline.end (), result.begin (), result.end ()));
         }
-        // normal tol, does not try to eat the last point
+        // normal tol, 1 x stepsize
         {
-            std::vector <float> polyline;
-            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <float, DIM> ());
             std::vector <float> result;
-            float tol = 4.5f;
+            float tol = 1.1f;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 3*DIM);
-            int keys [] = {0, 5, 10};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
+            VERIFY_TRUE(result.size () == 9*DIM);
+            int keys [] = {0, 7, 9, 11, 13, 16, 19, 22, 24};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 9)));
         }
-        // normal tol, tries to eat the last point
+        // normal tol, 2 x stepsize
         {
-            std::vector <float> polyline;
-            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <float, DIM> ());
             std::vector <float> result;
-            float tol = 6.5f;
+            float tol = 2.1f;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 3*DIM);
-            int keys [] = {0, 7, 10};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 17, 20, 23, 24};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+        }
+    }
+
+    void TestReumannWitkam::TestBasicSanity () {
+        const unsigned DIM = 2;
+        const float tol = 2.f;
+        {
+            // even num points
+            const unsigned count = 6;
+            std::vector <float> polyline;
+            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <float, DIM> ());
+            std::vector <float> result;
+
+            psimpl::simplify_reumann_witkam <DIM> (
+                    polyline.begin (), polyline.end (), tol,
+                    std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 2*DIM);
+            VERIFY_TRUE(CompareEndPoints <DIM> (polyline.begin (), polyline.end (), result.begin (), result.end ()));
+        }
+        {
+            // odd num points
+            const unsigned count = 5;
+            std::vector <float> polyline;
+            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <float, DIM> ());
+            std::vector <float> result;
+
+            psimpl::simplify_reumann_witkam <DIM> (
+                    polyline.begin (), polyline.end (), tol,
+                    std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 2*DIM);
+            VERIFY_TRUE(CompareEndPoints <DIM> (polyline.begin (), polyline.end (), result.begin (), result.end ()));
         }
     }
 
     // different random access iterators, different value types, different dimensions
-    void TestRadialDistance::TestRandomIterator () {
-        const unsigned count = 10;
+    void TestReumannWitkam::TestRandomIterator () {
+        const unsigned count = 25;
         {
             const unsigned DIM = 2;
 
             float polyline [count*DIM];
-            std::generate_n (polyline, count*DIM, StraightLine <float, DIM> ());
+            std::generate_n (polyline, count*DIM, SquareToothLine <float, DIM> ());
             float result [count*DIM];
-            float tol = 3.5f;
+            float tol = 2.5f;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                     polyline, polyline + count*DIM, tol,
                     result);
 
-            int keys [] = {0, 4, 8, 9};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline, result, std::vector <int> (keys, keys + 4)));
+            int keys [] = {0, 17, 20, 23, 24};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline, result, std::vector <int> (keys, keys + 5)));
         }
         {
             const unsigned DIM = 3;
             std::vector <double> polyline, result;
-            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <double, DIM> ());
+            std::generate_n (std::back_inserter (polyline), count*DIM, SquareToothLine <double, DIM> ());
             double tol = 2.5;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            int keys [] = {0, 3, 6, 9};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 17, 20, 23, 24};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
         }
         {
             const unsigned DIM = 4;
             std::deque <int> polyline, result;
-            std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <int, DIM> ());
-            int tol = 5;
+            std::generate_n (std::back_inserter (polyline), count*DIM, SquareToothLine <int, DIM> ());
+            int tol = 3;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                     polyline.begin (), polyline.end (), tol,
                     std::back_inserter (result));
 
-            int keys [] = {0, 5, 9};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 17, 20, 23, 24};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
         }
     }
 
     // bidirectional iterator, different value types, different dimensions
-    void TestRadialDistance::TestBidirectionalIterator () {
-        const unsigned count = 10;
+    void TestReumannWitkam::TestBidirectionalIterator () {
+        const unsigned count = 25;
         {
             const unsigned DIM = 2;
             std::list <float> polyline, result;
-            std::generate_n (std::inserter (polyline, polyline.begin ()), count*DIM, StraightLine <float, DIM> ());
-            float tol = 7.5f;
+            std::generate_n (std::inserter (polyline, polyline.begin ()), count*DIM, SquareToothLine <float, DIM> ());
+            float tol = 2.5f;
 
-            psimpl::simplify_radial_distance <DIM> (
+            psimpl::simplify_reumann_witkam <DIM> (
                 polyline.begin (), polyline.end (), tol,
                 std::inserter (result, result.begin ()));
 
-            int keys [] = {0, 8, 9};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 17, 20, 23, 24};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
         }
     }
 
     // forward iterator, different value types, different dimensions
-    void TestRadialDistance::TestForwardIterator () {
+    void TestReumannWitkam::TestForwardIterator () {
         FAIL("TODO");
     }
 
-    void TestRadialDistance::TestReturnValue () {
+    void TestReumannWitkam::TestReturnValue () {
         const unsigned DIM = 3;
         const unsigned count = 15;
 
@@ -273,7 +318,7 @@ namespace psimpl {
         ASSERT_TRUE (
             std::distance (
                 result, 
-                psimpl::simplify_radial_distance <DIM> (
+                psimpl::simplify_reumann_witkam <DIM> (
                     polyline, polyline + count*DIM, 0.f,
                     result))
             == count*DIM);
@@ -282,10 +327,10 @@ namespace psimpl {
         ASSERT_TRUE (
             std::distance (
                 result, 
-                psimpl::simplify_radial_distance <DIM> (
+                psimpl::simplify_reumann_witkam <DIM> (
                     polyline, polyline + count*DIM, 1.5f,
                     result))
-            == 8*DIM);
+            == 2*DIM);
     }
 
 }}

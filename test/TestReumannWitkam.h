@@ -24,31 +24,34 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#ifndef PSIMPL_TEST_SIMPLIFICATION
-#define PSIMPL_TEST_SIMPLIFICATION
+#ifndef PSIMPL_TEST_REUMANN_WITKAM
+#define PSIMPL_TEST_REUMANN_WITKAM
 
 
 #include "test.h"
-#include "TestNthPoint.h"
-#include "TestRadialDistance.h"
-#include "TestPerpendicularDistance.h"
-#include "TestReumannWitkam.h"
 
 
 namespace psimpl {
     namespace test
 {
-    class TestSimplification
+    //! Tests function psimpl::simplify_reumann_witkam
+    class TestReumannWitkam
     {
     public:
-        TestSimplification () {
-            TEST_RUN("nth point", TestNthPoint ());
-            TEST_RUN("radial distance", TestRadialDistance ());
-            TEST_RUN("perpendicular distance", TestPerpendicularDistance ());
-            TEST_RUN("reumann witkam", TestReumannWitkam ());
-        }
+        TestReumannWitkam ();
+
+    private:
+        void TestIncompletePoint ();
+        void TestNotEnoughPoints ();
+        void TestInvalidTol ();
+        void TestValidTol ();
+        void TestBasicSanity ();
+        void TestRandomIterator ();
+        void TestBidirectionalIterator ();
+        void TestForwardIterator ();
+        void TestReturnValue ();
     };
 }}
 
 
-#endif // PSIMPL_TEST_SIMPLIFICATION
+#endif // PSIMPL_TEST_REUMANN_WITKAM

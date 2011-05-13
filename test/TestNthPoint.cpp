@@ -282,7 +282,7 @@ namespace psimpl {
 
     // forward iterator, different value types, different dimensions
     void TestNthPoint::TestForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
     void TestNthPoint::TestReturnValue () {

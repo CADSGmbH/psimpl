@@ -133,7 +133,7 @@ namespace psimpl {
     }
 
     void TestMath::TestEqual_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
     void TestMath::TestMakeVector_RandomIterator () {
@@ -209,7 +209,7 @@ namespace psimpl {
     }
 
     void TestMath::TestMakeVector_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
     void TestMath::TestDot_RandomIterator () {
@@ -257,7 +257,7 @@ namespace psimpl {
     }
 
     void TestMath::TestDot_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
 
@@ -364,7 +364,7 @@ namespace psimpl {
     }
 
     void TestMath::TestInterpolate_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
     void TestMath::TestPointDistance () {
@@ -434,7 +434,7 @@ namespace psimpl {
     }
 
     void TestMath::TestPointDistance_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
 
@@ -549,7 +549,7 @@ namespace psimpl {
     }
 
     void TestMath::TestLineDistance_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
     void TestMath::TestSegmentDistance () {
@@ -681,20 +681,23 @@ namespace psimpl {
     }
 
     void TestMath::TestSegmentDistance_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
     void TestMath::TestRayDistance () {
+        FAIL("TODO");
     }
 
     void TestMath::TestRayDistance_RandomIterator () {
+        FAIL("TODO");
     }
 
     void TestMath::TestRayDistance_BidirectionalIterator () {
+        FAIL("TODO");
     }
 
     void TestMath::TestRayDistance_ForwardIterator () {
-        ASSERT_TRUE(false); // TODO
+        FAIL("TODO");
     }
 
 }}
