@@ -470,7 +470,7 @@ namespace psimpl
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
-            3- The InputIterator value type is convertible to a value type of the OutputIterator
+            3- The input iterator value type is convertible to a value type of the OutputIterator
             4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
             5- The range [first, last) contains at least 2 vertices
@@ -532,12 +532,12 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            3- The InputIterator type models the concept of a forward iterator
-            4- The InputIterator value type is convertible to a value type of the output iterator
-            5- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
+            2- The InputIterator type models the concept of a forward iterator
+            3- The input iterator value type is convertible to a value type of the output iterator
+            4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
-            6- The range [first, last) contains at least 2 vertices
-            7- tol is not 0
+            5- The range [first, last) contains at least 2 vertices
+            6- tol is not 0
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -676,7 +676,7 @@ namespace psimpl
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
-            3- The InputIterator value type is convertible to a value type of the output iterator
+            3- The input iterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
             5- The range [first, last) contains at least 2 vertices
@@ -762,7 +762,7 @@ namespace psimpl
             Input (Type) Requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
-            3- The InputIterator value type is convertible to a value type of the output iterator
+            3- The input iterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains vertex coordinates in multiples of DIM,
                f.e.: x, y, z, x, y, z, x, y, z when DIM = 3
             5- The range [first, last) contains at least 2 vertices
@@ -848,12 +848,13 @@ namespace psimpl
 
             Input (Type) Requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The range [first, last) contains vertex coordinates in multiples of DIM,
+            2- The InputIterator type models the concept of a forward iterator
+            3- The input iterator value type is convertible to a value type of the output iterator
+            4- The range [first, last) contains vertex coordinates in multiples of DIM,
                f.e.: x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains at least 2 vertices
-            5- min_tol is not 0
-            6- max_tol is not 0
+            5- The range [first, last) contains at least 2 vertices
+            6- min_tol is not 0
+            7- max_tol is not 0
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -881,8 +882,7 @@ namespace psimpl
 
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || min_tol2 == 0 || max_tol2 == 0) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
 
             // define the ray R(r0, r1)
@@ -892,15 +892,15 @@ namespace psimpl
 
             // keep track of two test points
             InputIterator pi = r0;     // the previous test point
-            InputIterator pj = r0;     // the current test point (pi+1)
-            std::advance (pj, DIM);
+            InputIterator pj =         // the current test point (pi+1)
+                AdvanceCopy (pi);
 
             // the first point is always part of the simplification
             CopyKey (r0, result);
 
             for (diff_type j = 2; j < pointCount; ++j) {
                 pi = pj;
-                std::advance (pj, DIM);
+                Advance (pj);
 
                 if (!rayDefined) {
                     // discard each point within minimum tolerance
@@ -1009,6 +1009,7 @@ namespace psimpl
                 }
                 else {
                     --next;
+                    ++remaining;
                 }
             }
             return result;
@@ -1743,15 +1744,15 @@ namespace psimpl
         \param[out] result  destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_opheim (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type min_tol,
-        typename std::iterator_traits <InputIterator>::value_type max_tol,
+        ForwardIterator first,
+        ForwardIterator last,
+        typename std::iterator_traits <ForwardIterator>::value_type min_tol,
+        typename std::iterator_traits <ForwardIterator>::value_type max_tol,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.Opheim (first, last, min_tol, max_tol, result);
     }
 

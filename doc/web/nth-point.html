@@ -78,7 +78,7 @@ OutputIterator <span class="algorithm">simplify_nth_point</span> (
  <li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li> 
  <li>The range <code>[first, last)</code> contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
  <li>The range <code>[first, last)</code> contains at least 2 vertices</li> 
- <li><code>n</code> is at least 2</li> 
+ <li><code>n</code> is not zero</li> 
 </ol> 
  
 <p>In case these requirements are not met, compile errors may occur, <b>or</b>

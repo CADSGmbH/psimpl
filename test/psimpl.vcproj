@@ -211,6 +211,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestOpheim.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestOpheim.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TestPerpendicularDistance.cpp"
 				>
 			</File>
