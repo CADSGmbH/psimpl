@@ -204,7 +204,7 @@ namespace psimpl
 
             \param[in] p1       the first coordinate of the first point
             \param[in] p2       the first coordinate of the second point
-            \param[out] result  the resulting vector (p2-p1)
+            \param[in] result   the resulting vector (p2-p1)
             \return             one beyond the last coordinate of the resulting vector
         */
         template <unsigned DIM, class InputIterator, class OutputIterator>
@@ -249,7 +249,7 @@ namespace psimpl
             \param[in] p1           the first coordinate of the first point
             \param[in] p2           the first coordinate of the second point
             \param[in] fraction     the fraction used during interpolation
-            \param[out] result      the interpolation result (p1 + fraction * (p2 - p1))
+            \param[in] result       the interpolation result (p1 + fraction * (p2 - p1))
             \return                 one beyond the last coordinate of the interpolated point
         */
         template <unsigned DIM, class InputIterator, class OutputIterator>
@@ -482,7 +482,7 @@ namespace psimpl
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] n        specifies 'each nth point'
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator NthPoint (
@@ -508,8 +508,7 @@ namespace psimpl
             CopyKey (key, result);
 
             // copy each nth point
-            while (remaining) {
-                Forward (key, n, remaining);
+            while (Forward (key, n, remaining)) {
                 CopyKey (key, result);
             }
 
@@ -545,7 +544,7 @@ namespace psimpl
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] tol      radial (point-to-point) distance tolerance
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator RadialDistance (
@@ -599,7 +598,7 @@ namespace psimpl
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] tol      perpendicular (segment-to-point) distance tolerance
             \param[in] repeat   the number of times to successively apply the PD routine
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator PerpendicularDistance (
@@ -688,7 +687,7 @@ namespace psimpl
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] tol      perpendicular (segment-to-point) distance tolerance
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator PerpendicularDistance (
@@ -774,7 +773,7 @@ namespace psimpl
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] tol      perpendicular (point-to-line) distance tolerance
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator ReumannWitkam (
@@ -863,7 +862,7 @@ namespace psimpl
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] min_tol  radial and perpendicular (point-to-ray) distance tolerance
             \param[in] max_tol  radial distance tolerance
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator Opheim (
@@ -933,11 +932,17 @@ namespace psimpl
         /*!
             \brief Performs Lang approximation (LA).
 
-            TODO
-                look_ahead=1 -> no simpl
-                look_ahead=2 -> min 50% remaining points
-                look_ahead=10 -> min 10% remaining points
-            TODO
+            The LA routine defines a fixed size search-region. The first and last points of that
+            search region form a segment. This segment is used to calculate the perpendicular
+            distance to each intermediate point. If any calculated distance is larger than the
+            specified tolerance, the search region will be shrunk by excluding its last point. This
+            process will continue untill all calculated distances fall below the specified tolerance
+            , or there are no more intermediate points. At this point all intermediate points are
+            removed and a new search region is defined starting at the last point from old search
+            region.
+            Note that the size of the search region (look_ahead parameter) controls the maximum
+            amount of simplification, e.g.: a size of 20 will always result in a simplification that
+            contains at least 5% of the original points.
 
             \image html psimpl_la.png
 
@@ -948,28 +953,29 @@ namespace psimpl
 
             Input (Type) Requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The range [first, last) contains vertex coordinates in multiples of DIM,
+            2- The InputIterator type models the concept of a bidirectional iterator
+            3- The InputIterator value type is convertible to a value type of the output iterator
+            4- The range [first, last) contains vertex coordinates in multiples of DIM,
                f.e.: x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains at least 2 vertices
-            5- look_ahead is not zero
+            5- The range [first, last) contains at least 2 vertices
             6- tol is not 0
+            7- look_ahead is not zero
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
 
             \param[in] first      the first coordinate of the first polyline point
             \param[in] last       one beyond the last coordinate of the last polyline point
-            \param[in] look_ahead TODO
             \param[in] tol        perpendicular (point-to-segment) distance tolerance
-            \param[out] result    destination of the simplified polyline
+            \param[in] look_ahead defines the size of the search region
+            \param[in] result     destination of the simplified polyline
             \return               one beyond the last coordinate of the simplified polyline
         */
         OutputIterator Lang (
             InputIterator first,
             InputIterator last,
-            unsigned look_ahead,
             value_type tol,
+            unsigned look_ahead,
             OutputIterator result)
         {
             diff_type coordCount = std::distance (first, last);
@@ -983,15 +989,16 @@ namespace psimpl
                 return std::copy (first, last, result);
             }
 
-            unsigned remaining = pointCount - 1;    // the number of points remaining after key
             InputIterator current = first;          // indicates the current key
-            InputIterator next =                    // used to find the next key
-                ForwardCopy (first, look_ahead, remaining);
+            InputIterator next = first;             // used to find the next key
+
+            unsigned remaining = pointCount - 1;    // the number of points remaining after current
+            unsigned moved = Forward (next, look_ahead, remaining);
 
             // the first point is always part of the simplification
             CopyKey (current, result);
 
-            while (remaining) {
+            while (moved) {
                 value_type d2 = 0;
                 InputIterator p = AdvanceCopy (current);
 
@@ -1005,11 +1012,10 @@ namespace psimpl
                 if (d2 < tol2) {
                     current = next;
                     CopyKey (current, result);
-                    Forward (next, look_ahead, remaining);
+                    moved = Forward (next, look_ahead, remaining);
                 }
                 else {
-                    --next;
-                    ++remaining;
+                    Backward (next, remaining);
                 }
             }
             return result;
@@ -1053,7 +1059,7 @@ namespace psimpl
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] tol      perpendicular (point-to-segment) distance tolerance
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator DouglasPeucker (
@@ -1089,8 +1095,6 @@ namespace psimpl
                     for (unsigned d = 0; d < DIM; ++d) {
                         *result = current [d];
                         ++result;
-                        
-                        // TODO user Copy ???
                     }
                 }
             }
@@ -1132,7 +1136,7 @@ namespace psimpl
             \param[in] first    the first coordinate of the first polyline point
             \param[in] last     one beyond the last coordinate of the last polyline point
             \param[in] count    the maximum number of points of the simplified polyline
-            \param[out] result  destination of the simplified polyline
+            \param[in] result   destination of the simplified polyline
             \return             one beyond the last coordinate of the simplified polyline
         */
         OutputIterator DouglasPeuckerN (
@@ -1208,7 +1212,7 @@ namespace psimpl
             \param[in] original_last    one beyond the last coordinate of the last polyline point
             \param[in] simplified_first the first coordinate of the first simplified polyline point
             \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
-            \param[out] result          destination of the squared positional errors
+            \param[in] result           destination of the squared positional errors
             \param[out] valid           indicates if the computed positional errors are valid
             \return                     one beyond the last computed positional error
         */
@@ -1333,9 +1337,8 @@ namespace psimpl
 
             \sa CopyKey
 
-            \param[in] key      the first coordinate of the key
-            \param[out] result  destination of the copied key
-            \return             one beyond beyond the last coordinate of the copied key
+            \param[in,out] key      the first coordinate of the key
+            \param[in,out] result   destination of the copied key
         */
         inline void CopyKeyAdvance (
             InputIterator& key,
@@ -1353,8 +1356,8 @@ namespace psimpl
 
             \sa CopyKeyAdvance
 
-            \param[in] key      the first coordinate of the key
-            \param[out] result  destination of the copied key
+            \param[in]     key      the first coordinate of the key
+            \param[in,out] result   destination of the copied key
         */
         inline void CopyKey (
             InputIterator key,
@@ -1368,14 +1371,14 @@ namespace psimpl
 
             \sa AdvanceCopy
 
-            \param[in,out]    it    iterator to be advanced
-            \param[in]        n    number of points to advance
+            \param[in,out] it  iterator to be advanced
+            \param[in]     n   number of points to advance
         */
         inline void Advance (
             InputIterator& it,
             diff_type n = 1)
         {
-            std::advance (it, n * DIM);
+            std::advance (it, n * static_cast <diff_type> (DIM));
         }
         
         /*!
@@ -1383,9 +1386,9 @@ namespace psimpl
 
             \sa Advance
 
-            \param[in] it    iterator to be advanced
-            \param[in] n     number of points to advance
-            \return            an incremented copy of the input iterator
+            \param[in] it   iterator to be advanced
+            \param[in] n    number of points to advance
+            \return         an incremented copy of the input iterator
         */
         inline InputIterator AdvanceCopy (
             InputIterator it,
@@ -1401,44 +1404,38 @@ namespace psimpl
             If there are fewer than n point remaining the iterator will be incremented to the last
             point.
 
-            \sa ForwardCopy
+            \sa Backward
 
-            \param[in,out]    it            iterator to be advanced
-            \param[in]        n             number of points to advance
-            \param[in,out]    remaining    number of points remaining
+            \param[in,out] it           iterator to be advanced
+            \param[in]     n            number of points to advance
+            \param[in,out] remaining    number of points remaining after it
+            \return                     the actual amount of points that the iterator advanced
         */
-        inline void Forward (
+        inline unsigned Forward (
             InputIterator& it,
             unsigned n,
             unsigned& remaining)
         {
-            if (remaining) {
-                n = std::min (n, remaining);
-                std::advance (it, n * DIM);
-                remaining -= n;
-            }
+            n = std::min (n, remaining);
+            Advance (it, n);
+            remaining -= n;
+            return n;
         }
 
         /*!
-            \brief Increments a copy of the iterator by n points if possible.
-
-            If there are fewer than n point remaining the iterator will be incremented to the last
-            point.
+            \brief Decrements the iterator by 1 point.
 
             \sa Forward
 
-            \param[in]        it            iterator to be advanced
-            \param[in]        n             number of points to advance
-            \param[in,out]    remaining    number of points remaining
-            \return            an incremented copy of the input iterator
+            \param[in,out] it            iterator to be advanced
+            \param[in,out] remaining     number of points remaining after it
         */
-        inline InputIterator ForwardCopy (
-            InputIterator it,
-            unsigned n,
+        inline void Backward (
+            InputIterator& it,
             unsigned& remaining)
         {
-            Forward (it, n, remaining);
-            return it;
+            Advance (it, -1);
+            ++remaining;
         }
 
     private:
@@ -1623,7 +1620,7 @@ namespace psimpl
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] n        specifies 'each nth point'
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class ForwardIterator, class OutputIterator>
@@ -1646,7 +1643,7 @@ namespace psimpl
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] tol      radial (point-to-point) distance tolerance
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class ForwardIterator, class OutputIterator>
@@ -1670,7 +1667,7 @@ namespace psimpl
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] tol      perpendicular (segment-to-point) distance tolerance
         \param[in] repeat   the number of times to successively apply the PD routine.
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class ForwardIterator, class OutputIterator>
@@ -1694,7 +1691,7 @@ namespace psimpl
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] tol      perpendicular (segment-to-point) distance tolerance
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class ForwardIterator, class OutputIterator>
@@ -1717,7 +1714,7 @@ namespace psimpl
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] tol      perpendicular (point-to-line) distance tolerance
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class ForwardIterator, class OutputIterator>
@@ -1741,7 +1738,7 @@ namespace psimpl
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] min_tol  minimum distance tolerance
         \param[in] max_tol  maximum distance tolerance
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class ForwardIterator, class OutputIterator>
@@ -1764,21 +1761,21 @@ namespace psimpl
 
         \param[in] first      the first coordinate of the first polyline point
         \param[in] last       one beyond the last coordinate of the last polyline point
-        \param[in] look_ahead
         \param[in] tol        perpendicular (point-to-segment) distance tolerance
-        \param[out] result    destination of the simplified polyline
+        \param[in] look_ahead defines the size of the search region
+        \param[in] result     destination of the simplified polyline
         \return               one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class InputIterator, class OutputIterator>
     OutputIterator simplify_lang (
         InputIterator first,
         InputIterator last,
-        unsigned look_ahead,
         typename std::iterator_traits <InputIterator>::value_type tol,
+        unsigned look_ahead,
         OutputIterator result)
     {
         PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
-        return ps.Lang (first, last, look_ahead, tol, result);
+        return ps.Lang (first, last, tol, look_ahead, result);
     }
 
     /*!
@@ -1790,7 +1787,7 @@ namespace psimpl
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] tol      perpendicular (point-to-segment) distance tolerance
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class InputIterator, class OutputIterator>
@@ -1813,7 +1810,7 @@ namespace psimpl
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
         \param[in] count    the maximum number of points of the simplified polyline
-        \param[out] result  destination of the simplified polyline
+        \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
     template <unsigned DIM, class InputIterator, class OutputIterator>
@@ -1837,7 +1834,7 @@ namespace psimpl
         \param[in] original_last    one beyond the last coordinate of the last polyline point
         \param[in] simplified_first the first coordinate of the first simplified polyline point
         \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
-        \param[out] result          destination of the squared positional errors
+        \param[in] result           destination of the squared positional errors
         \param[out] valid           indicates if the computed positional errors are valid
         \return                     one beyond the last computed positional error
     */

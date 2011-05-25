@@ -195,6 +195,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestLang.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestLang.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TestMath.cpp"
 				>
 			</File>

@@ -24,35 +24,35 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#ifndef PSIMPL_TEST_SIMPLIFICATION
-#define PSIMPL_TEST_SIMPLIFICATION
+#ifndef PSIMPL_TEST_LANG
+#define PSIMPL_TEST_LANG
 
 
 #include "test.h"
-#include "TestNthPoint.h"
-#include "TestRadialDistance.h"
-#include "TestPerpendicularDistance.h"
-#include "TestReumannWitkam.h"
-#include "TestOpheim.h"
-#include "TestLang.h"
 
 
 namespace psimpl {
     namespace test
 {
-    class TestSimplification
+    //! Tests function psimpl::simplify_lang
+    class TestLang
     {
     public:
-        TestSimplification () {
-            TEST_RUN("nth point", TestNthPoint ());
-            TEST_RUN("radial distance", TestRadialDistance ());
-            TEST_RUN("perpendicular distance", TestPerpendicularDistance ());
-            TEST_RUN("reumann witkam", TestReumannWitkam ());
-            TEST_RUN("opheim", TestOpheim ());
-            TEST_RUN("lang", TestLang ());
-        }
+        TestLang ();
+
+    private:
+        void TestIncompletePoint ();
+        void TestNotEnoughPoints ();
+        void TestInvalidTol ();
+        void TestValidTol ();
+        void TestInvalidLookAhead ();
+        void TestValidLookAhead ();
+        void TestBasicSanity ();
+        void TestRandomIterator ();
+        void TestBidirectionalIterator ();
+        void TestReturnValue ();
     };
 }}
 
 
-#endif // PSIMPL_TEST_SIMPLIFICATION
+#endif // PSIMPL_TEST_LANG

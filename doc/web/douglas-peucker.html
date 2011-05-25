@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
-  <meta name="keywords" content="douglas-peucker, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
+  <meta name="description" content="Douglas-Peucker algorithm for polyline simplification">
+  <meta name="keywords" content="Douglas-Peucker, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
-  <title>psimpl - generic n-dimensional polyline simplification</title>
+  <title>psimpl - Douglas-Peucker simplification</title>
 </head>
 <body>
 <div id="main_container">
@@ -28,6 +28,7 @@
                 <li><a title="Perpendicular Distance" href="perpendicular-distance.html">Perpendicular Distance</a></li>
                 <li><a title="Reumann-Witkam" href="reumann-witkam.html">Reumann-Witkam</a></li>
                 <li><a title="Opheim" href="opheim.html">Opheim</a></li>
+                <li><a title="Lang" href="lang.html">Lang</a></li>
                 <li><a title="Douglas-Peucker" href="douglas-peucker.html">Douglas-Peucker</a></li>
             </ul>
         </div>
@@ -72,8 +73,8 @@ algorithm, and will be very fast when m is small. To make it even faster, the
 
 <pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_douglas_peucker</span> (
-    InputIterator begin,
-    InputIterator end,
+    InputIterator first,
+    InputIterator last,
     <span class="keyword">typename</span> std::iterator_traits &lt;InputIterator&gt;::value_type tol,
     OutputIterator result)</pre>
 
@@ -95,9 +96,10 @@ range: <code>result + m * DIM</code>.</p>
 <li><code>tol</code> is not zero.</li>
 </ol>
 
-<p>In case these requirements are not met, compile errors may occur, <b>or</b> the
-entire input range <code>[first, last)</code> is copied to the output range
-<code>[result, result + (last - first))</code>.</p>
+<p>In case these requirements are not met, the entire input range
+<code>[first, last)</code> is copied to the output range 
+<code>[result, result + (last - first))</code>, <b>or</b> compile errors may
+occur.</p> 
 
 <h2>Implementation Details</h2>
 
@@ -176,8 +178,8 @@ pre-processing step to speed up the algorithm.</p>
 
 <pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_douglas_peucker_n</span> (
-    InputIterator begin,
-    InputIterator end,
+    InputIterator first,
+    InputIterator last,
     <span class="keyword">unsigned</span> count,
     OutputIterator result)</pre>
 
@@ -197,9 +199,10 @@ range: <code>result + count</code>.</p>
 <li><code>count</code> is at least 2</li>
 </ol>
 
-<p>In case these requirements are not met, compile errors may occur, <b>or</b>
- the entire input range <code>[first, last)</code> is copied to the output range
- <code>[result, result + (last - first))</code>.</p>
+<p>In case these requirements are not met, the entire input range
+<code>[first, last)</code> is copied to the output range 
+<code>[result, result + (last - first))</code>, <b>or</b> compile errors may
+occur.</p> 
 
 <h2>Implementation Details</h2>
 

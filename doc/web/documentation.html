@@ -28,6 +28,7 @@
                 <li><a title="Perpendicular Distance" href="perpendicular-distance.html">Perpendicular Distance</a></li>
                 <li><a title="Reumann-Witkam" href="reumann-witkam.html">Reumann-Witkam</a></li>
                 <li><a title="Opheim" href="opheim.html">Opheim</a></li>
+                <li><a title="Lang" href="lang.html">Lang</a></li>
                 <li><a title="Douglas-Peucker" href="douglas-peucker.html">Douglas-Peucker</a></li>
             </ul>
         </div>
@@ -143,6 +144,7 @@
         <li>Lang simplification</li>
         <li>Visvalingam-Whyatt simplification</li>
         <li>Zhao-Saalfeld simplification</li>
+        <li>Computing Length errors due to simplification</li>
         <li>Computing Area errors due to simplification</li>
         </ul>
         
@@ -150,11 +152,15 @@
        
         <p>Other things that I want to look into include:</p>
         <ul>
+        <li>Make the input tolerance type a template parameter: currently the 
+        tolerance type is the same as the value type of the input iterators.
+        This means that when using integer coordinates, all distance calculations
+        will be performed using integers.</li>
         <li>Split Douglas-Peucker into two algorithms: a vanilla implementation
         and one that uses Radial Distance as a pre-processing step</li>
         <li>A seperate version that operates on <i>point</i> containers instead
         of <i>coordinate</i> containers</li>
-        <li>Positional error calculation that works for situations where the data
+        <li>Error calculations that works for situations where the data
         type of a simplification differs from the original polyline</li>
         </ul>
                 

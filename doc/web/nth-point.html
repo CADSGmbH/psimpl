@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-  <meta name="description" content="psimpl - nth point routine for polyline simplification">
+  <meta name="description" content="nth point routine for polyline simplification">
   <meta name="keywords" content="nth point, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
-  <title>psimpl - nth point routine</title>
+  <title>psimpl - nth point simplification</title>
 </head>
 <body>
 <div id="main_container">
@@ -28,6 +28,7 @@
                 <li><a title="Perpendicular Distance" href="perpendicular-distance.html">Perpendicular Distance</a></li>
                 <li><a title="Reumann-Witkam" href="reumann-witkam.html">Reumann-Witkam</a></li>
                 <li><a title="Opheim" href="opheim.html">Opheim</a></li>
+                <li><a title="Lang" href="lang.html">Lang</a></li>
                 <li><a title="Douglas-Peucker" href="douglas-peucker.html">Douglas-Peucker</a></li>
             </ul>
         </div>
@@ -81,9 +82,10 @@ OutputIterator <span class="algorithm">simplify_nth_point</span> (
  <li><code>n</code> is not zero</li> 
 </ol> 
  
-<p>In case these requirements are not met, compile errors may occur, <b>or</b>
- the entire input range <code>[first, last)</code> is copied to the output range
- <code>[result, result + (last - first))</code>.</p> 
+<p>In case these requirements are not met, the entire input range
+<code>[first, last)</code> is copied to the output range 
+<code>[result, result + (last - first))</code>, <b>or</b> compile errors may
+occur.</p> 
  
 <h2>Implementation Details</h2> 
  
