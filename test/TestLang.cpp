@@ -69,7 +69,7 @@ namespace psimpl {
         polyline.push_back (4.f);
         result.clear ();
 
-        psimpl::simplify_perpendicular_distance <DIM> (
+        psimpl::simplify_lang <DIM> (
             polyline.begin (), polyline.end (), tol, lookAhead,
             std::back_inserter (result));
 
@@ -283,81 +283,211 @@ namespace psimpl {
     }
 
     void TestLang::TestBasicSanity () {
-        FAIL("TODO");
-        // test with
-        //    spike at the start of the search window
-        //    spike at the end of the search window
-        //    spike one after the start of the polyline
+        const unsigned DIM = 2;
+        const unsigned count = 9;
+        const unsigned lookAhead = 3;
+
+        std::vector <float> polyline;
+        std::generate_n (std::back_inserter (polyline), count*DIM, StraightLine <float, DIM> ());
+
         //    spike at the start of the polyline
+        {
+            polyline [0*DIM+1] = 2.f;   // add a spike
+
+            float tol = 0.5f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 1, 4, 7, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+
+            polyline [0*DIM+1] = 0.f;   // remove the spike
+        }
+        {
+            polyline [0*DIM+1] = 2.f;   // add a spike
+
+            float tol = 2.1f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 4*DIM);
+            int keys [] = {0, 3, 6, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
+
+            polyline [0*DIM+1] = 0.f;   // remove the spike
+        }
+        //    spike one after the start of the polyline
+        {
+            polyline [1*DIM+1] = 2.f;   // add a spike
+
+            float tol = 0.5f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 1, 2, 5, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+
+            polyline [1*DIM+1] = 0.f;   // remove the spike
+        }
+        {
+            polyline [1*DIM+1] = 2.f;   // add a spike
+
+            float tol = 2.1f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 4*DIM);
+            int keys [] = {0, 3, 6, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
+
+            polyline [1*DIM+1] = 0.f;   // remove the spike
+        }
         //    spike one before the end of the polyline
+        {
+            polyline [7*DIM+1] = 2.f;   // add a spike
+
+            float tol = 0.5f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 3, 6, 7, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+
+            polyline [7*DIM+1] = 0.f;   // remove the spike
+        }
+        {
+            polyline [7*DIM+1] = 2.f;   // add a spike
+
+            float tol = 2.1f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 4*DIM);
+            int keys [] = {0, 3, 6, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
+
+            polyline [7*DIM+1] = 0.f;   // remove the spike
+        }
         //    spike at the end of the polyline
+        {
+            polyline [8*DIM+1] = 2.f;   // add a spike
+
+            float tol = 0.5f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 3, 6, 7, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+
+            polyline [8*DIM+1] = 0.f;   // remove the spike
+        }
+        {
+            polyline [8*DIM+1] = 2.f;   // add a spike
+
+            float tol = 2.1f;
+            std::vector <float> result;
+
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
+
+            VERIFY_TRUE(result.size () == 4*DIM);
+            int keys [] = {0, 3, 6, 8};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
+
+            polyline [8*DIM+1] = 0.f;   // remove the spike
+        }
     }
 
     void TestLang::TestRandomIterator () {
-        FAIL("TODO");
-        //const unsigned count = 7;
-        //{
-        //    const unsigned DIM = 2;
+        const unsigned count = 13;
+        const unsigned lookAhead = 5;
+        {
+            const unsigned DIM = 3;
+            float polyline [count*DIM];
+            std::generate_n (polyline, count*DIM, SquareToothLine <float, DIM> ());
+            float result [count*DIM];
+            float tol = 1.1f;
 
-        //    float polyline [count*DIM];
-        //    std::generate_n (polyline, count*DIM, SawToothLine <float, DIM> ());
-        //    float result [count*DIM];
-        //    float tol = 2.5f;
+            psimpl::simplify_lang <DIM> (
+                    polyline, polyline + count*DIM, tol, lookAhead,
+                    result);
 
-        //    psimpl::simplify_perpendicular_distance <DIM> (
-        //            polyline, polyline + count*DIM, tol,
-        //            result);
+            int keys [] = {0, 5, 9, 12};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline, result, std::vector <int> (keys, keys + 4)));
+        }
+        {
+            const unsigned DIM = 4;
+            std::vector <double> polyline, result;
+            std::generate_n (std::back_inserter (polyline), count*DIM, SquareToothLine <double, DIM> ());
+            double tol = 0.5;
 
-        //    int keys [] = {0, 2, 4, 5, 6};
-        //    VERIFY_TRUE(ComparePoints <DIM> (polyline, result, std::vector <int> (keys, keys + 5)));
-        //}
-        //{
-        //    const unsigned DIM = 3;
-        //    std::vector <double> polyline, result;
-        //    std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <double, DIM> ());
-        //    double tol = 2.5;
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::back_inserter (result));
 
-        //    psimpl::simplify_perpendicular_distance <DIM> (
-        //        polyline.begin (), polyline.end (), tol,
-        //        std::back_inserter (result));
+            VERIFY_TRUE(result.size () == 7*DIM);
+            int keys [] = {0, 3, 4, 6, 8, 10, 12};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 7)));
+        }
+        {
+            const unsigned DIM = 5;
+            std::deque <int> polyline, result;
+            std::generate_n (std::back_inserter (polyline), count*DIM, SquareToothLine <int, DIM> ());
+            int tol = 3;
 
-        //    VERIFY_TRUE(result.size () == 5*DIM);
-        //    int keys [] = {0, 2, 4, 5, 6};
-        //    VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
-        //}
-        //{
-        //    const unsigned DIM = 4;
-        //    std::deque <int> polyline, result;
-        //    std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <int, DIM> ());
-        //    int tol = 2;
+            psimpl::simplify_lang <DIM> (
+                    polyline.begin (), polyline.end (), tol, lookAhead,
+                    std::back_inserter (result));
 
-        //    psimpl::simplify_perpendicular_distance <DIM> (
-        //            polyline.begin (), polyline.end (), tol,
-        //            std::back_inserter (result));
-
-        //    VERIFY_TRUE(result.size () == 6*DIM);
-        //    int keys [] = {0, 2, 3, 4, 5, 6};
-        //    VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 6)));
-        //}
+            VERIFY_TRUE(result.size () == 4*DIM);
+            int keys [] = {0, 5, 10, 12};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
+        }
     }
 
     void TestLang::TestBidirectionalIterator () {
-        FAIL("TODO");
-        //const unsigned count = 10;
-        //{
-        //    const unsigned DIM = 2;
-        //    std::list <float> polyline, result;
-        //    std::generate_n (std::inserter (polyline, polyline.begin ()), count*DIM, SawToothLine <float, DIM> ());
-        //    float tol = 3.5f;
+        const unsigned count = 13;
+        const unsigned lookAhead = 5;
+        {
+            const unsigned DIM = 2;
+            std::list <float> polyline, result;
+            std::generate_n (std::inserter (polyline, polyline.begin ()), count*DIM, SquareToothLine <float, DIM> ());
+            float tol = 0.9f;
 
-        //    psimpl::simplify_perpendicular_distance <DIM> (
-        //        polyline.begin (), polyline.end (), tol,
-        //        std::inserter (result, result.begin ()));
+            psimpl::simplify_lang <DIM> (
+                polyline.begin (), polyline.end (), tol, lookAhead,
+                std::inserter (result, result.begin ()));
 
-        //    VERIFY_TRUE(result.size () == 7*DIM);
-        //    int keys [] = {0, 2, 4, 6, 7, 8, 9};
-        //    VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 7)));
-        //}
+            VERIFY_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 3, 6, 9, 12};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+        }
     }
 
     void TestLang::TestReturnValue () {

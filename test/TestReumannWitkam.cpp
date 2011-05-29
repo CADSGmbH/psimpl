@@ -57,7 +57,7 @@ namespace psimpl {
         std::generate_n (std::back_inserter (polyline), 4*DIM-1, StraightLine <float, DIM> ());
         std::vector <float> result;
 
-        psimpl::simplify_radial_distance <DIM> (
+        psimpl::simplify_reumann_witkam <DIM> (
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
