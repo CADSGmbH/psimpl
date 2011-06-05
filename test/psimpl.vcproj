@@ -243,6 +243,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestPositionalError.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestPositionalError.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TestRadialDistance.cpp"
 				>
 			</File>

@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-  <meta name="description" content="psimpl - a generic n-dimensional polyline simplification library">
-  <meta name="keywords" content="position error, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
+  <meta name="description" content="positional error calculation for polyline simplification">
+  <meta name="keywords" content="positional error, algorithm, psimpl, polyline, simplification, library, c++, simplify, reduce, decimate, approximate">
   <link rel="stylesheet" type="text/css" href="style.css">
-  <title>psimpl - generic n-dimensional polyline simplification</title>
+  <title>psimpl - positional error calculation</title>
 </head>
 <body>
 <div id="main_container">
@@ -28,6 +28,7 @@
                 <li><a title="Perpendicular Distance" href="perpendicular-distance.html">Perpendicular Distance</a></li>
                 <li><a title="Reumann-Witkam" href="reumann-witkam.html">Reumann-Witkam</a></li>
                 <li><a title="Opheim" href="opheim.html">Opheim</a></li>
+                <li><a title="Lang" href="lang.html">Lang</a></li>
                 <li><a title="Douglas-Peucker" href="douglas-peucker.html">Douglas-Peucker</a></li>
             </ul>
         </div>
@@ -55,12 +56,12 @@ Better performing simplification algorithms consistently produce lower positiona
 
 <h2>Interface</h2>
 
-<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> ForwardIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">compute_positional_errors2</span> (
-    InputIterator original_first,
-    InputIterator original_last,
-    InputIterator simplified_first,
-    InputIterator simplified_last,
+    ForwardIterator original_first,
+    ForwardIterator original_last,
+    ForwardIterator simplified_first,
+    ForwardIterator simplified_last,
     OutputIterator result,
     <span class="keyword">bool</span>* valid)</pre>
 
@@ -70,12 +71,12 @@ is calculated. Each positional error is copied to the output range
 <code>[result, result + (original_last - original_first))</code>. Note that both
 the original and simplified polyline must be defined using the same <code>value_type</code>.</p>
 
-<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> ForwardIterator&gt;
 math::Statistics <span class="algorithm">compute_positional_error_statistics</span> (
-    InputIterator original_first,
-    InputIterator original_last,
-    InputIterator simplified_first,
-    InputIterator simplified_last,
+    ForwardIterator original_first,
+    ForwardIterator original_last,
+    ForwardIterator simplified_first,
+    ForwardIterator simplified_last,
     <span class="keyword">bool</span>* valid)</pre>
 
 <p>Computes statistics (mean, max, sum, std) for the positional errors between the
@@ -87,8 +88,8 @@ range <code>[original_first, original_last)</code> and its simplification the ra
 
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
-<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code> (only for <code>compute_positional_errors2</code>)</li>
-<li>The <code>InputIterator</code> value type is convertible to <code>double</code> (only for <code>compute_positional_error_statistics</code>)</li>
+<li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code> (only for <code>compute_positional_errors2</code>)</li>
+<li>The <code>ForwardIterator</code> value type is convertible to <code>double</code> (only for <code>compute_positional_error_statistics</code>)</li>
 <li>The ranges <code>[original_first, original_last)</code> and <code>[simplified_first, simplified_last)</code> contain vertex coordinates in multiples of <code>DIM</code>, f.e.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 <li>The ranges <code>[original_first, original_last)</code> and <code>[simplified_first, simplified_last)</code> contain a minimum of 2 vertices</li>
 <li>The range <code>[simplified_first, simplified_last)</code> represents a simplification of the range <code>[original_first, original_last)</code>, meaning each point in the simplification has the exact same coordinates as some point from the original polyline.</li>

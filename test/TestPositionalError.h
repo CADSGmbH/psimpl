@@ -24,25 +24,33 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#ifndef PSIMPL_TEST_ERROR
-#define PSIMPL_TEST_ERROR
+#ifndef PSIMPL_TEST_POSITIONAL_ERROR
+#define PSIMPL_TEST_POSITIONAL_ERROR
 
 
 #include "test.h"
-#include "TestPositionalError.h"
 
 
 namespace psimpl {
     namespace test
 {
-    class TestError
+    //! Tests function psimpl::compute_positional_errors2
+    class TestPositionalError
     {
     public:
-        TestError () {
-            TEST_RUN("positional error", TestPositionalError ());
-        }
+        TestPositionalError ();
+
+    private:
+        void TestIncompletePoint ();
+        void TestNotEnoughPoints ();
+        void TestValidLines ();
+        void TestInvalidLines ();
+        void TestRandomIterator ();
+        void TestBidirectionalIterator ();
+        void TestForwardIterator ();
+        void TestReturnValue ();
     };
 }}
 
 
-#endif // PSIMPL_TEST_ERROR
+#endif // PSIMPL_TEST_POSITIONAL_ERROR

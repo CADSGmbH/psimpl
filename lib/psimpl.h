@@ -45,7 +45,10 @@
     ??-??-???? - Added Lang simplification; minor changes to input type requirements to improve
                  consistency among all algorithms; refactored all algos; fixed divide by zero
                  bug when using intergers; fixed a bug where incorrect output iterator was being
-                 returned under invalid input; documented input iterator requirements for each algo
+                 returned under invalid input; documented input iterator requirements for each algo;
+                 bug in douglas_peucker_n where not enough points could be returned; bug in 
+                 compute_positional_errors2 where the output iterator always had to be the same as
+                 the input iterator
 */
 
 /*!
@@ -1849,7 +1852,7 @@ namespace psimpl
         OutputIterator result,
         bool* valid)
     {
-        PolylineSimplification <DIM, InputIterator, InputIterator> ps;
+        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
         return ps.ComputePositionalErrors2 (original_first, original_last, simplified_first, simplified_last, result, valid);
     }
 
