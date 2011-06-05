@@ -424,6 +424,7 @@ namespace psimpl {
         }
     }
 
+    // different random access iterators, different value types, different dimensions
     void TestLang::TestRandomIterator () {
         const unsigned count = 13;
         const unsigned lookAhead = 5;
@@ -471,6 +472,7 @@ namespace psimpl {
         }
     }
 
+    // bidirectional iterator, different value types, different dimensions
     void TestLang::TestBidirectionalIterator () {
         const unsigned count = 13;
         const unsigned lookAhead = 5;

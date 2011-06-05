@@ -467,11 +467,11 @@ psimpl::simplify_opheim &lt;4&gt; (polyline.begin (), polyline.end (),
 
 <h3><a id="heading0028" name="heading0028">Interface</a></h3>
 
-<pre lang="C++">template &lt;unsigned DIM, class InputIterator, class OutputIterator&gt;
+<pre lang="C++">template &lt;unsigned DIM, class ForwardIterator, class OutputIterator&gt;
 OutputIterator simplify_douglas_peucker (
-    InputIterator first,
-    InputIterator last,
-    typename std::iterator_traits &lt;InputIterator&gt;::value_type tol,
+    ForwardIterator first,
+    ForwardIterator last,
+    typename std::iterator_traits &lt;ForwardIterator&gt;::value_type tol,
     OutputIterator result)</pre>
 
 <p>Applies the <em>Distance between points</em> routine followed by <em>Douglas-Peucker</em> approximation to the range [<code>first</code>, <code>last</code>) using the specified tolerance <code>tol</code>. The resulting simplified polyline is copied to the output range [<code>result</code>, <code>result</code> + <em>m</em>*<code>DIM</code>), where <em>m</em> is the number of vertices of the simplified polyline. The return value is the end of the output range: <code>result</code> + <em>m</em>*<code>DIM</code>.</p>
@@ -481,7 +481,7 @@ OutputIterator simplify_douglas_peucker (
 <ol>
 <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
 
-<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
+<li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 
 <li>The range [<code>first</code>, <code>last</code>) contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 

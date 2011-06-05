@@ -35,6 +35,7 @@
 #include "TestReumannWitkam.h"
 #include "TestOpheim.h"
 #include "TestLang.h"
+#include "TestDouglasPeucker.h"
 
 
 namespace psimpl {
@@ -50,6 +51,8 @@ namespace psimpl {
             TEST_RUN("reumann witkam", TestReumannWitkam ());
             TEST_RUN("opheim", TestOpheim ());
             TEST_RUN("lang", TestLang ());
+            TEST_RUN("douglas peucker", TestDouglasPeucker ());
+            TEST_RUN("douglas peucker n", TestDouglasPeuckerN ());
         }
     };
 }}

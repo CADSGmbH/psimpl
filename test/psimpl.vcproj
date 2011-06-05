@@ -191,6 +191,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestDouglasPeucker.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestDouglasPeucker.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TestError.h"
 				>
 			</File>

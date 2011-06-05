@@ -41,7 +41,8 @@ namespace psimpl {
     template <typename T, unsigned DIM>
     class StraightLine {
     public:
-        StraightLine () :
+        StraightLine (T stepSize = 1) :
+            mStepSize (stepSize),
             mCoord (0),
             mDimension (0)
         {}
@@ -51,13 +52,14 @@ namespace psimpl {
             T value = 0;
             if (mDimension == 0) {
                 value = mCoord;
-                mCoord += 1;
+                mCoord += mStepSize;
             }
             ++mDimension;
             return value;
         }
         
     private:
+        T mStepSize;
         T mCoord;
         unsigned mDimension;
     };
@@ -65,7 +67,8 @@ namespace psimpl {
     template <typename T, unsigned DIM>
     class SawToothLine {
     public:
-        SawToothLine () :
+        SawToothLine (T stepSize = 1) :
+            mStepSize (stepSize),
             mCoord (0),
             mToothSize (0),
             mDimension (0),
@@ -78,7 +81,7 @@ namespace psimpl {
             if (mDimension == 0) {
                 mToggle = !mToggle;
                 value = mCoord;
-                mCoord += 1;
+                mCoord += mStepSize;
             }
             else if (mToggle && mDimension == 1) {
                 mToothSize += 1;
@@ -89,6 +92,7 @@ namespace psimpl {
         }
         
     private:
+        T mStepSize;
         T mCoord;
         T mToothSize;
         unsigned mDimension;

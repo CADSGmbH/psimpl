@@ -83,11 +83,12 @@ namespace psimpl {
 
     int TestRun::Result () {
         std::cout << std::string(80, '_') << std::endl;
-        std::cout << "Tests passed: " << sTestsPassed << std::endl;
-        std::cout << "Tests failed: " << sTestsFailed << std::endl;
-        std::cout << "Tests disabled: " << sTestsDisabled << std::endl;
-        std::cout << "Total errors: " << sErrors << std::endl;
-        std::cout << "Total unhandeled exceptions: " << sExceptions << std::endl;
+        std::cout << "finished unit tests:" << std::endl;
+        std::cout << "passed = " << sTestsPassed << std::endl;
+        std::cout << "failed = " << sTestsFailed << std::endl;
+        std::cout << "disabled = " << sTestsDisabled << std::endl;
+        std::cout << "total errors = " << sErrors << std::endl;
+        std::cout << "total unhandeled exceptions = " << sExceptions << std::endl;
         return sTestsFailed;
     }
 }}

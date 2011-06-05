@@ -1047,11 +1047,12 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
+            2- The InputIterator type models the concept of a forward iterator
+            3- The InputIterator value type is convertible to a value type of the output iterator
+            4- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains at least 2 vertices
-            5- tol is not 0
+            5- The range [first, last) contains at least 2 vertices
+            6- tol is not 0
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -1074,10 +1075,9 @@ namespace psimpl
                                    : 0;
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || tol == 0) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
-            // (radial) distance between points routine
+            // radial distance routine as preprocessing
             util::scoped_array <value_type> reduced (coordCount);     // radial distance results
             PolylineSimplification <DIM, InputIterator, value_type*> psimpl_to_array;
             ptr_diff_type reducedCoordCount = std::distance (reduced.get (),
@@ -1122,11 +1122,12 @@ namespace psimpl
 
             Input (Type) requirements:
             1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
+            2- The InputIterator type models the concept of an input iterator
+            3- The InputIterator value type is convertible to a value type of the output iterator
+            4- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
-            4- The range [first, last) contains a minimum of count vertices
-            5- count is at least 2
+            5- The range [first, last) contains a minimum of count vertices
+            6- count is at least 2
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -1151,8 +1152,7 @@ namespace psimpl
                                    : 0;
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount <= static_cast <diff_type> (count) || count < 2) {
-                std::copy (first, last, result);
-                return result;
+                return std::copy (first, last, result);
             }
 
             // copy coords
@@ -1512,7 +1512,7 @@ namespace psimpl
                     subPoly = stack.top ();     // take a sub poly
                     stack.pop ();               // and find its key
                     KeyInfo keyInfo = FindKey (coords, subPoly.first, subPoly.last);
-                    if (keyInfo.index != subPoly.last && tol2 < keyInfo.dist2) {
+                    if (keyInfo.index && tol2 < keyInfo.dist2) {
                         // store the key if valid
                         keys [keyInfo.index / DIM] = 1;
                         // split the polyline at the key and recurse
@@ -1557,20 +1557,22 @@ namespace psimpl
                 while (!queue.empty ()) {
                     subPoly = queue.top ();     // take a sub poly
                     queue.pop ();
-                    if (subPoly.keyInfo.index != subPoly.last) {
-                        // store the key if valid
-                        keys [subPoly.keyInfo.index / DIM] = 1;
-                        // check point count tolerance
-                        keyCount++;
-                        if (keyCount == countTol) {
-                            break;
-                        }
-                        // split the polyline at the key and recurse
-                        SubPolyAlt left (subPoly.first, subPoly.keyInfo.index);
-                        left.keyInfo = FindKey (coords, left.first, left.last);
+                    // store the key
+                    keys [subPoly.keyInfo.index / DIM] = 1;
+                    // check point count tolerance
+                    keyCount++;
+                    if (keyCount == countTol) {
+                        break;
+                    }
+                    // split the polyline at the key and recurse
+                    SubPolyAlt left (subPoly.first, subPoly.keyInfo.index);
+                    left.keyInfo = FindKey (coords, left.first, left.last);
+                    if (left.keyInfo.index) {
                         queue.push (left);
-                        SubPolyAlt right (subPoly.keyInfo.index, subPoly.last);
-                        right.keyInfo = FindKey (coords, right.first, right.last);
+                    }
+                    SubPolyAlt right (subPoly.keyInfo.index, subPoly.last);
+                    right.keyInfo = FindKey (coords, right.first, right.last);
+                    if (right.keyInfo.index) {
                         queue.push (right);
                     }
                 }
