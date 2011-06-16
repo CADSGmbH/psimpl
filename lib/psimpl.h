@@ -48,7 +48,7 @@
                  returned under invalid input; documented input iterator requirements for each algo;
                  bug in douglas_peucker_n where not enough points could be returned; bug in 
                  compute_positional_errors2 where the output iterator always had to be the same as
-                 the input iterator
+                 the input iterator; fixed a bug in compute_positional_error_statistics 
 */
 
 /*!
@@ -105,7 +105,7 @@
 namespace psimpl
 {
     /*!
-        \brief TODO
+        \brief Contains utility functions and classes.
     */
     namespace util
     {
@@ -1319,19 +1319,21 @@ namespace psimpl
             bool* valid)
         {
             diff_type pointCount = std::distance (original_first, original_last) / DIM;
-            util::scoped_array <value_type> errors (pointCount);
-            // TODO scoped_array <double> ???
+            util::scoped_array <double> errors (pointCount);
+            PolylineSimplification <DIM, InputIterator, double*> ps;
 
-            PolylineSimplification <DIM, InputIterator, value_type*> ps;
-            ps.ComputePositionalErrors2 (original_first, original_last,
-                                         simplified_first, simplified_last,
-                                         errors.get (), valid);
+            diff_type errorCount = 
+                std::distance (
+                    errors.get (), 
+                    ps.ComputePositionalErrors2 (original_first, original_last,
+                                                 simplified_first, simplified_last,
+                                                 errors.get (), valid));
 
-            std::transform (errors.get (), errors.get () + pointCount,
+            std::transform (errors.get (), errors.get () + errorCount,
                             errors.get (),
                             std::ptr_fun <double, double> (std::sqrt));
-            // TODO works with integer value_type ???
-            return math::compute_statistics (errors.get (), errors.get () + pointCount);
+
+            return math::compute_statistics (errors.get (), errors.get () + errorCount);
         }
 
     private:

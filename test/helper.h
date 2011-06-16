@@ -23,6 +23,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/*
+    psimpl - generic n-dimensional polyline simplification
+    Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
+
+    This file is part of psimpl, and is hosted at SourceForge:
+    http://sourceforge.net/projects/psimpl/
+*/
 
 #ifndef PSIMPL_HELPER
 #define PSIMPL_HELPER
@@ -38,6 +45,11 @@ namespace psimpl {
     static float float_epsilon = 0.001f;
     static double double_epsilon = 0.00001;
 
+    /*!
+        \brief Generates a straight line, one coordinate at a time
+
+        example: (0,0) (1,0) (2,0) (3,0) (4,0) (5,0) etc
+    */
     template <typename T, unsigned DIM>
     class StraightLine {
     public:
@@ -59,11 +71,16 @@ namespace psimpl {
         }
         
     private:
-        T mStepSize;
-        T mCoord;
-        unsigned mDimension;
+        T mStepSize;            //!< distance between points along x-axis
+        T mCoord;               //!< x-axis value of the current point
+        unsigned mDimension;    //!< dimension of the current point (x-axis = 0)
     };
 
+    /*!
+        \brief Generates a saw-tooth line, one coordinate at a time
+
+        example: (0,0) (1,1) (2,0) (3,2) (4,0) (5,3) (6,0) etc
+    */
     template <typename T, unsigned DIM>
     class SawToothLine {
     public:
@@ -92,13 +109,18 @@ namespace psimpl {
         }
         
     private:
-        T mStepSize;
-        T mCoord;
-        T mToothSize;
-        unsigned mDimension;
-        bool mToggle;
+        T mStepSize;            //!< distance between points along x-axis
+        T mCoord;               //!< x-axis value of the current point
+        T mToothSize;           //!< height of the tooth (y-axis), increases by one after each tooth
+        unsigned mDimension;    //!< dimension of the current point (x-axis = 0)
+        bool mToggle;           //!< indicates if the current point is a tooth
     };
 
+    /*!
+        \brief Generates a block-tooth line, one coordinate at a time
+
+        example: (0,0) (1,0) (1,1) (2,1) (2,0) (3,0) (4,0) (4,1) (4,2) (5,2) etc
+    */
     template <typename T, unsigned DIM>
     class SquareToothLine {
     public:
@@ -152,26 +174,30 @@ namespace psimpl {
         }
             
     private:
-        T mPosition [DIM];
-        T mToothSize;
-        T mCurrentSize;
-        unsigned mDimension;
-        unsigned mDirection;
+        T mPosition [DIM];      //!< precomputed coordinates for each dimension
+        T mToothSize;           //!< height of the tooth (y-axis), increases by one after each tooth
+        T mCurrentSize;         //!< height of the current point (y-axis)
+        unsigned mDimension;    //!< dimension of the current point (x-axis = 0)
+        unsigned mDirection;    //!< direction of the current tooth (0,2=forward, 1=up, 3=down)
     };
 
+    //! \brief exact compare of two values of the same type
     template <class T>
     inline bool CompareValue (T a, T b) {
         return a == b;
     }
 
+    //! \brief compare of two float values using float_epsilon
     inline bool CompareValue (float a, float b) {
         return fabs (a - b) < float_epsilon;
     }
 
+    //! \brief compare of two double values using double_epsilon
     inline bool CompareValue (double a, double b) {
         return fabs (a - b) < double_epsilon;
     }
 
+    //! \brief compares each coordinate of two points
     template <unsigned DIM, class InputIterator1, class InputIterator2>
     bool ComparePoint (InputIterator1 p1, InputIterator2 p2) {
         for (unsigned d=0; d <DIM; ++d) {
@@ -184,6 +210,7 @@ namespace psimpl {
         return true;
     }
 
+    //! \brief compares only the end points of two polylines
     template <unsigned DIM, class InputIterator1, class InputIterator2>
     bool CompareEndPoints (InputIterator1 polyline_begin, InputIterator1 polyline_end, InputIterator2 simplification_begin, InputIterator1 simplification_end) {
         // compare first point
@@ -198,6 +225,7 @@ namespace psimpl {
         return ComparePoint <DIM> (polyline_begin, simplification_begin);
     }
 
+    //! \brief compares a polyline and its simplification, based on the given key indices
     template <unsigned DIM, class InputIterator1, class InputIterator2>
     bool ComparePoints(InputIterator1 polyline, InputIterator2 simplification, const std::vector<int>& keys) {
         for (size_t i=0; i<keys.size (); ++i) {

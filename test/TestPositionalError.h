@@ -23,6 +23,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/*
+    psimpl - generic n-dimensional polyline simplification
+    Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
+
+    This file is part of psimpl, and is hosted at SourceForge:
+    http://sourceforge.net/projects/psimpl/
+*/
 
 #ifndef PSIMPL_TEST_POSITIONAL_ERROR
 #define PSIMPL_TEST_POSITIONAL_ERROR
@@ -34,7 +41,7 @@
 namespace psimpl {
     namespace test
 {
-    //! Tests function psimpl::compute_positional_errors2
+    //! Tests function psimpl::compute_positional_errors2 and psimpl::compute_positional_error_statistics
     class TestPositionalError
     {
     public:
@@ -50,6 +57,7 @@ namespace psimpl {
         void TestForwardIterator ();
         void TestReturnValue ();
     };
+
 }}
 
 

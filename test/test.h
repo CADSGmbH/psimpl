@@ -23,6 +23,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/*
+    psimpl - generic n-dimensional polyline simplification
+    Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
+
+    This file is part of psimpl, and is hosted at SourceForge:
+    http://sourceforge.net/projects/psimpl/
+*/
 
 #ifndef PSIMPL_TEST
 #define PSIMPL_TEST
@@ -31,9 +38,10 @@
 #include <string>
 #include <iostream>
 
-
+//! \brief initializes the root level test run
 #define TEST_INIT() psimpl::test::TestRun::Init()
 
+//! \brief defines a test run with a name and a (test)function to execute
 #define TEST_RUN(name, function)                        \
     try {                                               \
         psimpl::test::TestRun run (name);               \
@@ -43,12 +51,14 @@
         psimpl::test::TestRun::Exception (e.what ());   \
     }
 
+//! \brief disables a specific test run; replace with TEST_RUN to enable
 #define TEST_DISABLED(name, function)                   \
     {                                                   \
         psimpl::test::TestRun run (name);               \
         run.Disable ();                                 \
     }
 
+//! \brief outputs the results of the root level test run
 #define TEST_RESULT() psimpl::test::TestRun::Result()
 
 #define PASS() // do nothing
@@ -65,6 +75,7 @@
 namespace psimpl {
     namespace test
 {
+    //! \ brief represents a single, possibly nested, test run
     class TestRun
     {
     public:
@@ -82,15 +93,15 @@ namespace psimpl {
         static std::string Offset ();
 
     private:
-        static int sDepth;
-        static int sTestsPassed;
-        static int sTestsFailed;
-        static int sTestsDisabled;
-        static int sErrors;
-        static int sExceptions;
+        static int sDepth;          //!< nesting depth of the current executing test run
+        static int sTestsPassed;    //!< total number of passed test runs
+        static int sTestsFailed;    //!< total number of failed test runs
+        static int sTestsDisabled;  //!< total number of disabled test runs
+        static int sErrors;         //!< total number of test run errors
+        static int sExceptions;     //!< total number of test run exceptions
 
-        int mCount;
-        bool mDisabled;
+        int mCount;                 //!< total number of test run errors/exceptions that occurred before this test run started
+        bool mDisabled;             //!< indicates if this test run is disabled
     };
 }}
 

@@ -23,6 +23,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/*
+    psimpl - generic n-dimensional polyline simplification
+    Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
+
+    This file is part of psimpl, and is hosted at SourceForge:
+    http://sourceforge.net/projects/psimpl/
+*/
 
 #include "test.h"
 
@@ -48,6 +55,7 @@ namespace psimpl {
     TestRun::~TestRun () {
         --sDepth;
 
+        // update counters
         if (mDisabled)
             ++sTestsDisabled;
         else if (mCount == sErrors + sExceptions)
@@ -61,6 +69,7 @@ namespace psimpl {
         mDisabled = true;
     }
 
+    //! \brief returns a whitespace string used for log indentation
     std::string TestRun::Offset () {
         return std::string (sDepth * 2, ' ');
     }

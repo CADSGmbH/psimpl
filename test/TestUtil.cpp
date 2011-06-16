@@ -23,6 +23,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/*
+    psimpl - generic n-dimensional polyline simplification
+    Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
+
+    This file is part of psimpl, and is hosted at SourceForge:
+    http://sourceforge.net/projects/psimpl/
+*/
 
 #include "TestUtil.h"
 #include "test.h"
