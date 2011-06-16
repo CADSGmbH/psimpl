@@ -12,12 +12,23 @@ Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 27-02-2011 - Added Opheim simplification, and functions for computing positional
              errors due to simplification; renamed simplify_douglas_peucker_alt
              to simplify_douglas_peucker_n
+18-06-2011   Added Lang simplification; fixed divide by zero bug when using
+             integers; fixed a bug where incorrect output iterators were
+             returned under invalid input; fixed a bug in douglas_peucker_n 
+             where an incorrect number of points could be returned; fixed a bug
+             in compute_positional_errors2 that required the output and input
+             iterator types to be the same; fixed a bug in
+             compute_positional_error_statistics where invalid statistics could
+             be returned under questionable input; documented input iterator
+             requirements for each algorithm; miscellaneous refactoring of most
+             algorithms.
 --------------------------------------------------------------------------------
 'psimpl' is licensed under the Mozilla Public License Version 1.1 (MPL), see
 the accompanying LICENSE.txt file. Alternatively a copy of this license may be
 obtained from http://www.mozilla.org/MPL/.
 --------------------------------------------------------------------------------
-'psimpl' is hosted at SourceForge: http://sourceforge.net/projects/psimpl/
+'psimpl' is hosted at SourceForge: http://sourceforge.net/projects/psimpl/ and
+has a dedicated website: http://psimpl.sf.net
 Originally psimpl was released as part of the article 'Polyline Simplification'
 at The Code Project: 
 http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
@@ -35,7 +46,9 @@ Simplification
   segment defined by their left and right neighbors
 * Reumann-Witkam - Shifts a strip along the polyline and removes points that
   fall outside
-* Opheim - a constrained version of Reumann-Witkam
+* Opheim - A constrained version of Reumann-Witkam
+* Lang - Similar to the Perpendicular distance routine, but instead of looking
+  only at direct neighbors, an entire search region is processed
 * Douglas-Peucker - A classic simplification algorithm that provides an
   excellent approximation of the original line
 * A variation on the Douglas-Peucker algorithm - Slower, but yields better
@@ -55,7 +68,7 @@ The demo package contains a win32 demo application for 'psimpl'. The demo
 application allows you to experiment with the different simplification
 algorithms. It can generate pseudo random 2D-polylines of up to 10.000.000
 vertices in various types of containers. The boundingbox of the generated
-polyline is always n x n, where n is the amount of vertices of the generated
+polyline is always 2n x n, where n is the amount of vertices of the generated
 polyline. Use this fact to specify a proper distance tolerance.
 
 Internally, the generated and simplified polyline are always stored in a

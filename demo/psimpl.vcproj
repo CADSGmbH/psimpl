@@ -198,7 +198,7 @@
 			Name="doc"
 			>
 			<File
-				RelativePath=".\doc\Doxyfile"
+				RelativePath="..\doc\Doxyfile"
 				>
 			</File>
 		</Filter>

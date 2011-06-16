@@ -34,21 +34,20 @@
 
     28-09-2010 - Initial version
     23-10-2010 - Changed license from CPOL to MPL
-    26-10-2010 - Clarified input (type) requirements, and changed the
-                 behavior of the algorithms under invalid input
-    01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam routines;
-                 moved all functions related to distance calculations to the math namespace
+    26-10-2010 - Clarified input (type) requirements, and changed the behavior of the algorithms
+                 under invalid input
+    01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam routines; moved all
+                 functions related to distance calculations to the math namespace
     10-12-2010 - Fixed a bug in the perpendicular distance routine
-    27-02-2011 - Added Opheim simplification, and functions for computing positional errors
-                 due to simplification; renamed simplify_douglas_peucker_alt to
-                 simplify_douglas_peucker_n
-    ??-??-???? - Added Lang simplification; minor changes to input type requirements to improve
-                 consistency among all algorithms; refactored all algos; fixed divide by zero
-                 bug when using intergers; fixed a bug where incorrect output iterator was being
-                 returned under invalid input; documented input iterator requirements for each algo;
-                 bug in douglas_peucker_n where not enough points could be returned; bug in 
-                 compute_positional_errors2 where the output iterator always had to be the same as
-                 the input iterator; fixed a bug in compute_positional_error_statistics 
+    27-02-2011 - Added Opheim simplification, and functions for computing positional errors due to
+                 simplification; renamed simplify_douglas_peucker_alt to simplify_douglas_peucker_n
+    18-06-2011 - Added Lang simplification; fixed divide by zero bug when using integers; fixed a
+                 bug where incorrect output iterators were returned under invalid input; fixed a bug
+                 in douglas_peucker_n where an incorrect number of points could be returned; fixed a
+                 bug in compute_positional_errors2 that required the output and input iterator types
+                 to be the same; fixed a bug in compute_positional_error_statistics where invalid
+                 statistics could be returned under questionable input; documented input iterator
+                 requirements for each algorithm; miscellaneous refactoring of most algorithms.
 */
 
 /*!
@@ -73,7 +72,9 @@
       segment defined by their left and right neighbors
     \li Reumann-Witkam - Shifts a strip along the polyline and removes points that
       fall outside
-    \li Opheim - a constrained version of Reumann-Witkam
+    \li Opheim - A constrained version of Reumann-Witkam
+    \li Lang - Similar to the Perpendicular distance routine, but instead of looking
+      only at direct neighbors, an entire search region is processed.
     \li Douglas-Peucker - A classic simplification algorithm that provides an
       excellent approximation of the original line
     \li A variation on the Douglas-Peucker algorithm - Slower, but yields better

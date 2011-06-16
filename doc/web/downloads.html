@@ -25,8 +25,8 @@
     32-bit demo application for Windows:</p>
 
     <div id="button">
-        <a title="psimpl v6 source code" href="http://sourceforge.net/projects/psimpl/files/v6/psimpl_v6_src.zip/download">source code</a>
-        <a title="psimpl v6 demo application" href="http://sourceforge.net/projects/psimpl/files/v6/psimpl_v6_win32_demo.zip/download">win32 demo</a>
+        <a title="psimpl v7 source code" href="http://sourceforge.net/projects/psimpl/files/v7/psimpl_v7_src.zip/download">source code</a>
+        <a title="psimpl v7 demo application" href="http://sourceforge.net/projects/psimpl/files/v7/psimpl_v7_win32_demo.zip/download">win32 demo</a>
     </div>
     
     <p>The latest version can also be downloaded from <a title="Alternative download location" href="http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx">The Code Project</a>.
@@ -41,6 +41,26 @@
     <hr>
     
     <h1>Changelog</h1>
+    
+    <div class="news">
+        <div class="title">v7</div>
+        <hr>
+        <div class="date">18-06-2011</div>
+        <p>Added the <b class="algo">Lang</b> simplification algorithm, and
+        documented the input iterator type requirements for each algorithm.
+        <br><br>
+        Fixed several bugs:
+        <ul>
+        <li>divide by zero problem when using integers</li>
+        <li>incorrect output iterators returned under invalid input</li>
+        <li><code>douglas_peucker_n</code> - an incorrect number of
+        points could be returned</li>
+        <li><code>compute_positional_errors2</code> - required identical input
+        iterator and output iterator types</li>
+        <li><code>compute_positional_error_statistics</code> - invalid
+        statistics could be returned under questionable input</li>
+        </p>
+    </div>
     
     <div class="news">
         <div class="title">v6</div>

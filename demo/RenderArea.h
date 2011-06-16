@@ -28,20 +28,7 @@
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
     This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/ Originally psimpl was released
-    as part of the article 'Polyline Simplification' at The Code Project:
-    http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
-
-    28-09-2010 - Initial version
-    23-10-2010 - Changed license from CPOL to MPL
-    26-10-2010 - Clarified input (type) requirements, and changed the
-                 behavior of the algorithms under invalid input
-    01-12-2010 - Added the nth point, perpendicular distance and Reumann-Witkam routines;
-                 moved all functions related to distance calculations to the math namespace
-    10-12-2010 - Fixed a bug in the perpendicular distance routine
-    27-02-2011 - Added Opheim simplification, and functions for computing positional errors
-                 due to simplification; renamed simplify_douglas_peucker_alt to
-                 simplify_douglas_peucker_n
+    http://sourceforge.net/projects/psimpl/
 */
 
 #ifndef RENDERAREA_H
