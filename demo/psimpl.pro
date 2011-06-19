@@ -16,10 +16,6 @@ HEADERS += MainWindow.h \
     ../lib/psimpl.h
 FORMS += MainWindow.ui
 OTHER_FILES += \
-    doc/Doxyfile \
-    README.txt \
-    LICENSE.txt \
-    psimpl-demo_resource.rc \
     resource.rc \
     ../README.txt \
     ../LICENSE.txt

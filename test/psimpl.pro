@@ -14,7 +14,13 @@ HEADERS += \
     TestError.h \
     test.h \
     helper.h \
-    ../lib/psimpl.h
+    ../lib/psimpl.h \
+    TestPositionalError.h \
+    TestPerpendicularDistance.h \
+    TestOpheim.h \
+    TestLang.h \
+    TestDouglasPeucker.h \
+    TestReumannWitkam.h
 
 SOURCES += \
     TestRadialDistance.cpp \
@@ -22,4 +28,10 @@ SOURCES += \
     TestMath.cpp \
     test.cpp \
     main.cpp \
-    TestUtil.cpp
+    TestUtil.cpp \
+    TestReumannWitkam.cpp \
+    TestPositionalError.cpp \
+    TestPerpendicularDistance.cpp \
+    TestOpheim.cpp \
+    TestLang.cpp \
+    TestDouglasPeucker.cpp

@@ -501,7 +501,7 @@ namespace psimpl {
 
     void TestPositionalError::TestReturnValue () {
         const unsigned DIM = 3;
-        const unsigned count = 11;
+        const int count = 11;
         bool valid = false;
 
         float polyline [count*DIM];

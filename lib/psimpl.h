@@ -1082,14 +1082,14 @@ namespace psimpl
                 return std::copy (first, last, result);
             }
             // radial distance routine as preprocessing
-            util::scoped_array <value_type> reduced (coordCount);     // radial distance results
+            util::scoped_array <value_type> reduced (coordCount);   // radial distance results
             PolylineSimplification <DIM, InputIterator, value_type*> psimpl_to_array;
             ptr_diff_type reducedCoordCount = std::distance (reduced.get (),
                 psimpl_to_array.RadialDistance (first, last, tol, reduced.get ()));
             ptr_diff_type reducedPointCount = reducedCoordCount / DIM;
 
             // douglas-peucker approximation
-            util::scoped_array <unsigned char> keys (pointCount);     // douglas-peucker results
+            util::scoped_array <uint8_t> keys (pointCount);         // douglas-peucker results
             DPHelper::Approximate (reduced.get (), reducedCoordCount, tol, keys.get ());
 
             // copy all keys
@@ -1167,7 +1167,7 @@ namespace psimpl
             }
 
             // douglas-peucker approximation
-            util::scoped_array <unsigned char> keys (pointCount);
+            util::scoped_array <uint8_t> keys (pointCount);
             DPHelper::ApproximateN (coords.get (), coordCount, count, keys.get ());
 
             // copy keys
@@ -1499,12 +1499,12 @@ namespace psimpl
                 const value_type* coords,
                 ptr_diff_type coordCount,
                 value_type tol,
-                unsigned char* keys)
+                uint8_t* keys)
             {
                 value_type tol2 = tol * tol;    // squared distance tolerance
                 ptr_diff_type pointCount = coordCount / DIM;
                 // zero out keys
-                memset (keys, 0, pointCount * sizeof (unsigned char));
+                std::fill_n (keys, pointCount, 0);
                 keys [0] = 1;                   // the first point is always a key
                 keys [pointCount - 1] = 1;      // the last point is always a key
 
@@ -1540,11 +1540,11 @@ namespace psimpl
                 const value_type* coords,
                 ptr_diff_type coordCount,
                 unsigned countTol,
-                unsigned char* keys)
+                uint8_t* keys)
             {
                 ptr_diff_type pointCount = coordCount / DIM;
                 // zero out keys
-                memset (keys, 0, pointCount * sizeof (unsigned char));
+                std::fill_n (keys, pointCount, 0);
                 keys [0] = 1;                   // the first point is always a key
                 keys [pointCount - 1] = 1;      // the last point is always a key
                 unsigned keyCount = 2;
