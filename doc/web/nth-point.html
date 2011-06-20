@@ -75,11 +75,11 @@ OutputIterator <span class="algorithm">simplify_nth_point</span> (
 <h2>Input (Type) Requirements</h2> 
  
 <ol> 
- <li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li> 
+ <li><code>DIM</code> is not 0, where <code>DIM</code> represents the dimension of the polyline</li> 
  <li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li> 
  <li>The range <code>[first, last)</code> contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li> 
  <li>The range <code>[first, last)</code> contains at least 2 vertices</li> 
- <li><code>n</code> is not zero</li> 
+ <li><code>n</code> is not 0</li> 
 </ol> 
  
 <p>In case these requirements are not met, the entire input range

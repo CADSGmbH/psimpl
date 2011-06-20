@@ -472,13 +472,13 @@ namespace psimpl
             simplified polyline. The return value is the end of the output range: result + m*DIM.
 
             Input (Type) requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
+            1- DIM is not 0, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
             3- The input iterator value type is convertible to a value type of the OutputIterator
             4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
             5- The range [first, last) contains at least 2 vertices
-            6- n is not zero
+            6- n is not 0
 
             In case these requirements are not met, the entire input range [first, last) is copied
             to the output range [result, result + (last - first)) OR compile errors may occur.
@@ -534,7 +534,7 @@ namespace psimpl
             end of the output range: result + m*DIM.
 
             Input (Type) requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
+            1- DIM is not 0, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
             3- The input iterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
@@ -677,7 +677,7 @@ namespace psimpl
             end of the output range: result + m*DIM.
 
             Input (Type) requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
+            1- DIM is not 0, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
             3- The input iterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains only vertex coordinates in multiples of DIM, f.e.:
@@ -763,7 +763,7 @@ namespace psimpl
             The return value is the end of the output range: result + m*DIM.
 
             Input (Type) Requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
+            1- DIM is not 0, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
             3- The input iterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains vertex coordinates in multiples of DIM,
@@ -850,7 +850,7 @@ namespace psimpl
             The return value is the end of the output range: result + m*DIM.
 
             Input (Type) Requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
+            1- DIM is not 0, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
             3- The input iterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains vertex coordinates in multiples of DIM,
@@ -956,7 +956,7 @@ namespace psimpl
             The return value is the end of the output range: result + m*DIM.
 
             Input (Type) Requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
+            1- DIM is not 0, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a bidirectional iterator
             3- The InputIterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains vertex coordinates in multiples of DIM,
@@ -1050,7 +1050,7 @@ namespace psimpl
             The return value is the end of the output range: result + m*DIM.
 
             Input (Type) requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
+            1- DIM is not 0, where DIM represents the dimension of the polyline
             2- The InputIterator type models the concept of a forward iterator
             3- The InputIterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
@@ -1089,7 +1089,7 @@ namespace psimpl
             ptr_diff_type reducedPointCount = reducedCoordCount / DIM;
 
             // douglas-peucker approximation
-            util::scoped_array <uint8_t> keys (pointCount);         // douglas-peucker results
+            util::scoped_array <unsigned char> keys (pointCount);         // douglas-peucker results
             DPHelper::Approximate (reduced.get (), reducedCoordCount, tol, keys.get ());
 
             // copy all keys
@@ -1125,8 +1125,8 @@ namespace psimpl
             return value is the end of the output range: result + count.
 
             Input (Type) requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator type models the concept of an input iterator
+            1- DIM is not 0, where DIM represents the dimension of the polyline
+            2- The InputIterator type models the concept of a forward iterator
             3- The InputIterator value type is convertible to a value type of the output iterator
             4- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
                x, y, z, x, y, z, x, y, z when DIM = 3
@@ -1167,7 +1167,7 @@ namespace psimpl
             }
 
             // douglas-peucker approximation
-            util::scoped_array <uint8_t> keys (pointCount);
+            util::scoped_array <unsigned char> keys (pointCount);
             DPHelper::ApproximateN (coords.get (), coordCount, count, keys.get ());
 
             // copy keys
@@ -1198,14 +1198,15 @@ namespace psimpl
             \image html psimpl_pos_error.png
 
             Input (Type) requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to a value type of the output iterator
-            3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+            1- DIM is not 0, where DIM represents the dimension of the polyline
+            2- The InputIterator type models the concept of a forward iterator
+            3- The InputIterator value type is convertible to a value type of the output iterator
+            4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
                when DIM = 3
-            4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+            5- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain a minimum of 2 vertices
-            5- The range [simplified_first, simplified_last) represents a simplification of the
+            6- The range [simplified_first, simplified_last) represents a simplification of the
                range [original_first, original_last), meaning each point in the simplification
                has the exact same coordinates as some point from the original polyline
 
@@ -1217,7 +1218,7 @@ namespace psimpl
             \param[in] simplified_first the first coordinate of the first simplified polyline point
             \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
             \param[in] result           destination of the squared positional errors
-            \param[out] valid           indicates if the computed positional errors are valid
+            \param[out] valid           [optional] indicates if the computed positional errors are valid
             \return                     one beyond the last computed positional error
         */
         OutputIterator ComputePositionalErrors2 (
@@ -1226,7 +1227,7 @@ namespace psimpl
             InputIterator simplified_first,
             InputIterator simplified_last,
             OutputIterator result,
-            bool* valid)
+            bool* valid=0)
         {
             diff_type original_coordCount = std::distance (original_first, original_last);
             diff_type original_pointCount = DIM     // protect against zero DIM
@@ -1289,14 +1290,15 @@ namespace psimpl
             [simplified_first, simplified_last).
 
             Input (Type) requirements:
-            1- DIM is not zero, where DIM represents the dimension of the polyline
-            2- The InputIterator value type is convertible to double
-            3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+            1- DIM is not 0, where DIM represents the dimension of the polyline
+            2- The InputIterator type models the concept of a forward iterator
+            3- The InputIterator value type is convertible to double
+            4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
                when DIM = 3
-            4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+            5- The ranges [original_first, original_last) and [simplified_first, simplified_last)
                contain a minimum of 2 vertices
-            5- The range [simplified_first, simplified_last) represents a simplification of the
+            6- The range [simplified_first, simplified_last) represents a simplification of the
                range [original_first, original_last), meaning each point in the simplification
                has the exact same coordinates as some point from the original polyline
 
@@ -1309,7 +1311,7 @@ namespace psimpl
             \param[in] original_last    one beyond the last coordinate of the last polyline point
             \param[in] simplified_first the first coordinate of the first simplified polyline point
             \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
-            \param[out] valid           indicates if the computed statistics are valid
+            \param[out] valid           [optional] indicates if the computed statistics are valid
             \return                     the computed statistics
         */
         math::Statistics ComputePositionalErrorStatistics (
@@ -1317,7 +1319,7 @@ namespace psimpl
             InputIterator original_last,
             InputIterator simplified_first,
             InputIterator simplified_last,
-            bool* valid)
+            bool* valid=0)
         {
             diff_type pointCount = std::distance (original_first, original_last) / DIM;
             util::scoped_array <double> errors (pointCount);
@@ -1499,7 +1501,7 @@ namespace psimpl
                 const value_type* coords,
                 ptr_diff_type coordCount,
                 value_type tol,
-                uint8_t* keys)
+                unsigned char* keys)
             {
                 value_type tol2 = tol * tol;    // squared distance tolerance
                 ptr_diff_type pointCount = coordCount / DIM;
@@ -1540,7 +1542,7 @@ namespace psimpl
                 const value_type* coords,
                 ptr_diff_type coordCount,
                 unsigned countTol,
-                uint8_t* keys)
+                unsigned char* keys)
             {
                 ptr_diff_type pointCount = coordCount / DIM;
                 // zero out keys
@@ -1774,15 +1776,15 @@ namespace psimpl
         \param[in] result     destination of the simplified polyline
         \return               one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class BidirectionalIterator, class OutputIterator>
     OutputIterator simplify_lang (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type tol,
+        BidirectionalIterator first,
+        BidirectionalIterator last,
+        typename std::iterator_traits <BidirectionalIterator>::value_type tol,
         unsigned look_ahead,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, BidirectionalIterator, OutputIterator> ps;
         return ps.Lang (first, last, tol, look_ahead, result);
     }
 
@@ -1798,14 +1800,14 @@ namespace psimpl
         \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_douglas_peucker (
-        InputIterator first,
-        InputIterator last,
-        typename std::iterator_traits <InputIterator>::value_type tol,
+        ForwardIterator first,
+        ForwardIterator last,
+        typename std::iterator_traits <ForwardIterator>::value_type tol,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.DouglasPeucker (first, last, tol, result);
     }
 
@@ -1821,14 +1823,14 @@ namespace psimpl
         \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator simplify_douglas_peucker_n (
-        InputIterator first,
-        InputIterator last,
+        ForwardIterator first,
+        ForwardIterator last,
         unsigned count,
         OutputIterator result)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.DouglasPeuckerN (first, last, count, result);
     }
 
@@ -1843,19 +1845,19 @@ namespace psimpl
         \param[in] simplified_first the first coordinate of the first simplified polyline point
         \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
         \param[in] result           destination of the squared positional errors
-        \param[out] valid           indicates if the computed positional errors are valid
+        \param[out] valid           [optional] indicates if the computed positional errors are valid
         \return                     one beyond the last computed positional error
     */
-    template <unsigned DIM, class InputIterator, class OutputIterator>
+    template <unsigned DIM, class ForwardIterator, class OutputIterator>
     OutputIterator compute_positional_errors2 (
-        InputIterator original_first,
-        InputIterator original_last,
-        InputIterator simplified_first,
-        InputIterator simplified_last,
+        ForwardIterator original_first,
+        ForwardIterator original_last,
+        ForwardIterator simplified_first,
+        ForwardIterator simplified_last,
         OutputIterator result,
-        bool* valid)
+        bool* valid=0)
     {
-        PolylineSimplification <DIM, InputIterator, OutputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, OutputIterator> ps;
         return ps.ComputePositionalErrors2 (original_first, original_last, simplified_first, simplified_last, result, valid);
     }
 
@@ -1869,18 +1871,18 @@ namespace psimpl
         \param[in] original_last    one beyond the last coordinate of the last polyline point
         \param[in] simplified_first the first coordinate of the first simplified polyline point
         \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
-        \param[out] valid           indicates if the computed statistics are valid
+        \param[out] valid           [optional] indicates if the computed statistics are valid
         \return                     the computed statistics
     */
-    template <unsigned DIM, class InputIterator>
+    template <unsigned DIM, class ForwardIterator>
     math::Statistics compute_positional_error_statistics (
-        InputIterator original_first,
-        InputIterator original_last,
-        InputIterator simplified_first,
-        InputIterator simplified_last,
-        bool* valid)
+        ForwardIterator original_first,
+        ForwardIterator original_last,
+        ForwardIterator simplified_first,
+        ForwardIterator simplified_last,
+        bool* valid=0)
     {
-        PolylineSimplification <DIM, InputIterator, InputIterator> ps;
+        PolylineSimplification <DIM, ForwardIterator, ForwardIterator> ps;
         return ps.ComputePositionalErrorStatistics (original_first, original_last, simplified_first, simplified_last, valid);
     }
 }

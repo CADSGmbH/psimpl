@@ -63,7 +63,7 @@ OutputIterator <span class="algorithm">compute_positional_errors2</span> (
     ForwardIterator simplified_first,
     ForwardIterator simplified_last,
     OutputIterator result,
-    <span class="keyword">bool</span>* valid)</pre>
+    <span class="keyword">bool</span>* valid=0)</pre>
 
 <p>For each point in the range <code>[original_first, original_last)</code> the
 <b>squared</b> distance to the simplification <code>[simplified_first, simplified_last)</code>
@@ -77,7 +77,7 @@ math::Statistics <span class="algorithm">compute_positional_error_statistics</sp
     ForwardIterator original_last,
     ForwardIterator simplified_first,
     ForwardIterator simplified_last,
-    <span class="keyword">bool</span>* valid)</pre>
+    <span class="keyword">bool</span>* valid=0)</pre>
 
 <p>Computes statistics (mean, max, sum, std) for the positional errors between the
 range <code>[original_first, original_last)</code> and its simplification the range
@@ -87,7 +87,7 @@ range <code>[original_first, original_last)</code> and its simplification the ra
 <h2>Input (Type) Requirements</h2>
 
 <ol>
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+<li><code>DIM</code> is not 0, where <code>DIM</code> represents the dimension of the polyline</li>
 <li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code> (only for <code>compute_positional_errors2</code>)</li>
 <li>The <code>ForwardIterator</code> value type is convertible to <code>double</code> (only for <code>compute_positional_error_statistics</code>)</li>
 <li>The ranges <code>[original_first, original_last)</code> and <code>[simplified_first, simplified_last)</code> contain vertex coordinates in multiples of <code>DIM</code>, f.e.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
@@ -112,7 +112,7 @@ output range. So I needed some way of letting the caller know this. One option
 would be to throw an exception. However, I designed <b class="proj">psimpl</b>
 to not itself throw any exceptions (see documentation section <b>The code</b>).
 Instead I opted for the optional <code><span class="keyword">boolean</span></code>
- argument.</p>
+ argument <code>valid</code>.</p>
 
 <h2>Usage</h2>
 

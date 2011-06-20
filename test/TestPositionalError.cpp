@@ -527,6 +527,14 @@ namespace psimpl {
                     simplification, simplification,
                     result, NULL))
             == 0);
+        ASSERT_TRUE (
+            std::distance (
+                result, 
+                psimpl::compute_positional_errors2 <DIM> (
+                    polyline, polyline + count*DIM,
+                    simplification, simplification,
+                    result))
+            == 0);
         ASSERT_FALSE(valid);
 
         // valid input
@@ -545,6 +553,14 @@ namespace psimpl {
                     polyline, polyline + count*DIM,
                     simplification, simplification + count*DIM,
                     result, NULL))
+            == count);
+        ASSERT_TRUE (
+            std::distance (
+                result, 
+                psimpl::compute_positional_errors2 <DIM> (
+                    polyline, polyline + count*DIM,
+                    simplification, simplification + count*DIM,
+                    result))
             == count);
         ASSERT_TRUE(valid);
     }

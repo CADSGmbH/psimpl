@@ -89,11 +89,11 @@ range: <code>result + m * DIM</code>.</p>
 <h2>Input (Type) Requirements</h2>
 
 <ol>
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
+<li><code>DIM</code> is not 0, where <code>DIM</code> represents the dimension of the polyline</li>
 <li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 <li>The range <code>[first, last)</code> contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 <li>The range <code>[first, last)</code> contains at least 2 vertices</li>
-<li><code>tol</code> is not zero.</li>
+<li><code>tol</code> is not 0.</li>
 </ol>
 
 <p>In case these requirements are not met, the entire input range
@@ -176,10 +176,10 @@ pre-processing step to speed up the algorithm.</p>
 
 <h2>Interface</h2>
 
-<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> InputIterator, <span class="keyword">class</span> OutputIterator&gt;
+<pre><span class="keyword">template</span> &lt;<span class="keyword">unsigned</span> DIM, <span class="keyword">class</span> ForwardIterator, <span class="keyword">class</span> OutputIterator&gt;
 OutputIterator <span class="algorithm">simplify_douglas_peucker_n</span> (
-    InputIterator first,
-    InputIterator last,
+    ForwardIterator first,
+    ForwardIterator last,
     <span class="keyword">unsigned</span> count,
     OutputIterator result)</pre>
 
@@ -192,8 +192,8 @@ range: <code>result + count</code>.</p>
 <h2>Input (Type) Requirements</h2>
 
 <ol>
-<li><code>DIM</code> is not zero, where <code>DIM</code> represents the dimension of the polyline</li>
-<li>The <code>InputIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
+<li><code>DIM</code> is not 0, where <code>DIM</code> represents the dimension of the polyline</li>
+<li>The <code>ForwardIterator</code> value type is convertible to the value type of the <code>OutputIterator</code></li>
 <li>The range <code>[first, last)</code> contains vertex coordinates in multiples of <code>DIM</code>, e.g.: x, y, z, x, y, z, x, y, z when <code>DIM</code> = 3</li>
 <li>The range <code>[first, last)</code> contains a minimum of <code>count</code> vertices</li>
 <li><code>count</code> is at least 2</li>

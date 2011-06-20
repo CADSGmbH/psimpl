@@ -764,7 +764,7 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>psimpl::RenderArea</class>
    <extends>QFrame</extends>
-   <header>renderarea.h</header>
+   <header>RenderArea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
