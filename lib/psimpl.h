@@ -28,10 +28,48 @@
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
     This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/ Originally psimpl was released
-    as part of the article 'Polyline Simplification' at The Code Project:
-    http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
+    http://sourceforge.net/projects/psimpl/
+*/
 
+/*!
+    \mainpage psimpl - generic n-dimensional polyline simplification
+
+<pre>
+    Author  - Elmar de Koning
+    Support - edekoning@gmail.com
+    Website - http://psimpl.sf.net
+    Article - http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
+    License - MPL 1.1
+</pre><br>
+
+    \section sec_psimpl psimpl
+<pre>
+    'psimpl' is a c++ polyline simplification library that is generic, easy to use, and supports
+    the following algorithms:
+
+    Simplification
+    + Nth point - A naive algorithm that keeps only each nth point
+    + Distance between points - Removes successive points that are clustered together
+    + Perpendicular distance - Removes points based on their distance to the line segment defined
+      by their left and right neighbors
+    + Reumann-Witkam - Shifts a strip along the polyline and removes points that fall outside
+    + Opheim - A constrained version of Reumann-Witkam
+    + Lang - Similar to the Perpendicular distance routine, but instead of looking only at direct
+      neighbors, an entire search region is processed
+    + Douglas-Peucker - A classic simplification algorithm that provides an excellent approximation
+      of the original line
+    + A variation on the Douglas-Peucker algorithm - Slower, but yields better results at lower resolutions
+
+    Errors
+    + positional error - Distance of each polyline point to its simplification
+
+    All the algorithms have been implemented in a single standalone C++ header using an STL-style
+    interface that operates on input and output iterators. Polylines can be of any dimension, and
+    defined using floating point or signed integer data types.
+</pre><br>
+    
+    \section sec_changelog changelog
+<pre>
     28-09-2010 - Initial version
     23-10-2010 - Changed license from CPOL to MPL
     26-10-2010 - Clarified input (type) requirements, and changed the behavior of the algorithms
@@ -48,45 +86,7 @@
                  to be the same; fixed a bug in compute_positional_error_statistics where invalid
                  statistics could be returned under questionable input; documented input iterator
                  requirements for each algorithm; miscellaneous refactoring of most algorithms.
-*/
-
-/*!
-    \mainpage psimpl - generic n-dimensional polyline simplification
-
-<pre>
-    Author  - Elmar de Koning
-    Support - edekoning@gmail.com
-    Website - http://psimpl.sf.net
-    License - MPL 1.1
-</pre><br>
-
-    \section sec_psimpl psimpl
-    'psimpl' is a C++ polyline simplification library that is, generic, easy to use,
-    and supports the following algorithms:
-
-    Simplification
-    \li Nth point - A naive algorithm that keeps only each nth point
-    \li Distance between points - Removes successive points that are clustered
-      together
-    \li Perpendicular distance - Removes points based on their distance to the line
-      segment defined by their left and right neighbors
-    \li Reumann-Witkam - Shifts a strip along the polyline and removes points that
-      fall outside
-    \li Opheim - A constrained version of Reumann-Witkam
-    \li Lang - Similar to the Perpendicular distance routine, but instead of looking
-      only at direct neighbors, an entire search region is processed.
-    \li Douglas-Peucker - A classic simplification algorithm that provides an
-      excellent approximation of the original line
-    \li A variation on the Douglas-Peucker algorithm - Slower, but yields better
-      results at lower resolutions
-
-    Errors
-    \li positional error - Distance of each polyline point to its simplification
-
-    All the algorithms have been implemented in a single standalone C++ header
-    using an STL-style interface that operates on input and output iterators.
-    Polylines can be of any dimension, and defined using floating point or signed
-    integer data types.
+</pre>
 */
 
 #ifndef PSIMPL_GENERIC

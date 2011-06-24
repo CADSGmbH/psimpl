@@ -82,7 +82,7 @@ allowed me to quickly add new container types.
 Note that the entire application is single threaded (sorry for being lazy),
 meaning it could go 'not responding' during a long running simplification.
 
-The demo application was made using Qt 4.7.0, Qt Creator 2.0.1 and Visual Studio
+The demo application was made using Qt 4.7.3, Qt Creator 2.1.0 and Visual Studio
 2008 Express. Complete source code is included.
 
 ================================================================================
