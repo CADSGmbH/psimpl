@@ -91,6 +91,8 @@ private slots:
     void on_simplifyPushButton_clicked ();
     void on_algorithmComboBox_currentIndexChanged(int index);
     void on_generatePushButton_clicked ();
+    void on_savePolylineButton_clicked ();
+    void on_saveSimplificationButton_clicked ();
     void SlotGeneratingPolyline ();
     void SlotConvertingPolyline ();
     void SlotSimplifyingPolyline ();

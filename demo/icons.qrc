@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file alias="save">disk.png</file>
+    </qresource>
+</RCC>

@@ -20,3 +20,6 @@ OTHER_FILES += \
     ../README.txt \
     ../LICENSE.txt
 RC_FILE = resource.rc
+
+RESOURCES += \
+    icons.qrc

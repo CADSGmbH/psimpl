@@ -35,7 +35,9 @@
 #include "ui_MainWindow.h"
 #include "DPWorker.h"
 #include <cmath>
+#include <QtCore/QTextStream>
 #include <QtGui/QToolButton>
+#include <QtGui/QFileDialog>
 
 
 namespace psimpl {
@@ -96,6 +98,8 @@ namespace psimpl {
         ui->togglePushButton->setEnabled(
             ui->generatedPolylineCheckBox->isChecked () !=
             ui->simplifiedPolylineCheckBox->isChecked ());
+        ui->savePolylineButton->setEnabled(true);
+        ui->saveSimplificationButton->setEnabled(true);
     }
 
     void MainWindow::DisableButtons ()
@@ -103,6 +107,8 @@ namespace psimpl {
         ui->generatePushButton->setDisabled (true);
         ui->simplifyPushButton->setDisabled (true);
         ui->togglePushButton->setDisabled (true);
+        ui->savePolylineButton->setDisabled(true);
+        ui->saveSimplificationButton->setDisabled(true);
     }
 
     void MainWindow::on_generatePushButton_clicked ()
@@ -190,6 +196,40 @@ namespace psimpl {
     {
         ui->renderArea->SetKeepAspectRatio (checked);
         update();
+    }
+
+    void MainWindow::on_savePolylineButton_clicked ()
+    {
+        QString filename =
+            QFileDialog::getSaveFileName (
+                this, tr ("Save generated polyline"), "", tr ("CSV (*.csv)"));
+
+        QFile file (filename);
+         if (!file.open (QIODevice::WriteOnly | QIODevice::Text))
+             return;
+
+         QTextStream out (&file);
+         for (int i=0; i<mWorker->mGeneratedCoords.size (); i+=2)
+         {
+             out << mWorker->mGeneratedCoords [i] << ',' << mWorker->mGeneratedCoords [i+1] << '\n';
+         }
+    }
+
+    void MainWindow::on_saveSimplificationButton_clicked ()
+    {
+        QString filename =
+            QFileDialog::getSaveFileName (
+                this, tr ("Save simplified polyline"), "", tr ("CSV (*.csv)"));
+
+        QFile file (filename);
+         if (!file.open (QIODevice::WriteOnly | QIODevice::Text))
+             return;
+
+         QTextStream out (&file);
+         for (int i=0; i<mWorker->mSimplifiedCoords.size (); i+=2)
+         {
+             out << mWorker->mSimplifiedCoords [i] << ',' << mWorker->mSimplifiedCoords [i+1] << '\n';
+         }
     }
 
     void MainWindow::SlotGeneratingPolyline () {

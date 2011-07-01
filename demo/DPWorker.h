@@ -90,7 +90,7 @@ namespace psimpl {
         void SignalSimplifiedPolyline (int duration, QVector <qreal>& polyline);
         void SignalSimplifiedPolyline (int duration, QVector <qreal>& polyline, double max, double sum, double mean, double std);
 
-    private:
+    public:
         QVector <qreal> mGeneratedCoords;
         QVector <qreal> mSimplifiedCoords;
     };
