@@ -1,6 +1,3 @@
-# -------------------------------------------------
-# Project created by QtCreator 2010-06-05T12:09:26
-# -------------------------------------------------
 TARGET = psimpl-test
 TEMPLATE = app
 CONFIG += console

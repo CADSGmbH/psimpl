@@ -35,6 +35,7 @@
 #include "ui_MainWindow.h"
 #include "DPWorker.h"
 #include <cmath>
+#include <limits>
 #include <QtCore/QTextStream>
 #include <QtGui/QToolButton>
 #include <QtGui/QFileDialog>
@@ -98,8 +99,9 @@ namespace psimpl {
         ui->togglePushButton->setEnabled(
             ui->generatedPolylineCheckBox->isChecked () !=
             ui->simplifiedPolylineCheckBox->isChecked ());
-        ui->savePolylineButton->setEnabled(true);
-        ui->saveSimplificationButton->setEnabled(true);
+        ui->loadPolylineButton->setEnabled (true);
+        ui->savePolylineButton->setEnabled (true);
+        ui->saveSimplificationButton->setEnabled (true);
     }
 
     void MainWindow::DisableButtons ()
@@ -107,8 +109,9 @@ namespace psimpl {
         ui->generatePushButton->setDisabled (true);
         ui->simplifyPushButton->setDisabled (true);
         ui->togglePushButton->setDisabled (true);
-        ui->savePolylineButton->setDisabled(true);
-        ui->saveSimplificationButton->setDisabled(true);
+        ui->loadPolylineButton->setDisabled (true);
+        ui->savePolylineButton->setDisabled (true);
+        ui->saveSimplificationButton->setDisabled (true);
     }
 
     void MainWindow::on_generatePushButton_clicked ()
@@ -142,11 +145,11 @@ namespace psimpl {
             break;
 
         case OPHEIM:
-            mWorker->SimplifyOp ((Container)ui->polyTypeComboBox->currentIndex (), ui->minOpLineEdit->text (), ui->maxOpLineEdit->text ());
+            mWorker->SimplifyOp ((Container)ui->polyTypeComboBox->currentIndex (), ui->opMinLineEdit->text (), ui->opMaxLineEdit->text ());
             break;
 
         case LANG:
-            mWorker->SimplifyLa ((Container)ui->polyTypeComboBox->currentIndex (), ui->laLineEdit->text (), ui->lookAheadLaSpinBox->value ());
+            mWorker->SimplifyLa ((Container)ui->polyTypeComboBox->currentIndex (), ui->laLineEdit->text (), ui->laLookAheadSpinBox->value ());
             break;
 
         case DOUGLAS_PEUCKER:
@@ -198,38 +201,113 @@ namespace psimpl {
         update();
     }
 
-    void MainWindow::on_savePolylineButton_clicked ()
+    void MainWindow::on_loadPolylineButton_clicked ()
     {
+        QApplication::setOverrideCursor (QCursor (Qt::WaitCursor));
+        DisableButtons ();
+
         QString filename =
-            QFileDialog::getSaveFileName (
-                this, tr ("Save generated polyline"), "", tr ("CSV (*.csv)"));
+            QFileDialog::getOpenFileName (
+                this, tr ("Load generated polyline"), "", tr ("CSV (*.poly)"));
 
         QFile file (filename);
-         if (!file.open (QIODevice::WriteOnly | QIODevice::Text))
-             return;
+        if (!file.open (QIODevice::ReadOnly | QIODevice::Text)) {
+            ui->statusBar->showMessage (QString ("Failed to open %1").arg (filename));
+        }
+        else {
+            mWorker->mGeneratedCoords.clear ();
+            mWorker->mSimplifiedCoords.clear ();
 
-         QTextStream out (&file);
-         for (int i=0; i<mWorker->mGeneratedCoords.size (); i+=2)
-         {
-             out << mWorker->mGeneratedCoords [i] << ',' << mWorker->mGeneratedCoords [i+1] << '\n';
-         }
+            QTextStream in (&file);
+            while (!in.atEnd ()) {
+                QString line = in.readLine ();
+                QStringList list = line.split (',', QString::SkipEmptyParts);
+                if (list.size () < 2) {
+                    break;
+                }
+                mWorker->mGeneratedCoords.push_back (list [0].toDouble ());
+                mWorker->mGeneratedCoords.push_back (list [1].toDouble ());
+            }
+            ui->statusBar->showMessage (QString ("Loaded %1").arg (filename));
+            ui->renderArea->SetGeneratedPolyline (mWorker->mGeneratedCoords);
+            ui->simplGroupBox->setEnabled (true);
+        }
+        EnableButtons ();
+        QApplication::restoreOverrideCursor ();
+        update();
+    }
+
+    void MainWindow::on_savePolylineButton_clicked ()
+    {
+        QApplication::setOverrideCursor (QCursor (Qt::WaitCursor));
+        DisableButtons ();
+
+        QString filename =
+            QFileDialog::getSaveFileName (
+                this, tr ("Save generated polyline"), "", tr ("CSV (*.poly)"));
+
+        QFile file (filename);
+        if (!file.open (QIODevice::WriteOnly | QIODevice::Text)) {
+            ui->statusBar->showMessage (QString ("Failed to open %1").arg (filename));
+        }
+        else {
+            QTextStream out (&file);
+            out.setRealNumberPrecision (std::numeric_limits <double>::digits10 + 1);
+            for (int i=0; i<mWorker->mGeneratedCoords.size (); i+=2)
+            {
+                out << mWorker->mGeneratedCoords [i] << ',' << mWorker->mGeneratedCoords [i+1] << '\n';
+            }
+            file.close ();
+            ui->statusBar->showMessage (QString ("Saved %1").arg (filename));
+        }
+        EnableButtons ();
+        QApplication::restoreOverrideCursor ();
+        update();
+
+        QFileInfo info (file);
+        filename = info.completeBaseName ().append(".algo");
+        file.setFileName(info.path ().append ("/").append (filename));
+
+        if (file.open (QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out (&file);
+            out.setDevice (&file);
+            out << "np," << ui->npSpinBox->value () << '\n';
+            out << "rd," << ui->rdLineEdit->text () << '\n';
+            out << "pd," << ui->pdLineEdit->text () << ',' << ui->pdSpinBox->value () << '\n';
+            out << "rw," << ui->rwLineEdit->text () << '\n';
+            out << "op," << ui->opMinLineEdit->text () << ',' << ui->opMaxLineEdit->text () << '\n';
+            out << "la," << ui->laLineEdit->text () << ',' << ui->laLookAheadSpinBox->value () << '\n';
+            out << "dp," << ui->dpLineEdit->text () << '\n';
+            out << "dpn," << ui->dpvSpinBox->value () << '\n';
+            file.close ();
+        }
     }
 
     void MainWindow::on_saveSimplificationButton_clicked ()
     {
+        QApplication::setOverrideCursor (QCursor (Qt::WaitCursor));
+        DisableButtons ();
+
         QString filename =
             QFileDialog::getSaveFileName (
-                this, tr ("Save simplified polyline"), "", tr ("CSV (*.csv)"));
+                this, tr ("Save simplified polyline"), "", tr ("CSV (*.simpl)"));
 
         QFile file (filename);
-         if (!file.open (QIODevice::WriteOnly | QIODevice::Text))
-             return;
-
-         QTextStream out (&file);
-         for (int i=0; i<mWorker->mSimplifiedCoords.size (); i+=2)
-         {
-             out << mWorker->mSimplifiedCoords [i] << ',' << mWorker->mSimplifiedCoords [i+1] << '\n';
-         }
+        if (!file.open (QIODevice::WriteOnly | QIODevice::Text)) {
+            ui->statusBar->showMessage (QString ("Failed to open %1").arg (filename));
+        }
+        else {
+            QTextStream out (&file);
+            for (int i=0; i<mWorker->mSimplifiedCoords.size (); i+=2)
+            {
+                out << mWorker->mSimplifiedCoords [i] << ',' << mWorker->mSimplifiedCoords [i+1] << '\n';
+            }
+            file.close ();
+            ui->statusBar->showMessage (QString ("Saved %1").arg (filename));
+        }
+        EnableButtons ();
+        QApplication::restoreOverrideCursor ();
+        update();
     }
 
     void MainWindow::SlotGeneratingPolyline () {

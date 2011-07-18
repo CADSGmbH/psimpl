@@ -49,11 +49,6 @@ p, li { white-space: pre-wrap; }
       <property name="frameShadow">
        <enum>QFrame::Sunken</enum>
       </property>
-      <zorder>generatePushButton</zorder>
-      <zorder>savePolylineButton</zorder>
-      <zorder>simplifyPushButton</zorder>
-      <zorder>simplifyPushButton</zorder>
-      <zorder>saveSimplificationButton</zorder>
      </widget>
     </item>
     <item>
@@ -155,6 +150,17 @@ p, li { white-space: pre-wrap; }
              </property>
              <property name="text">
               <string>Generate</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="loadPolylineButton">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="icons.qrc">
+               <normaloff>:/icon/open</normaloff>:/icon/open</iconset>
              </property>
             </widget>
            </item>
@@ -334,14 +340,14 @@ p, li { white-space: pre-wrap; }
               <number>0</number>
              </property>
              <item>
-              <widget class="QLineEdit" name="minOpLineEdit">
+              <widget class="QLineEdit" name="opMinLineEdit">
                <property name="text">
                 <string>0</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="maxOpLineEdit">
+              <widget class="QLineEdit" name="opMaxLineEdit">
                <property name="text">
                 <string>0</string>
                </property>
@@ -362,7 +368,7 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="lookAheadLaSpinBox">
+              <widget class="QSpinBox" name="laLookAheadSpinBox">
                <property name="maximum">
                 <number>10000000</number>
                </property>
