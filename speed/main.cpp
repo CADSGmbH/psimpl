@@ -52,7 +52,7 @@ typedef QVector <Setting> Settings;
 
 
 const unsigned DIM = 2;
-const unsigned repeat = 5;
+const unsigned repeat = 25;
 
 // -----------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ class BenchmarkController
 {
 public:
     BenchmarkController (unsigned& result) : mResult (result), mRepeat (repeat) { mTicks = getticks (); }
-    ~BenchmarkController () { mResult = elapsed (getticks (), mTicks) / repeat; }
+    ~BenchmarkController () { mResult = (getticks () - mTicks) / repeat; }
     void Next () { --mRepeat; }
     bool IsDone () { return mRepeat == 0; }
 private:
@@ -87,7 +87,7 @@ void Benchmark (double* tmpFirst, double* tmpLast, Iterator first, Iterator last
         int simplificationSize = 0;
         psimpl::math::Statistics stats;
 
-        std::cout << setting.first.toStdString () << ":\t";
+        std::cout << setting.first.toStdString () << ",";
 
         if (setting.first == "np") {
             BENCHMARK(elapsed) {
@@ -150,8 +150,8 @@ void Benchmark (double* tmpFirst, double* tmpLast, Iterator first, Iterator last
             continue;
         }
 
-        std::cout << simplificationSize / DIM << " (" << ((float) simplificationSize / (float) polylineSize) * 100.f << "%)\t" << elapsed << "\t";
-        std::cout << stats.mean << ", " << stats.std << ", " << stats.max << ", " << stats.sum << std::endl;
+        std::cout << simplificationSize / DIM << "," << (int) (((float) simplificationSize / (float) polylineSize) * 100.f) << "%," << elapsed << ",";
+        std::cout << stats.mean << "," << stats.std << "," << stats.max << ", " << stats.sum << std::endl;
     }
 }
 
@@ -207,28 +207,32 @@ void Benchmark (const QString& polylinePath, const QString& settingsPath)
     // test with double[]
     {
         std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using: double*" << std::endl;
+        std::cout << "using double []:" << std::endl;
+        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         const double* poly = polyline.constData ();
         Benchmark (first, last, poly, poly + polyline.size (), settings);
     }
     // test with std::vector <double>
     {
         std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using: std::vector <double>" << std::endl;
+        std::cout << "using std::vector <double>:" << std::endl;
+        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         std::vector <double> poly (polyline.constBegin (), polyline.constEnd ());
         Benchmark (first, last, poly.begin (), poly.end (), settings);
     }
     // test with std::deque <double>
     {
         std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using: std::deque <double>" << std::endl;
+        std::cout << "using std::deque <double>:" << std::endl;
+        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         std::deque <double> poly (polyline.constBegin (), polyline.constEnd ());
         Benchmark (first, last, poly.begin (), poly.end (), settings);
     }
     // test with std::list <double>
     {
         std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using: std::list <double>" << std::endl;
+        std::cout << "using std::list <double>:" << std::endl;
+        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         std::list <double> poly (polyline.constBegin (), polyline.constEnd ());
         Benchmark (first, last, poly.begin (), poly.end (), settings);
     }
