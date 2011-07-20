@@ -52,29 +52,50 @@ typedef QVector <Setting> Settings;
 
 
 const unsigned DIM = 2;
-const unsigned repeat = 25;
+      unsigned repeat = 25;
 
 // -----------------------------------------------------------------------------
 
 class BenchmarkController
 {
 public:
-    BenchmarkController (unsigned& result) : mResult (result), mRepeat (repeat) { mTicks = getticks (); }
-    ~BenchmarkController () { mResult = (getticks () - mTicks) / repeat; }
-    void Next () { --mRepeat; }
-    bool IsDone () { return mRepeat == 0; }
+    BenchmarkController (unsigned& result) :
+        mResult (result),
+        mRepeat (repeat)
+    {
+        mTicks = getticks ();
+    }
+
+    ~BenchmarkController () {
+        unsigned index = repeat / 2;
+        qSort (mMeasurements);
+        mResult = mMeasurements [index];
+    }
+
+    void StartMeasurement () {
+        unsigned measurement = getticks () - mTicks;
+        mMeasurements.push_back (measurement);
+        --mRepeat;
+        mTicks = getticks ();
+    }
+
+    bool IsDone () {
+        return mRepeat == 0;
+    }
+
 private:
     unsigned& mResult;
     unsigned mRepeat;
     CycleCounterTicks mTicks;
+   QVector <unsigned> mMeasurements;
 };
 
-#define BENCHMARK(elapsed) for (BenchmarkController ctrl (elapsed); !ctrl.IsDone (); ctrl.Next ())
+#define BENCHMARK(elapsed) for (BenchmarkController ctrl (elapsed); !ctrl.IsDone (); ctrl.StartMeasurement ())
 
 // -----------------------------------------------------------------------------
 
 template <class Iterator>
-void Benchmark (double* tmpFirst, double* tmpLast, Iterator first, Iterator last, const Settings& settings)
+void Benchmark (const std::string& container, double* tmpFirst, double* tmpLast, Iterator first, Iterator last, const Settings& settings)
 {
     // tmpFirst, tmpLast are the same as first, last; they provide a workaround for a limitation of
     // compute_positional_error_statistics, where all iterators must be of the same type
@@ -87,67 +108,63 @@ void Benchmark (double* tmpFirst, double* tmpLast, Iterator first, Iterator last
         int simplificationSize = 0;
         psimpl::math::Statistics stats;
 
-        std::cout << setting.first.toStdString () << ",";
+        std::cout << container << "," << setting.first.toStdString () << ",";
 
-        if (setting.first == "np") {
+        if (setting.first == "simplify_nth_point") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                     psimpl::simplify_nth_point <DIM> (first, last, setting.second [0].toUInt (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
         }
-        else if (setting.first == "rd") {
+        else if (setting.first == "simplify_radial_distance") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                     psimpl::simplify_radial_distance <DIM> (first, last, setting.second [0].toDouble (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
         }
-        else if (setting.first == "pd") {
+        else if (setting.first == "simplify_perpendicular_distance") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                     psimpl::simplify_perpendicular_distance <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
         }
-        else if (setting.first == "rw") {
+        else if (setting.first == "simplify_reumann_witkam") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                    psimpl::simplify_reumann_witkam <DIM> (first, last, setting.second [0].toDouble (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
         }
-        else if (setting.first == "op") {
+        else if (setting.first == "simplify_opheim") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                     psimpl::simplify_opheim <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toDouble (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
         }
-        else if (setting.first == "la") {
+        else if (setting.first == "simplify_lang") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                     psimpl::simplify_lang <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
         }
-        else if (setting.first == "dp") {
+        else if (setting.first == "simplify_douglas_peucker") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                     psimpl::simplify_douglas_peucker <DIM> (first, last, setting.second [0].toDouble (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
         }
-        else if (setting.first == "dpn") {
+        else if (setting.first == "simplify_douglas_peucker_n") {
             BENCHMARK(elapsed) {
                 simplificationSize =  std::distance (simplification.get (),
                     psimpl::simplify_douglas_peucker_n <DIM> (first, last, setting.second [0].toUInt (), simplification.get ()));
             }
             stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "dpr") {
-            std::cout << std::endl;
-            continue;
         }
 
         std::cout << simplificationSize / DIM << "," << (int) (((float) simplificationSize / (float) polylineSize) * 100.f) << "%," << elapsed << ",";
@@ -202,46 +219,43 @@ void Benchmark (const QString& polylinePath, const QString& settingsPath)
         }
         std::cout << ", " << settings.size () << " algorithms" << std::endl;
     }
+    std::cout << "--------------------------------------------------------------------------------" << std::endl;
+    std::cout << "cont, algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
     double* first = polyline.begin ();
     double* last = polyline.end ();
     // test with double[]
     {
-        std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using double []:" << std::endl;
-        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         const double* poly = polyline.constData ();
-        Benchmark (first, last, poly, poly + polyline.size (), settings);
+        Benchmark ("double []", first, last, poly, poly + polyline.size (), settings);
     }
     // test with std::vector <double>
     {
-        std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using std::vector <double>:" << std::endl;
-        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         std::vector <double> poly (polyline.constBegin (), polyline.constEnd ());
-        Benchmark (first, last, poly.begin (), poly.end (), settings);
+        Benchmark ("std::vector <double>", first, last, poly.begin (), poly.end (), settings);
     }
     // test with std::deque <double>
     {
-        std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using std::deque <double>:" << std::endl;
-        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         std::deque <double> poly (polyline.constBegin (), polyline.constEnd ());
-        Benchmark (first, last, poly.begin (), poly.end (), settings);
+        Benchmark ("std::deque <double>", first, last, poly.begin (), poly.end (), settings);
     }
     // test with std::list <double>
     {
-        std::cout << "--------------------------------------------------------------------------------" << std::endl;
-        std::cout << "using std::list <double>:" << std::endl;
-        std::cout << "algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
         std::list <double> poly (polyline.constBegin (), polyline.constEnd ());
-        Benchmark (first, last, poly.begin (), poly.end (), settings);
+        Benchmark ("std::list <double>", first, last, poly.begin (), poly.end (), settings);
     }
 }
 
 // -----------------------------------------------------------------------------
 
-int main (int /*argc*/, char * /*argv*/ [])
+int main (int argc, char* argv [])
 {
+    std::cout << "================================================================================" << std::endl;
+    std::cout << "Starting psimpl benchmark" << std::endl;
+    if (argc == 2) {
+        repeat = QString (argv [1]).toUInt ();
+        std::cout << "Setting repeat count to " << repeat << std::endl;
+    }
+
     QDirIterator it (".", QStringList () << "*.algo", QDir::Files | QDir::Readable);
     while (it.hasNext ()) {
         it.next ();
@@ -251,9 +265,9 @@ int main (int /*argc*/, char * /*argv*/ [])
             std::cout << "================================================================================" << std::endl;
             std::cout << "benchmarking : " << settings.completeBaseName ().toStdString ();
             Benchmark (polyline.absoluteFilePath (), settings.absoluteFilePath ());
-            std::cout << "================================================================================" << std::endl;
         }
     }
+    std::cout << "================================================================================" << std::endl;
 
     return 0;
 }

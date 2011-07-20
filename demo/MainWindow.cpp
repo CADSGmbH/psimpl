@@ -271,14 +271,14 @@ namespace psimpl {
         if (file.open (QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream out (&file);
             out.setDevice (&file);
-            out << "np," << ui->npSpinBox->value () << '\n';
-            out << "rd," << ui->rdLineEdit->text () << '\n';
-            out << "pd," << ui->pdLineEdit->text () << ',' << ui->pdSpinBox->value () << '\n';
-            out << "rw," << ui->rwLineEdit->text () << '\n';
-            out << "op," << ui->opMinLineEdit->text () << ',' << ui->opMaxLineEdit->text () << '\n';
-            out << "la," << ui->laLineEdit->text () << ',' << ui->laLookAheadSpinBox->value () << '\n';
-            out << "dp," << ui->dpLineEdit->text () << '\n';
-            out << "dpn," << ui->dpvSpinBox->value () << '\n';
+            out << "simplify_nth_point," << ui->npSpinBox->value () << '\n';
+            out << "simplify_radial_distance," << ui->rdLineEdit->text () << '\n';
+            out << "simplify_perpendicular_distance," << ui->pdLineEdit->text () << ',' << ui->pdSpinBox->value () << '\n';
+            out << "simplify_reumann_witkam," << ui->rwLineEdit->text () << '\n';
+            out << "simplify_opheim," << ui->opMinLineEdit->text () << ',' << ui->opMaxLineEdit->text () << '\n';
+            out << "simplify_lang," << ui->laLineEdit->text () << ',' << ui->laLookAheadSpinBox->value () << '\n';
+            out << "simplify_douglas_peucker," << ui->dpLineEdit->text () << '\n';
+            out << "simplify_douglas_peucker_n," << ui->dpvSpinBox->value () << '\n';
             file.close ();
         }
     }
