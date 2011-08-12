@@ -1,3 +1,51 @@
+// Boost.Geometry (aka GGL, Generic Geometry Library)
+//
+// Copyright Barend Gehrels 2007-2009, Geodan, Amsterdam, the Netherlands
+// Copyright Bruno Lalande 2008, 2009
+// Use, modification and distribution is subject to the Boost Software License,
+// Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// Linestring Example
+
+//#include <algorithm> // for reverse, unique
+//#include <iostream>
+//#include <iterator>
+//#include <utility>
+//#include <vector>
+
+//#include <boost/geometry/geometry.hpp>
+//#include <boost/geometry/geometries/linestring.hpp>
+//#include <boost/geometry/geometries/point_xy.hpp>
+//#include <boost/geometry/domains/gis/io/wkt/read_wkt.hpp>
+
+
+//int main(void)
+//{
+//    using namespace boost::geometry;
+
+//    boost::geometry::model::linestring<boost::geometry::model::d2::point_xy<double> > line, simplified;
+//    boost::geometry::read_wkt("linestring(1.1 1.1, 2.5 2.1, 3.1 3.1, 4.9 1.1, 3.1 1.9)", line);
+//    boost::geometry::simplify(line, simplified, 1);
+//    std::cout
+//        << "  original line: " << boost::geometry::dsv(line) << std::endl
+//        << "simplified line: " << boost::geometry::dsv(simplified) << std::endl;
+
+//    return 0;
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1
  *

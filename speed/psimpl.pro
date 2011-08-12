@@ -10,4 +10,9 @@ SOURCES += \
 HEADERS += \
     ../lib/psimpl.h \
     ../demo/psimpl_reference.h \
-    cycle_p.h
+    cycle_p.h \
+    ../lib/old_psimpl.h \
+    ../lib/detail/util.h \
+    ../lib/detail/math.h \
+    ../lib/detail/algo.h
+

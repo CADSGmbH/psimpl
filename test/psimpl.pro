@@ -11,13 +11,17 @@ HEADERS += \
     TestError.h \
     test.h \
     helper.h \
-    ../lib/psimpl.h \
     TestPositionalError.h \
     TestPerpendicularDistance.h \
     TestOpheim.h \
     TestLang.h \
     TestDouglasPeucker.h \
-    TestReumannWitkam.h
+    TestReumannWitkam.h \
+    ../lib/old_psimpl.h \
+    ../lib/psimpl.h \
+    ../lib/detail/algo.h \
+    ../lib/detail/util.h \
+    ../lib/detail/math.h
 
 SOURCES += \
     TestRadialDistance.cpp \

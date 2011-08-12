@@ -160,8 +160,8 @@ namespace psimpl {
             float w [dim] = {4, 6, 8};
             std::vector <float> p1 (v, v + dim);
             std::vector <float> p2 (w, w + dim);
-            std::vector <float> vec;
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), std::back_inserter (vec));
+            std::vector <float> vec (dim, 0);
+            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
 
             VERIFY_TRUE(vec.size () == dim);
             float e [dim] = {3, 4, 5};
@@ -174,8 +174,8 @@ namespace psimpl {
             int w [dim] = {4, 6, 8, 10};
             std::deque <int> p1 (v, v + dim);
             std::deque <int> p2 (w, w + dim);
-            std::deque <int> vec;
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), std::back_inserter (vec));
+            std::vector <int> vec (dim, 0);
+            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
 
             VERIFY_TRUE(vec.size () == dim);
             int e [dim] = {3, 4, 5, 6};
@@ -191,8 +191,8 @@ namespace psimpl {
             float w [dim] = {3, 5};
             std::list <float> p1 (v, v + dim);
             std::list <float> p2 (w, w + dim);
-            std::list <float> vec;
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), std::back_inserter (vec));
+            std::vector <float> vec (dim, 0);
+            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
 
             VERIFY_TRUE(vec.size () == dim);
             float e [dim] = {2, 3};
@@ -205,8 +205,8 @@ namespace psimpl {
             int w [dim] = {4, 6, 8, 10};
             std::set <int> p1 (v, v + dim);
             std::set <int> p2 (w, w + dim);
-            std::set <int> vec;
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), std::inserter (vec, vec.end ()));
+            std::vector <int> vec (dim, 0);
+            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
 
             VERIFY_TRUE(vec.size () == dim);
             int e [dim] = {3, 4, 5, 6};
@@ -318,7 +318,7 @@ namespace psimpl {
             std::vector <float> p3;
             float fraction = 0.1f;
             psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::back_inserter (p3));
-            
+
             float e [dim] = {1.1f, 2.1f, 3.1f};
             std::vector <float> expect (e, e + dim);
             VERIFY_TRUE(ComparePoint <dim> (p3.begin (), expect.begin ()));
@@ -332,7 +332,7 @@ namespace psimpl {
             std::deque <int> p3;
             float fraction = 0.5f;
             psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::back_inserter (p3));
-            
+
             int e [dim] = {2, 4, 5, 7};
             std::deque <int> expect (e, e + dim);
             VERIFY_TRUE(ComparePoint <dim> (p3.begin (), expect.begin ()));
@@ -349,7 +349,7 @@ namespace psimpl {
             std::list <float> p3;
             float fraction = 0.9f;
             psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::back_inserter (p3));
-            
+
             float e [dim] = {1.9f, 2.9f, 3.9f};
             std::list <float> expect (e, e + dim);
             VERIFY_TRUE(ComparePoint <dim> (p3.begin (), expect.begin ()));
@@ -363,7 +363,7 @@ namespace psimpl {
             std::set <int> p3;
             float fraction = 0.5f;
             psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::inserter (p3, p3.end ()));
-            
+
             int e [dim] = {2, 4, 5, 7};
             std::set <int> expect (e, e + dim);
             VERIFY_TRUE(ComparePoint <dim>(p3.begin (), expect.begin ()));
