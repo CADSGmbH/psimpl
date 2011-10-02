@@ -54,8 +54,6 @@ namespace psimpl {
         void TestValidTol ();
         void TestBasicSanity ();
         void TestRandomIterator ();
-        void TestBidirectionalIterator ();
-        void TestForwardIterator ();
         void TestReturnValue ();
     };
 
@@ -72,8 +70,6 @@ namespace psimpl {
         void TestValidTol ();
         void TestBasicSanity ();
         void TestRandomIterator ();
-        void TestBidirectionalIterator ();
-        void TestForwardIterator ();
         void TestReturnValue ();
     };
 }}

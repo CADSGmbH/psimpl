@@ -42,6 +42,8 @@ namespace psimpl {
     namespace util
 {
 
+	// note: copy_n, scoped_array, and all type traits, will be removed when moving to C++0x
+
     namespace detail
     {
         // ---------- copy_n -----------------------------------------------------------------------
@@ -80,6 +82,46 @@ namespace psimpl {
         {
             return std::copy (first, first + n, result);
         }
+
+		// ---------- type traits ------------------------------------------------------------------------
+		template <typename T>
+		struct remove_const
+		{
+			typedef T type;
+		};
+		template <typename T>
+		struct remove_const <const T>
+		{
+			typedef T type;
+		};
+
+		template <typename T>
+		struct remove_volatile
+		{
+			typedef T type;
+		};
+		template <typename T>
+		struct remove_volatile <volatile T>
+		{
+			typedef T type;
+		};
+
+		template <typename T>
+		struct remove_cv
+		{
+			typedef typename remove_const <typename remove_volatile <T>::type>::type type;
+		};
+
+		template <typename T>
+		struct promote_to_floating_point_helper
+		{
+			typedef T type;
+		};
+		template <typename T>
+		struct promote_to_floating_point
+		{
+			typedef typename promote_to_floating_point_helper <typename remove_cv <T>::type>::type type;
+		};
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -104,43 +146,71 @@ namespace psimpl {
         OutputIterator result)
     {
         return detail::copy_n (
-            first, n, result, std::iterator_traits <InputIterator>::iterator_category);
+            first, n, result, std::iterator_traits <InputIterator>::iterator_category ());
     }
 
     /*!
-        \brief Copies the key from [first, first+n) to [result, result+n).
+        \brief Copies the key from [first, first+DIM) to [result, result+DIM).
 
         \param[in]     first    the first coordinate of the key
-        \param[in]     n        the number of coordinates to copy
         \param[in,out] result   destination of the copied coordinates
     */
     template
     <
+		unsigned DIM,
         typename InputIterator,
-        typename Size,
         typename OutputIterator
     >
     inline void copy_key (
         InputIterator first,
-        Size n,
         OutputIterator& result)
     {
-        result = copy_n (first, n, result);
+        result = util::copy_n (first, DIM, result);
+    }
+
+	/*!
+		\brief Copies all the keys from [first, last) to result.
+
+		\param[in]     first    the first coordinate of the first polyline point
+		\param[in]     last		one beyond the last coordinate of the last polyline point
+		\param[in]     keys		defines which points in [first, last) are keys
+        \param[in,out] result   destination of the copied coordinates
+	*/
+	template
+    <
+		unsigned DIM,
+        typename ForwardIterator,
+		typename InputIterator,
+        typename OutputIterator
+    >
+    inline void copy_keys (
+        ForwardIterator first,
+		ForwardIterator last,
+		InputIterator keys,
+        OutputIterator& result)
+    {
+		while (first != last) {
+            if (*keys++) {
+				util::copy_key <DIM> (first, result);
+            }
+			std::advance (first, DIM);
+        }
     }
 
     /*!
-        \brief Increments the iterator by n if possible.
+        \brief Increments the iterator by n points if possible.
 
-        If there are fewer than n elements remaining the iterator will be incremented to the last
-        element.
+        If there are fewer than n points remaining the iterator will be incremented to the last
+        point.
 
         \param[in,out] it           iterator to be advanced
-        \param[in]     n            number of elements to advance
-        \param[in,out] remaining    number of elements remaining after it
-        \return                     the actual amount of elements that the iterator advanced
+        \param[in]     n            number of points to advance
+        \param[in,out] remaining    number of points remaining after it
+        \return                     the actual amount of points that the iterator advanced
     */
     template
     <
+		unsigned DIM,
         typename InputIterator,
         typename Distance
     >
@@ -150,31 +220,32 @@ namespace psimpl {
         Distance& remaining)
     {
         n = std::min (n, remaining);
-        std::advance (it, n);
+        std::advance (it, n * DIM);
         remaining -= n;
         return n;
     }
 
     /*!
-        \brief Decrements the iterator by n elements.
-
-        \sa Forward
+        \brief Decrements the iterator by n points.
 
         \param[in,out] it           iterator to be advanced
-        \param[in]     n            number of elements to advance
+        \param[in]     n            number of points to advance
         \param[in,out] remaining    number of points remaining after it
     */
     template
     <
-        typename InputIterator,
+		unsigned DIM,
+        typename BidirectionalIterator,
         typename Distance
     >
     inline void backward (
-        InputIterator& it,
+        BidirectionalIterator& it,
         Distance n,
         Distance& remaining)
     {
-        std::advance (it, n);
+		typedef typename std::iterator_traits <BidirectionalIterator>::difference_type diff_type;
+
+        std::advance (it, -n * static_cast <diff_type> (DIM));
         remaining += n;
     }
 
@@ -182,8 +253,6 @@ namespace psimpl {
 
     /*!
         \brief A smart pointer for holding a dynamically allocated array.
-
-        Similar to boost::scoped_array.
     */
     template <typename T>
     class scoped_array
@@ -229,61 +298,11 @@ namespace psimpl {
 
     // ---------------------------------------------------------------------------------------------
 
-    template <typename T>
-    struct remove_const
-    {
-        typedef T type;
-    };
-
-    template <typename T>
-    struct remove_const <const T>
-    {
-        typedef T type;
-    };
-
-    template <typename T>
-    struct remove_volatile
-    {
-        typedef T type;
-    };
-
-    template <typename T>
-    struct remove_volatile <volatile T>
-    {
-        typedef T type;
-    };
-
-    template <typename T>
-    struct remove_cv
-    {
-        typedef typename remove_const <typename remove_volatile <T>::type>::type type;
-    };
-
-    template <typename T>
-    struct promote_to_floating_point_helper
-    {
-        typedef T type;
-    };
-
-    template <typename T>
-    struct promote_to_floating_point
-    {
-        typedef typename promote_to_floating_point_helper <typename remove_cv <T>::type>::type type;
-    };
-
-#define PSIMPL_DEF_FLOATING_POINT_PROMOTION (intType, fpType) \
-    namespace util { \
-        template <> \
-        struct promote_to_floating_point_helper <intType> \
-        { \
-            typedef fpType type; \
-        }; \
-    } \
-
+	//! \brief Meta function: selects a calculation type based on an interator type
     template <typename Iterator>
     struct select_calculation_type
     {
-        typedef typename promote_to_floating_point
+		typedef typename detail::promote_to_floating_point
                             <
                                 typename std::iterator_traits <Iterator>::value_type
                             >::type type;
@@ -291,55 +310,19 @@ namespace psimpl {
 
 }}
 
+/*!
+	\brief Defines a type promotion from an integer type to a floating point type
 
-//        /*!
-//            \brief Increments the iterator by n points.
-
-//            \sa AdvanceCopy
-
-//            \param[in,out] it  iterator to be advanced
-//            \param[in]     n   number of points to advance
-//        */
-//        inline void Advance (
-//            InputIterator& it,
-//            diff_type n = 1)
-//        {
-//            std::advance (it, n * static_cast <diff_type> (DIM));
-//        }
-
-//        /*!
-//            \brief Increments a copy of the iterator by n points.
-
-//            \sa Advance
-
-//            \param[in] it   iterator to be advanced
-//            \param[in] n    number of points to advance
-//            \return         an incremented copy of the input iterator
-//        */
-//        inline InputIterator AdvanceCopy (
-//            InputIterator it,
-//            diff_type n = 1)
-//        {
-//            Advance (it, n);
-//            return it;
-//        }
-
-
-//        /*!
-//            \brief Decrements the iterator by 1 point.
-
-//            \sa Forward
-
-//            \param[in,out] it            iterator to be advanced
-//            \param[in,out] remaining     number of points remaining after it
-//        */
-//        inline void Backward (
-//            InputIterator& it,
-//            unsigned& remaining)
-//        {
-//            Advance (it, -1);
-//            ++remaining;
-//        }
+	\note Only use this macro outside any namespace!
+*/
+#define PSIMPL_DEF_FLOATING_POINT_PROMOTION(intType,fpType)		\
+	namespace psimpl { namespace util { namespace detail {		\
+        template <>												\
+        struct promote_to_floating_point_helper <intType>		\
+        {														\
+            typedef fpType type;								\
+        };														\
+	}}}
 
 
 #endif // PSIMPL_DETAIL_UTIL

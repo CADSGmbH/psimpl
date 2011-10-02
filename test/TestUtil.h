@@ -45,6 +45,12 @@ namespace psimpl {
 
     private:
         void TestScopedArray ();
+		void TestCopyN ();
+		void TestCopyKey ();
+		void TestCopyKeys ();
+		void TestForward ();
+		void TestBackward ();
+		void TestSelectCalculationType ();
     };
 }}
 

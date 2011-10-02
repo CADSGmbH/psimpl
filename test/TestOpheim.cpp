@@ -34,6 +34,7 @@
 #include "TestOpheim.h"
 #include "helper.h"
 #include "../lib/psimpl.h"
+#include <iterator>
 #include <vector>
 #include <deque>
 #include <list>
@@ -365,15 +366,15 @@ namespace psimpl {
             const unsigned DIM = 4;
             std::deque <int> polyline, result;
             std::generate_n (std::back_inserter (polyline), count*DIM, SquareToothLine <int, DIM> ());
-            int minTol = 3;
-            int maxTol = 10;
+            float minTol = 2.5f;
+            float maxTol = 7.5f;
 
             psimpl::simplify_opheim <DIM> (
                     polyline.begin (), polyline.end (), minTol, maxTol,
                     std::back_inserter (result));
 
             VERIFY_TRUE(result.size () == 3*DIM);
-            int keys [] = {0, 17, 24};
+            int keys [] = {0, 13, 24};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
         }
     }

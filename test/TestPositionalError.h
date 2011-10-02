@@ -41,7 +41,7 @@
 namespace psimpl {
     namespace test
 {
-    //! Tests function psimpl::compute_positional_errors2 and psimpl::compute_positional_error_statistics
+    //! Tests function psimpl::compute_positional_errors2
     class TestPositionalError
     {
     public:
@@ -57,7 +57,6 @@ namespace psimpl {
         void TestForwardIterator ();
         void TestReturnValue ();
     };
-
 }}
 
 

@@ -34,6 +34,7 @@
 #include "TestRadialDistance.h"
 #include "helper.h"
 #include "../lib/psimpl.h"
+#include <iterator>
 #include <vector>
 #include <deque>
 #include <list>

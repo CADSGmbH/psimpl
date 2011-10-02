@@ -58,14 +58,13 @@
       neighbors, an entire search region is processed
     + Douglas-Peucker - A classic simplification algorithm that provides an excellent approximation
       of the original line
-    + A variation on the Douglas-Peucker algorithm - Slower, but yields better results at lower resolutions
 
     Errors
     + positional error - Distance of each polyline point to its simplification
 
-    All the algorithms have been implemented in a single standalone C++ header using an STL-style
-    interface that operates on input and output iterators. Polylines can be of any dimension, and
-    defined using floating point or signed integer data types.
+    All the algorithms have been implemented in a header-only library using an STL-style interface
+	that operates on input and output iterators. Supported polylines can be of any dimension, and
+	defined using floating point or integer data types.
 </pre><br>
 
     \section sec_changelog changelog
@@ -86,7 +85,8 @@
                  to be the same; fixed a bug in compute_positional_error_statistics where invalid
                  statistics could be returned under questionable input; documented input iterator
                  requirements for each algorithm; miscellaneous refactoring of most algorithms.
-    ??-??-???? - refactoring
+    ??-??-???? - Complete rewrite; split code across multiple headers; split dp; more accurate 
+				 results with intergers; improved compute pos error now supports ...
 </pre>
 */
 
@@ -99,24 +99,26 @@
 #include "detail/util.h"
 
 
+// Several algorithms may use divisions and thus need to operate on floating points for accurate
+// results. The list below defines what integral types may be promoted to what floating point
+// types. Any type not listed here will never get promoted. Feel free to extend this list with
+// other types you want to use.
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(		  char,  double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(unsigned char,  double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(  signed char,  double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(unsigned short, double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(  signed short, double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(unsigned int,   double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(  signed int,   double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(unsigned long,  double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(  signed long,  double)
+
+
 /*!
     \brief Root namespace of the polyline simplification library.
 */
 namespace psimpl
 {
-    // Several algorithms may use divisions and thus need to operate on floating points for accurate
-    // results. The list below defines what integral types may be promoted to what floating point
-    // types. Any type not listed here will never get promoted. Feel free to extend this list with
-    // other types you want to use.
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (unsigned char,  double)
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (  signed char,  double)
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (unsigned short, double)
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (  signed short, double)
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (unsigned int,   double)
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (  signed int,   double)
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (unsigned long,  double)
-//    PSIMPL_DEF_FLOATING_POINT_PROMOTION (  signed long,  double)
-
     /*!
         \brief Performs the nth point simplification routine (NP).
 
@@ -160,7 +162,7 @@ namespace psimpl
         Size n,
         OutputIterator result)
     {
-        return detail::nth_point
+        return algo::nth_point
             <
                 DIM,
                 ForwardIterator,
@@ -170,7 +172,7 @@ namespace psimpl
     }
 
     /*!
-        \brief Performs the (radial) distance simplification routine (RD).
+        \brief Performs the radial distance simplification routine (RD).
 
         RD is a brute-force O(n) algorithm for polyline simplification. It reduces successive
         vertices that are clustered too closely to a single vertex, called a key. The resulting
@@ -213,7 +215,7 @@ namespace psimpl
         Distance tol,
         OutputIterator result)
     {
-        return detail::radial_distance
+        return algo::radial_distance
             <
                 DIM,
                 ForwardIterator,
@@ -268,7 +270,7 @@ namespace psimpl
         Distance tol,
         OutputIterator result)
     {
-        return detail::perpendicular_distance
+        return algo::perpendicular_distance
             <
                 DIM,
                 ForwardIterator,
@@ -306,7 +308,7 @@ namespace psimpl
         Size repeat,
         OutputIterator result)
     {
-        return detail::perpendicular_distance_repeat
+        return algo::perpendicular_distance_repeat
             <
                 DIM,
                 ForwardIterator,
@@ -362,7 +364,7 @@ namespace psimpl
         Distance tol,
         OutputIterator result)
     {
-        return detail::reumann_witkam
+        return algo::reumann_witkam
             <
                 DIM,
                 ForwardIterator,
@@ -425,7 +427,7 @@ namespace psimpl
         Distance max_tol,
         OutputIterator result)
     {
-        return detail::opheim
+        return algo::opheim
             <
                 DIM,
                 ForwardIterator,
@@ -490,7 +492,7 @@ namespace psimpl
         Size look_ahead,
         OutputIterator result)
     {
-        return detail::lang
+        return algo::lang
             <
                 DIM,
                 BidirectionalIterator,
@@ -500,24 +502,72 @@ namespace psimpl
             >::simplify (first, last, tol, look_ahead, result);
     }
 
-    /*!
-        \brief Performs Douglas-Peucker approximation (DP).
+	/*!
+        \brief Performs Douglas-Peucker approximation (DPc).
 
-        The DP algorithm uses the RadialDistance (RD) routine O(n) as a preprocessing step.
-        After RD the algorithm is O (n m) in worst case and O(n log m) on average, where m < n
-        (m is the number of points after RD).
-
-        The DP algorithm starts with a simplification that is the single edge joining the first
+        The DPc algorithm starts with a simplification that is the single edge joining the first
         and last vertices of the polyline. The distance of the remaining vertices to that edge
         are computed. The vertex that is furthest away from theedge (called a key), and has a
         computed distance that is larger than a specified tolerance, will be added to the
         simplification. This process will recurse for each edge in the current simplification,
-        untill all vertices of the original polyline are within tolerance.
+        untill all vertices of the original polyline are within tolerance. The algorithm is O(n2)
+		in worst case and O(n log n) on average.
 
         \image html psimpl_dp.png
 
-        Note that this algorithm will create a copy of the input polyline during the vertex
-        reduction step.
+		DPc is applied to the range [first, last) using the specified tolerance tol. The resulting
+		simplified polyline is copied to the output range [result, result + m*DIM), where m is the
+		number of vertices of the simplified polyline. The return value is the end of the output
+		range: result + m*DIM.
+
+        Input (Type) requirements:
+        1- DIM is not 0, where DIM represents the dimension of the polyline
+        2- The RandomAccessIterator value type is convertible to a value type of the OutputIterator
+        3- The range [first, last) contains vertex coordinates in multiples of DIM, f.e.:
+           x, y, z, x, y, z, x, y, z when DIM = 3
+        4- The range [first, last) contains at least 2 vertices
+        5- tol > 0
+
+        In case these requirements are not met, the entire input range [first, last) is copied
+        to the output range [result, result + (last - first)) OR compile errors may occur.
+
+        \param[in] first    the first coordinate of the first polyline point
+        \param[in] last     one beyond the last coordinate of the last polyline point
+        \param[in] tol      perpendicular (point-to-segment) distance tolerance
+        \param[in] result   destination of the simplified polyline
+        \return             one beyond the last coordinate of the simplified polyline
+    */
+    template
+    <
+        unsigned DIM,
+        typename RandomAccessIterator,
+        typename Distance,
+        typename OutputIterator
+    >
+    OutputIterator simplify_douglas_peucker_classic (
+        RandomAccessIterator first,
+        RandomAccessIterator last,
+        Distance tol,
+        OutputIterator result)
+    {
+        return algo::douglas_peucker_classic
+            <
+                DIM,
+                RandomAccessIterator,
+                Distance,
+                OutputIterator
+            >::simplify (first, last, tol, result);
+    }
+
+    /*!
+        \brief Performs Douglas-Peucker approximation, but uses RD as a preprocessing step (DP).
+
+        The DP algorithm uses the radial distance (RD) routine O(n) as a preprocessing step.
+        After RD the algorithm is O (n m) in worst case and O(n log m) on average, where m < n
+        (m is the number of points after RD).
+
+        Note that this algorithm will create a copy of the input polyline during the RD
+        preprocessing step.
 
         RD followed by DP is applied to the range [first, last) using the specified tolerance
         tol. The resulting simplified polyline is copied to the output range
@@ -554,7 +604,7 @@ namespace psimpl
         Distance tol,
         OutputIterator result)
     {
-        return detail::douglas_peucker
+        return algo::douglas_peucker
             <
                 DIM,
                 ForwardIterator,
@@ -564,7 +614,7 @@ namespace psimpl
     }
 
     /*!
-        \brief Performs a Douglas-Peucker approximation variant (DPn).
+        \brief Performs Douglas-Peucker approximation, but uses a point count tolerance (DPn).
 
         This algorithm is a variation of the original implementation. Instead of considering
         one polyline segment at a time, all segments of the current simplified polyline are
@@ -572,11 +622,8 @@ namespace psimpl
         added to the simplification. This process will recurse untill the the simplification
         contains the desired amount of vertices.
 
-        The algorithm, which does not use the (radial) distance between points routine as a
+        The algorithm, which does not use the radial distance simplification routine as a
         preprocessing step, is O(n2) in worst case and O(n log n) on average.
-
-        Note that this algorithm will create a copy of the input polyline for performance
-        reasons.
 
         DPn is applied to the range [first, last). The resulting simplified polyline consists
         of count vertices and is copied to the output range [result, result + count). The
@@ -612,7 +659,7 @@ namespace psimpl
         Size count,
         OutputIterator result)
     {
-        return detail::douglas_peucker_n
+        return algo::douglas_peucker_n
             <
                 DIM,
                 RandomAccessIterator,
@@ -621,6 +668,121 @@ namespace psimpl
             >::simplify (first, last, count, result);
     }
 
+	/*!
+		\brief Computes the squared positional error between a polyline and its simplification.
+
+        For each point in the range [original_first, original_last) the squared distance to the
+        simplification [simplified_first, simplified_last) is calculated. Each positional error
+        is copied to the output range [result, result + count), where count is the number of
+        points in the original polyline. The return value is the end of the output range:
+        result + count.
+
+        \image html psimpl_pos_error.png
+
+        Input (Type) requirements:
+        1- DIM is not 0, where DIM represents the dimension of the polyline
+        2- The ForwardIterator value type is convertible to a value type of the OutputIterator
+        3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+           contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
+           when DIM = 3
+        4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+           each contain a minimum of 2 vertices
+        5- The range [simplified_first, simplified_last) represents a simplification of the
+           range [original_first, original_last), meaning each point in the simplification
+           has the exact same coordinates as some point from the original polyline
+
+		   TODO outputiterator value type is promoted value type of simplification iterator
+
+        In case these requirements are not met, the valid flag is set to false OR
+        compile errors may occur.
+
+        \param[in] original_first   the first coordinate of the first polyline point
+        \param[in] original_last    one beyond the last coordinate of the last polyline point
+        \param[in] simplified_first the first coordinate of the first simplified polyline point
+        \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
+        \param[in] result           destination of the squared positional errors
+        \param[out] valid           [optional] indicates if the computed positional errors are valid
+        \return                     one beyond the last computed positional error
+	*/
+	template
+	<
+		unsigned DIM,
+		typename ForwardIterator1,
+		typename ForwardIterator2,
+		typename OutputIterator
+	>
+    OutputIterator compute_positional_errors2 (
+        ForwardIterator1 original_first,
+        ForwardIterator1 original_last,
+        ForwardIterator2 simplified_first,
+        ForwardIterator2 simplified_last,
+        OutputIterator result,
+        bool* valid=0)
+    {
+		return algo::positional_error
+			<
+				DIM,
+				ForwardIterator1,
+				ForwardIterator2,
+				OutputIterator
+			>::compute (original_first, original_last,
+						simplified_first, simplified_last,
+						result, valid);
+	}
+
+	/*!
+		\brief Computes statistics for the positional errors between a polyline and its simplification.
+
+		Various statistics (mean, max, sum, std) are calculated for the positional errors
+		between the range [original_first, original_last) and its simplification the range
+		[simplified_first, simplified_last).
+
+		Input (Type) requirements:
+		1- DIM is not 0, where DIM represents the dimension of the polyline
+		2- The ForwardIterator value type is convertible to double
+		3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+		   contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
+		   when DIM = 3
+		4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+		   contain a minimum of 2 vertices
+		5- The range [simplified_first, simplified_last) represents a simplification of the
+		   range [original_first, original_last), meaning each point in the simplification
+		   has the exact same coordinates as some point from the original polyline
+
+		In case these requirements are not met, the valid flag is set to false OR
+		compile errors may occur.
+
+		\sa ComputePositionalErrors2
+
+		\param[in] original_first   the first coordinate of the first polyline point
+		\param[in] original_last    one beyond the last coordinate of the last polyline point
+		\param[in] simplified_first the first coordinate of the first simplified polyline point
+		\param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
+		\param[out] valid           [optional] indicates if the computed statistics are valid
+		\return                     the computed statistics
+	*/
+	//////template
+	//////<
+	//////	unsigned DIM,
+	//////	typename ForwardIterator1,
+	//////	typename ForwardIterator2
+	//////>
+ //////   math::statistics compute_positional_error_statistics (
+ //////       ForwardIterator1 original_first,
+ //////       ForwardIterator1 original_last,
+ //////       ForwardIterator2 simplified_first,
+ //////       ForwardIterator2 simplified_last,
+ //////       bool* valid=0)
+ //////   {
+	//////	return algo::positional_error_statistics
+	//////		<
+	//////			DIM,
+	//////			ForwardIterator1,
+	//////			ForwardIterator2
+	//////		>::compute (original_first, original_last,
+	//////					simplified_first, simplified_last,
+	//////					valid);
+	//////}
 }
 
 #endif // PSIMPL_GENERIC

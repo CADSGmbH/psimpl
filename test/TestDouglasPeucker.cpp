@@ -34,6 +34,7 @@
 #include "TestDouglasPeucker.h"
 #include "helper.h"
 #include "../lib/psimpl.h"
+#include <iterator>
 #include <vector>
 #include <deque>
 #include <list>
@@ -49,8 +50,6 @@ namespace psimpl {
         TEST_RUN("valid tol", TestValidTol ());
         TEST_RUN("basic sanity", TestBasicSanity ());
         TEST_RUN("random iterator", TestRandomIterator ());
-        TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
-        TEST_DISABLED("forward iterator", TestForwardIterator ());
         TEST_RUN("return value", TestReturnValue ());
     }
 
@@ -262,30 +261,6 @@ namespace psimpl {
         }
     }
 
-    // bidirectional iterator, different value types, different dimensions
-    void TestDouglasPeucker::TestBidirectionalIterator () {
-        const unsigned count = 11;
-        {
-            const unsigned DIM = 2;
-            std::list <float> polyline, result;
-            std::generate_n (std::inserter (polyline, polyline.begin ()), count*DIM, SawToothLine <float, DIM> (10));
-            float tol = 4.1f;
-
-            psimpl::simplify_douglas_peucker <DIM> (
-                polyline.begin (), polyline.end (), tol,
-                std::inserter (result, result.begin ()));
-
-            VERIFY_TRUE(result.size () == 4*DIM);
-            int keys [] = {0, 8, 9, 10};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
-        }
-    }
-
-    // forward iterator, different value types, different dimensions
-    void TestDouglasPeucker::TestForwardIterator () {
-        FAIL("TODO");
-    }
-
     void TestDouglasPeucker::TestReturnValue () {
         const unsigned DIM = 3;
         const unsigned count = 11;
@@ -322,8 +297,6 @@ namespace psimpl {
         TEST_RUN("valid tol", TestValidTol ());
         TEST_RUN("basic sanity", TestBasicSanity ());
         TEST_RUN("random iterator", TestRandomIterator ());
-        TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
-        TEST_DISABLED("forward iterator", TestForwardIterator ());
         TEST_RUN("return value", TestReturnValue ());
     }
 
@@ -629,30 +602,6 @@ namespace psimpl {
             int keys [] = {0, 8, 9, 10};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + tol)));
         }
-    }
-
-    // bidirectional iterator, different value types, different dimensions
-    void TestDouglasPeuckerN::TestBidirectionalIterator () {
-        const unsigned count = 11;
-        {
-            const unsigned DIM = 2;
-            std::list <float> polyline, result;
-            std::generate_n (std::inserter (polyline, polyline.begin ()), count*DIM, SawToothLine <float, DIM> ());
-            unsigned tol = 6;
-
-            psimpl::simplify_douglas_peucker_n <DIM> (
-                polyline.begin (), polyline.end (), tol,
-                std::inserter (result, result.begin ()));
-
-            VERIFY_TRUE(result.size () == tol*DIM);
-            int keys [] = {0, 6, 7, 8, 9, 10};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + tol)));
-        }
-    }
-
-    // forward iterator, different value types, different dimensions
-    void TestDouglasPeuckerN::TestForwardIterator () {
-        FAIL("TODO");
     }
 
     void TestDouglasPeuckerN::TestReturnValue () {

@@ -50,6 +50,37 @@ namespace psimpl {
 
     // ---------------------------------------------------------------------------------------------
 
+	/*!
+        \brief Determines if two points have the exact same coordinates.
+
+		Note that the value type of InputIterator1 is leading. If InputIterator2 has a different value
+		type its values will be explicitly cast before comparing.
+
+        \param[in] p1       the first coordinate of the first point
+        \param[in] p2       the first coordinate of the second point
+        \return             true when the points are equal; false otherwise
+    */
+    template
+	<
+		unsigned DIM,
+		typename InputIterator1,
+		typename InputIterator2
+	>
+    inline bool equal (
+        InputIterator1 p1,
+        InputIterator2 p2)
+    {
+		typedef typename std::iterator_traits <InputIterator1>::value_type value_type;
+
+		// todo candidate for optimization based on random iterator or pointer types
+		for (unsigned d = 0; d < DIM; ++d, ++p1, ++p2) {
+            if (*p1 != static_cast <value_type> (*p2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /*!
         \brief Adds two points from each other.
 
@@ -60,12 +91,13 @@ namespace psimpl {
     template
     <
         unsigned DIM,
-        typename InputIterator,
+        typename InputIterator1,
+		typename InputIterator2,
         typename RandomAccessIterator
     >
     inline void add (
-        InputIterator p1,
-        InputIterator p2,
+        InputIterator1 p1,
+        InputIterator2 p2,
         RandomAccessIterator result)
     {
         // todo candidate for optimization based on random iterator or pointer types
@@ -84,12 +116,13 @@ namespace psimpl {
     template
     <
         unsigned DIM,
-        typename InputIterator,
+        typename InputIterator1,
+		typename InputIterator2,
         typename RandomAccessIterator
     >
     inline void subtract (
-        InputIterator p1,
-        InputIterator p2,
+        InputIterator1 p1,
+        InputIterator2 p2,
         RandomAccessIterator result)
     {
         // todo candidate for optimization based on random iterator or pointer types
@@ -129,14 +162,17 @@ namespace psimpl {
     template
     <
         unsigned DIM,
-        typename InputIterator
+        typename InputIterator1,
+		typename InputIterator2
     >
-    inline typename std::iterator_traits <InputIterator>::value_type dot (
-        InputIterator v1,
-        InputIterator v2)
+    inline typename util::select_calculation_type <InputIterator1>::type dot (
+        InputIterator1 v1,
+        InputIterator2 v2)
     {
         // todo candidate for optimization based on random iterator or pointer types
-        typename std::iterator_traits <InputIterator>::value_type result ();
+		typedef typename util::select_calculation_type <InputIterator1>::type calc_type;
+		calc_type result = 0;
+
         for (unsigned d = 0; d < DIM; ++d, ++v1, ++v2) {
             result += (*v1) * (*v2);
         }
@@ -153,19 +189,19 @@ namespace psimpl {
     template
     <
         unsigned DIM,
-        typename InputIterator1,
-        typename InputIterator2
+        typename ForwardIterator1,
+        typename ForwardIterator2
     >
-    inline typename std::iterator_traits <InputIterator1>::value_type point_distance2 (
-        InputIterator1 p1,
-        InputIterator2 p2)
+    inline typename util::select_calculation_type <ForwardIterator1>::type point_distance2 (
+        ForwardIterator1 p1,
+        ForwardIterator2 p2)
     {
         // todo candidate for optimization based on random iterator or pointer types
-        // todo test with dist(float, int) and vice versa
-        typename std::iterator_traits <InputIterator1>::value_type result ();
+		typedef typename util::select_calculation_type <ForwardIterator1>::type calc_type;
+        calc_type result = 0;
 
         for (unsigned d = 0; d < DIM; ++d, ++p1, ++p2) {
-            result += (*p1 - *p2) * (*p1 - *p2);
+            result += (static_cast <calc_type> (*p1) - *p2) * (static_cast <calc_type> (*p1) - *p2);
         }
         return result;
     }
@@ -181,14 +217,15 @@ namespace psimpl {
     template
     <
         unsigned DIM,
-        typename InputIterator
+        typename ForwardIterator1,
+		typename ForwardIterator2
     >
-    typename util::select_calculation_type <InputIterator>::type line_distance2 (
-        InputIterator l1,
-        InputIterator l2,
-        InputIterator p)
+    typename util::select_calculation_type <ForwardIterator1>::type line_distance2 (
+        ForwardIterator1 l1,
+        ForwardIterator1 l2,
+        ForwardIterator2 p)
     {
-        typedef typename util::select_calculation_type <InputIterator>::type calc_type;
+        typedef typename util::select_calculation_type <ForwardIterator1>::type calc_type;
 
         calc_type v [DIM];                 // vector l1 --> l2
         calc_type w [DIM];                 // vector l1 --> p
@@ -220,14 +257,15 @@ namespace psimpl {
     template
     <
         unsigned DIM,
-        typename InputIterator
+        typename ForwardIterator1,
+		typename ForwardIterator2
     >
-    typename util::select_calculation_type <InputIterator>::type ray_distance2 (
-        InputIterator r1,
-        InputIterator r2,
-        InputIterator p)
+    typename util::select_calculation_type <ForwardIterator1>::type ray_distance2 (
+        ForwardIterator1 r1,
+        ForwardIterator1 r2,
+        ForwardIterator2 p)
     {
-        typedef typename util::select_calculation_type <InputIterator>::type calc_type;
+        typedef typename util::select_calculation_type <ForwardIterator1>::type calc_type;
 
         calc_type v [DIM];        // vector r1 --> r2
         calc_type w [DIM];        // vector r1 --> p
@@ -264,14 +302,15 @@ namespace psimpl {
     template
     <
         unsigned DIM,
-        typename InputIterator
+        typename ForwardIterator1,
+		typename ForwardIterator2
     >
-    typename util::select_calculation_type <InputIterator>::type segment_distance2 (
-        InputIterator s1,
-        InputIterator s2,
-        InputIterator p)
+    typename util::select_calculation_type <ForwardIterator1>::type segment_distance2 (
+        ForwardIterator1 s1,
+        ForwardIterator1 s2,
+        ForwardIterator2 p)
     {
-        typedef typename util::select_calculation_type <InputIterator>::type calc_type;
+        typedef typename util::select_calculation_type <ForwardIterator1>::type calc_type;
 
         calc_type v [DIM];        // vector s1 --> s2
         calc_type w [DIM];        // vector s1 --> p

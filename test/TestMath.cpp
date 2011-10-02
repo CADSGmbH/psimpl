@@ -35,6 +35,7 @@
 #include "test.h"
 #include "helper.h"
 #include "../lib/psimpl.h"
+#include <iterator>
 #include <vector>
 #include <deque>
 #include <list>
@@ -50,40 +51,45 @@ namespace psimpl {
         TEST_RUN("equal | random iterator", TestEqual_RandomIterator ());
         TEST_RUN("equal | bidirectional iterator", TestEqual_BidirectionalIterator ());
         TEST_DISABLED("equal | forward iterator", TestEqual_ForwardIterator ());
+		TEST_RUN("equal | mixed iterators", TestEqual_MixedIterators ());
 
-        TEST_RUN("make_vector | random iterator", TestMakeVector_RandomIterator ());
-        TEST_RUN("make_vector | bidirectional iterator", TestMakeVector_BidirectionalIterator ());
-        TEST_DISABLED("make_vector | forward iterator", TestMakeVector_ForwardIterator ());
+		TEST_RUN("add | random iterator", TestAdd_RandomIterator ());
+        TEST_RUN("add | bidirectional iterator", TestAdd_BidirectionalIterator ());
+        TEST_DISABLED("add | forward iterator", TestAdd_ForwardIterator ());
+		TEST_RUN("add | mixed iterators", TestAdd_MixedIterators ());
+
+		TEST_RUN("subtract | random iterator", TestSubtract_RandomIterator ());
+        TEST_RUN("subtract | bidirectional iterator", TestSubtract_BidirectionalIterator ());
+        TEST_DISABLED("subtract | forward iterator", TestSubtract_ForwardIterator ());
+		TEST_RUN("subtract | mixed iterators", TestSubtract_MixedIterators ());
 
         TEST_RUN("dot | random iterator", TestDot_RandomIterator ());
         TEST_RUN("dot | bidirectional iterator", TestDot_BidirectionalIterator ());
         TEST_DISABLED("dot | forward iterator", TestDot_ForwardIterator ());
-
-        TEST_RUN("interpolate | fractions", TestInterpolate_Fractions ());
-        TEST_RUN("interpolate | random iterator", TestInterpolate_RandomIterator ());
-        TEST_RUN("interpolate | bidirectional iterator", TestInterpolate_BidirectionalIterator ());
-        TEST_DISABLED("interpolate forward iterator", TestInterpolate_ForwardIterator ());
-
+		TEST_RUN("dot | mixed iterators", TestDot_MixedIterators ());
+		
         TEST_RUN("point_distance2", TestPointDistance ());
         TEST_RUN("point_distance2 | random iterator", TestPointDistance_RandomIterator ());
         TEST_RUN("point_distance2 | bidirectional iterator", TestPointDistance_BidirectionalIterator ());
         TEST_DISABLED("point_distance2 forward iterator", TestPointDistance_ForwardIterator ());
 
-        TEST_RUN("line_distance2", TestLineDistance ());
-        TEST_RUN("line_distance2 | random iterator", TestLineDistance_RandomIterator ());
-        TEST_RUN("line_distance2 | bidirectional iterator", TestLineDistance_BidirectionalIterator ());
-        TEST_DISABLED("line_distance2 | forward iterator", TestLineDistance_ForwardIterator ());
+        //////TEST_RUN("line_distance2", TestLineDistance ());
+        //////TEST_RUN("line_distance2 | random iterator", TestLineDistance_RandomIterator ());
+        //////TEST_RUN("line_distance2 | bidirectional iterator", TestLineDistance_BidirectionalIterator ());
+        //////TEST_DISABLED("line_distance2 | forward iterator", TestLineDistance_ForwardIterator ());
 
-        TEST_RUN("segment_distance2", TestSegmentDistance ());
-        TEST_RUN("segment_distance2 | random iterator", TestSegmentDistance_RandomIterator ());
-        TEST_RUN("segment_distance2 | bidirectional iterator", TestSegmentDistance_BidirectionalIterator ());
-        TEST_DISABLED("segment_distance2 | forward iterator", TestSegmentDistance_ForwardIterator ());
+        //////TEST_RUN("segment_distance2", TestSegmentDistance ());
+        //////TEST_RUN("segment_distance2 | random iterator", TestSegmentDistance_RandomIterator ());
+        //////TEST_RUN("segment_distance2 | bidirectional iterator", TestSegmentDistance_BidirectionalIterator ());
+        //////TEST_DISABLED("segment_distance2 | forward iterator", TestSegmentDistance_ForwardIterator ());
 
-        TEST_RUN("ray_distance2", TestRayDistance ());
-        TEST_RUN("ray_distance2 | random iterator", TestRayDistance_RandomIterator ());
-        TEST_RUN("ray_distance2 | bidirectional iterator", TestRayDistance_BidirectionalIterator ());
-        TEST_DISABLED("ray_distance2 | forward iterator", TestRayDistance_ForwardIterator ());
+        //////TEST_RUN("ray_distance2", TestRayDistance ());
+        //////TEST_RUN("ray_distance2 | random iterator", TestRayDistance_RandomIterator ());
+        //////TEST_RUN("ray_distance2 | bidirectional iterator", TestRayDistance_BidirectionalIterator ());
+        //////TEST_DISABLED("ray_distance2 | forward iterator", TestRayDistance_ForwardIterator ());
     }
+
+	// ---------------------------------------------------------------------------------------------
 
     void TestMath::TestEqual_RandomIterator () {
         {
@@ -98,9 +104,9 @@ namespace psimpl {
             const unsigned dim = 3;
             float v [dim] = {1, 2, 3};
             float w [dim] = {2, 3, 4};
-            std::vector <float> p1(v, v + dim);
-            std::vector <float> p2(v, v + dim);
-            std::vector <float> p3(w, w + dim);
+            std::vector <float> p1 (v, v + dim);
+            std::vector <float> p2 (v, v + dim);
+            std::vector <float> p3 (w, w + dim);
             VERIFY_TRUE(psimpl::math::equal <dim> (p1.begin (), p2.begin ()));
             VERIFY_FALSE(psimpl::math::equal <dim> (p1.begin (), p3.begin ()));
         }
@@ -108,9 +114,9 @@ namespace psimpl {
             const unsigned dim = 4;
             int v [dim] = {1, 2, 3, 4};
             int w [dim] = {2, 3, 4, 5};
-            std::deque <int> p1(v, v + dim);
-            std::deque <int> p2(v, v + dim);
-            std::deque <int> p3(w, w + dim);
+            std::deque <int> p1 (v, v + dim);
+            std::deque <int> p2 (v, v + dim);
+            std::deque <int> p3 (w, w + dim);
             VERIFY_TRUE(psimpl::math::equal <dim> (p1.begin (), p2.begin ()));
             VERIFY_FALSE(psimpl::math::equal <dim> (p1.begin (), p3.begin ()));
         }
@@ -121,9 +127,9 @@ namespace psimpl {
             const unsigned dim = 2;
             float v [dim] = {1, 2};
             float w [dim] = {2, 3};
-            std::list <float> p1(v, v + dim);
-            std::list <float> p2(v, v + dim);
-            std::list <float> p3(w, w + dim);
+            std::list <float> p1 (v, v + dim);
+            std::list <float> p2 (v, v + dim);
+            std::list <float> p3 (w, w + dim);
             VERIFY_TRUE(psimpl::math::equal <dim> (p1.begin (), p2.begin ()));
             VERIFY_FALSE(psimpl::math::equal <dim> (p1.begin (), p3.begin ()));
         }
@@ -131,9 +137,9 @@ namespace psimpl {
             const unsigned dim = 3;
             int v [dim] = {1, 2, 3};
             int w [dim] = {2, 3, 4};
-            std::set <int> p1(v, v + dim);
-            std::set <int> p2(v, v + dim);
-            std::set <int> p3(w, w + dim);
+            std::set <int> p1 (v, v + dim);
+            std::set <int> p2 (v, v + dim);
+            std::set <int> p3 (w, w + dim);
             VERIFY_TRUE(psimpl::math::equal <dim> (p1.begin (), p2.begin ()));
             VERIFY_FALSE(psimpl::math::equal <dim> (p1.begin (), p3.begin ()));
         }
@@ -143,13 +149,119 @@ namespace psimpl {
         FAIL("TODO");
     }
 
-    void TestMath::TestMakeVector_RandomIterator () {
+	void TestMath::TestEqual_MixedIterators () {
+        const unsigned dim = 3;
+        short v [dim] = {1, 2, 3};
+        int w [dim] = {2, 3, 4};
+        std::vector <short> p1 (v, v + dim);
+        std::list <int> p2 (v, v + dim);
+        std::deque <long> p3 (w, w + dim);
+        VERIFY_TRUE(psimpl::math::equal <dim> (p1.begin (), p2.begin ()));
+        VERIFY_FALSE(psimpl::math::equal <dim> (p1.begin (), p3.begin ()));
+	}
+
+	// ---------------------------------------------------------------------------------------------
+
+	void TestMath::TestAdd_RandomIterator () {
         {
             const unsigned dim = 2;
             double p1 [dim] = {1, 2};
             double p2 [dim] = {3, 5};
             double vec [dim] = {0, 0};
-            psimpl::math::make_vector <dim> (p1, p2, vec);
+			psimpl::math::add <dim> (p1, p2, vec);
+
+            double expect [dim] = {4, 7};
+            VERIFY_TRUE(ComparePoint <dim> (vec, expect));
+        }
+        {
+            const unsigned dim = 3;
+            float v [dim] = {1, 2, 3};
+            float w [dim] = {4, 6, 8};
+            std::vector <float> p1 (v, v + dim);
+            std::vector <float> p2 (w, w + dim);
+            std::vector <float> vec (dim);
+            psimpl::math::add <dim> (p1.begin (), p2.begin (), vec.begin ());
+
+            VERIFY_TRUE(vec.size () == dim);
+            float e [dim] = {5, 8, 11};
+            std::vector <float> expect (e, e + dim);
+            VERIFY_TRUE(ComparePoint <dim> (vec.begin (), expect.begin ()));
+        }
+        {
+            const unsigned dim = 4;
+            int v [dim] = {1, 2, 3, 4};
+            int w [dim] = {4, 6, 8, 10};
+            std::deque <int> p1 (v, v + dim);
+            std::deque <int> p2 (w, w + dim);
+            std::deque <int> vec (dim);
+            psimpl::math::add <dim> (p1.begin (), p2.begin (), vec.begin ());
+
+            VERIFY_TRUE(vec.size () == dim);
+            int e [dim] = {5, 8, 11, 14};
+            std::deque <int> expect (e, e + dim);
+            VERIFY_TRUE(ComparePoint <dim> (vec.begin (), expect.begin ()));
+        }
+    }
+
+    void TestMath::TestAdd_BidirectionalIterator () {
+        {
+            const unsigned dim = 2;
+            float v [dim] = {1, 2};
+            float w [dim] = {3, 5};
+            std::list <float> p1 (v, v + dim);
+            std::list <float> p2 (w, w + dim);
+            float vec [dim];
+            psimpl::math::add <dim> (p1.begin (), p2.begin (), vec);
+
+            float e [dim] = {4, 7};
+            std::list <float> expect (e, e + dim);
+            VERIFY_TRUE(ComparePoint <dim> (vec, expect.begin ()));
+        }
+        {
+            const unsigned dim = 4;
+            int v [dim] = {1, 2, 3, 4};
+            int w [dim] = {4, 6, 8, 10};
+            std::set <int> p1 (v, v + dim);
+            std::set <int> p2 (w, w + dim);
+            int vec [dim];
+            psimpl::math::add <dim> (p1.begin (), p2.begin (), vec);
+
+            int e [dim] = {5, 8, 11, 14};
+            std::set <int> expect (e, e + dim);
+            VERIFY_TRUE(ComparePoint <dim> (vec, expect.begin ()));
+        }
+    }
+
+    void TestMath::TestAdd_ForwardIterator () {
+        FAIL("TODO");
+    }
+
+	void TestMath::TestAdd_MixedIterators () {
+        {
+            const unsigned dim = 3;
+            short v [dim] = {1, 2, 3};
+            int w [dim] = {4, 6, 8};
+            std::vector <short> p1 (v, v + dim);
+            std::list <int> p2 (w, w + dim);
+            std::deque <long> vec (dim);
+            psimpl::math::add <dim> (p1.begin (), p2.begin (), vec.begin ());
+
+            VERIFY_TRUE(vec.size () == dim);
+            long e [dim] = {5, 8, 11};
+            std::vector <long > expect (e, e + dim);
+            VERIFY_TRUE(ComparePoint <dim> (vec.begin (), expect.begin ()));
+        }
+    }
+
+	// ---------------------------------------------------------------------------------------------
+
+	void TestMath::TestSubtract_RandomIterator () {
+        {
+            const unsigned dim = 2;
+            double p1 [dim] = {1, 2};
+            double p2 [dim] = {3, 5};
+            double vec [dim] = {0, 0};
+			psimpl::math::subtract <dim> (p1, p2, vec);
 
             double expect [dim] = {2, 3};
             VERIFY_TRUE(ComparePoint <dim> (vec, expect));
@@ -160,8 +272,8 @@ namespace psimpl {
             float w [dim] = {4, 6, 8};
             std::vector <float> p1 (v, v + dim);
             std::vector <float> p2 (w, w + dim);
-            std::vector <float> vec (dim, 0);
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
+            std::vector <float> vec (dim);
+            psimpl::math::subtract <dim> (p1.begin (), p2.begin (), vec.begin ());
 
             VERIFY_TRUE(vec.size () == dim);
             float e [dim] = {3, 4, 5};
@@ -174,8 +286,8 @@ namespace psimpl {
             int w [dim] = {4, 6, 8, 10};
             std::deque <int> p1 (v, v + dim);
             std::deque <int> p2 (w, w + dim);
-            std::vector <int> vec (dim, 0);
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
+            std::deque <int> vec (dim);
+            psimpl::math::subtract <dim> (p1.begin (), p2.begin (), vec.begin ());
 
             VERIFY_TRUE(vec.size () == dim);
             int e [dim] = {3, 4, 5, 6};
@@ -184,20 +296,19 @@ namespace psimpl {
         }
     }
 
-    void TestMath::TestMakeVector_BidirectionalIterator () {
+    void TestMath::TestSubtract_BidirectionalIterator () {
         {
             const unsigned dim = 2;
             float v [dim] = {1, 2};
             float w [dim] = {3, 5};
             std::list <float> p1 (v, v + dim);
             std::list <float> p2 (w, w + dim);
-            std::vector <float> vec (dim, 0);
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
+            float vec [dim];
+            psimpl::math::subtract <dim> (p1.begin (), p2.begin (), vec);
 
-            VERIFY_TRUE(vec.size () == dim);
             float e [dim] = {2, 3};
             std::list <float> expect (e, e + dim);
-            VERIFY_TRUE(ComparePoint <dim> (vec.begin (), expect.begin ()));
+            VERIFY_TRUE(ComparePoint <dim> (vec, expect.begin ()));
         }
         {
             const unsigned dim = 4;
@@ -205,19 +316,37 @@ namespace psimpl {
             int w [dim] = {4, 6, 8, 10};
             std::set <int> p1 (v, v + dim);
             std::set <int> p2 (w, w + dim);
-            std::vector <int> vec (dim, 0);
-            psimpl::math::make_vector <dim> (p1.begin (), p2.begin (), vec.begin ());
+            int vec [dim];
+            psimpl::math::subtract <dim> (p1.begin (), p2.begin (), vec);
 
-            VERIFY_TRUE(vec.size () == dim);
             int e [dim] = {3, 4, 5, 6};
             std::set <int> expect (e, e + dim);
+            VERIFY_TRUE(ComparePoint <dim> (vec, expect.begin ()));
+        }
+    }
+
+    void TestMath::TestSubtract_ForwardIterator () {
+        FAIL("TODO");
+    }
+
+	void TestMath::TestSubtract_MixedIterators () {
+        {
+            const unsigned dim = 3;
+            short v [dim] = {1, 2, 3};
+            int w [dim] = {4, 6, 8};
+            std::vector <short> p1 (v, v + dim);
+            std::list <int> p2 (w, w + dim);
+            std::deque <long> vec (dim);
+            psimpl::math::subtract <dim> (p1.begin (), p2.begin (), vec.begin ());
+
+            VERIFY_TRUE(vec.size () == dim);
+            long e [dim] = {3, 4, 5};
+            std::vector <long > expect (e, e + dim);
             VERIFY_TRUE(ComparePoint <dim> (vec.begin (), expect.begin ()));
         }
     }
 
-    void TestMath::TestMakeVector_ForwardIterator () {
-        FAIL("TODO");
-    }
+	// ---------------------------------------------------------------------------------------------
 
     void TestMath::TestDot_RandomIterator () {
         {
@@ -230,16 +359,16 @@ namespace psimpl {
             const unsigned dim = 3;
             float v [dim] = {1, 2, 3};
             float w [dim] = {2, 3, 4};
-            std::vector <float> p1(v, v + dim);
-            std::vector <float> p2(w, w + dim);
+            std::vector <float> p1 (v, v + dim);
+            std::vector <float> p2 (w, w + dim);
             VERIFY_TRUE(psimpl::math::dot <dim> (p1.begin (), p2.begin ()) == 20.f);
         }
         {
             const unsigned dim = 4;
             int v [dim] = {1, 2, 3, 4};
             int w [dim] = {2, 3, 4, 5};
-            std::deque <int> p1(v, v + dim);
-            std::deque <int> p2(w, w + dim);
+            std::deque <int> p1 (v, v + dim);
+            std::deque <int> p2 (w, w + dim);
             VERIFY_TRUE(psimpl::math::dot <dim> (p1.begin (), p2.begin ()) == 40);
         }
     }
@@ -249,16 +378,16 @@ namespace psimpl {
             const unsigned dim = 2;
             float v [dim] = {1, 2};
             float w [dim] = {2, 3};
-            std::list <float> p1(v, v + dim);
-            std::list <float> p2(w, w + dim);
+            std::list <float> p1 (v, v + dim);
+            std::list <float> p2 (w, w + dim);
             VERIFY_TRUE(psimpl::math::dot <dim> (p1.begin (), p2.begin ()) == 8.f);
         }
         {
             const unsigned dim = 3;
             int v [dim] = {1, 2, 3};
             int w [dim] = {2, 3, 4};
-            std::set <int> p1(v, v + dim);
-            std::set <int> p2(w, w + dim);
+            std::set <int> p1 (v, v + dim);
+            std::set <int> p2 (w, w + dim);
             VERIFY_TRUE(psimpl::math::dot <dim> (p1.begin (), p2.begin ()) == 20);
         }
     }
@@ -267,112 +396,16 @@ namespace psimpl {
         FAIL("TODO");
     }
 
-
-    void TestMath::TestInterpolate_Fractions () {
-        const unsigned dim = 2;
-        float p1 [dim] = {1, 2};
-        float p2 [dim] = {2, 3};
-        float p3 [dim];
-        {
-            float fraction = -1.f;
-            psimpl::math::interpolate <dim> (p1, p2, fraction, p3);
-            float expect [dim] = {0.f, 1.f};
-            VERIFY_TRUE(ComparePoint <dim> (p3, expect));
-        }
-        {
-            float fraction = 0.f;
-            psimpl::math::interpolate <dim> (p1, p2, fraction, p3);
-            VERIFY_TRUE(ComparePoint <dim> (p3, p1));
-        }
-        {
-            float fraction = 1.f;
-            psimpl::math::interpolate <dim> (p1, p2, fraction, p3);
-            VERIFY_TRUE(ComparePoint <dim> (p3, p2));
-        }
-        {
-            float fraction = 2.f;
-            psimpl::math::interpolate <dim> (p1, p2, fraction, p3);
-            float expect [dim] = {3.f, 4.f};
-            VERIFY_TRUE(ComparePoint <dim> (p3, expect));
-        }
+	void TestMath::TestDot_MixedIterators () {
+        const unsigned dim = 3;
+        float v [dim] = {1, 2, 3};
+        int w [dim] = {2, 3, 4};
+        std::vector <float> p1 (v, v + dim);
+        std::list <int> p2 (w, w + dim);
+        VERIFY_TRUE(psimpl::math::dot <dim> (p1.begin (), p2.begin ()) == 20.f);
     }
 
-    void TestMath::TestInterpolate_RandomIterator () {
-        {
-            const unsigned dim = 2;
-            double p1 [dim] = {1, 2};
-            double p2 [dim] = {2, 3};
-            double p3 [dim];
-            float fraction = 0.1f;
-            psimpl::math::interpolate <dim> (p1, p2, fraction, p3);
-
-            double expect [dim] = {1.1, 2.1};
-            VERIFY_TRUE(ComparePoint <dim> (p3, expect));
-        }
-        {
-            const unsigned dim = 3;
-            float v [dim] = {1, 2, 3};
-            float w [dim] = {2, 3, 4};
-            std::vector <float> p1(v, v + dim);
-            std::vector <float> p2(w, w + dim);
-            std::vector <float> p3;
-            float fraction = 0.1f;
-            psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::back_inserter (p3));
-
-            float e [dim] = {1.1f, 2.1f, 3.1f};
-            std::vector <float> expect (e, e + dim);
-            VERIFY_TRUE(ComparePoint <dim> (p3.begin (), expect.begin ()));
-        }
-        {
-            const unsigned dim = 4;
-            int v [dim] = {1, 2, 3, 4};
-            int w [dim] = {4, 6, 8, 10};
-            std::deque <int> p1(v, v + dim);
-            std::deque <int> p2(w, w + dim);
-            std::deque <int> p3;
-            float fraction = 0.5f;
-            psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::back_inserter (p3));
-
-            int e [dim] = {2, 4, 5, 7};
-            std::deque <int> expect (e, e + dim);
-            VERIFY_TRUE(ComparePoint <dim> (p3.begin (), expect.begin ()));
-        }
-    }
-
-    void TestMath::TestInterpolate_BidirectionalIterator () {
-        {
-            const unsigned dim = 3;
-            float v [dim] = {1, 2, 3};
-            float w [dim] = {2, 3, 4};
-            std::list <float> p1(v, v + dim);
-            std::list <float> p2(w, w + dim);
-            std::list <float> p3;
-            float fraction = 0.9f;
-            psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::back_inserter (p3));
-
-            float e [dim] = {1.9f, 2.9f, 3.9f};
-            std::list <float> expect (e, e + dim);
-            VERIFY_TRUE(ComparePoint <dim> (p3.begin (), expect.begin ()));
-        }
-        {
-            const unsigned dim = 4;
-            int v [dim] = {1, 2, 3, 4};
-            int w [dim] = {4, 6, 8, 10};
-            std::set <int> p1(v, v + dim);
-            std::set <int> p2(w, w + dim);
-            std::set <int> p3;
-            float fraction = 0.5f;
-            psimpl::math::interpolate <dim> (p1.begin (), p2.begin (), fraction, std::inserter (p3, p3.end ()));
-
-            int e [dim] = {2, 4, 5, 7};
-            std::set <int> expect (e, e + dim);
-            VERIFY_TRUE(ComparePoint <dim>(p3.begin (), expect.begin ()));
-        }
-    }
-
-    void TestMath::TestInterpolate_ForwardIterator () {
-        FAIL("TODO");
-    }
+	// ---------------------------------------------------------------------------------------------
 
     void TestMath::TestPointDistance () {
         const unsigned dim = 2;
@@ -444,6 +477,7 @@ namespace psimpl {
         FAIL("TODO");
     }
 
+	// ---------------------------------------------------------------------------------------------
 
     void TestMath::TestLineDistance () {
         const unsigned dim = 2;
@@ -558,6 +592,8 @@ namespace psimpl {
     void TestMath::TestLineDistance_ForwardIterator () {
         FAIL("TODO");
     }
+
+	// ---------------------------------------------------------------------------------------------
 
     void TestMath::TestSegmentDistance () {
         const unsigned dim = 2;
@@ -690,6 +726,8 @@ namespace psimpl {
     void TestMath::TestSegmentDistance_ForwardIterator () {
         FAIL("TODO");
     }
+
+	// ---------------------------------------------------------------------------------------------
 
     void TestMath::TestRayDistance () {
         const unsigned dim = 2;

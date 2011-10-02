@@ -47,19 +47,22 @@ namespace psimpl {
         void TestEqual_RandomIterator ();
         void TestEqual_BidirectionalIterator ();
         void TestEqual_ForwardIterator ();
+		void TestEqual_MixedIterators ();
 
-        void TestMakeVector_RandomIterator ();
-        void TestMakeVector_BidirectionalIterator ();
-        void TestMakeVector_ForwardIterator ();
+		void TestAdd_RandomIterator ();
+        void TestAdd_BidirectionalIterator ();
+        void TestAdd_ForwardIterator ();
+		void TestAdd_MixedIterators ();
+
+		void TestSubtract_RandomIterator ();
+        void TestSubtract_BidirectionalIterator ();
+        void TestSubtract_ForwardIterator ();
+		void TestSubtract_MixedIterators ();
 
         void TestDot_RandomIterator ();
         void TestDot_BidirectionalIterator ();
         void TestDot_ForwardIterator ();
-
-        void TestInterpolate_Fractions ();
-        void TestInterpolate_RandomIterator ();
-        void TestInterpolate_BidirectionalIterator ();
-        void TestInterpolate_ForwardIterator ();
+		void TestDot_MixedIterators ();
 
         void TestPointDistance ();
         void TestPointDistance_RandomIterator ();
