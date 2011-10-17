@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,13 +28,14 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 #include "TestPositionalError.h"
 #include "helper.h"
 #include "../lib/psimpl.h"
+#include <numeric>
 #include <iterator>
 #include <vector>
 #include <deque>
@@ -51,6 +53,7 @@ namespace psimpl {
         TEST_RUN("random iterator", TestRandomIterator ());
         TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
         TEST_DISABLED("forward iterator", TestForwardIterator ());
+        TEST_RUN("mixed iterators", TestMixedIterators ());
         TEST_RUN("return value", TestReturnValue ());
     }
 
@@ -71,8 +74,8 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
 
         // 4th simplification point incomplete
         polyline = simplification;
@@ -83,8 +86,8 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
     }
 
     // not enough points: point count < 3
@@ -103,8 +106,8 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
 
         // 1 polyline points, 4 simplification points
         std::generate_n (std::back_inserter (polyline), 1*DIM, StraightLine <float, DIM> ());
@@ -114,8 +117,8 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
 
         // 4 polyline points, 0 simplification points
         polyline = simplification;
@@ -126,8 +129,8 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
 
         // 4 polyline points, 1 simplification points
         std::generate_n (std::back_inserter (simplification), 1*DIM, StraightLine <float, DIM> ());
@@ -137,8 +140,8 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
 
         // polyline points < simplification points
         simplification.clear ();
@@ -149,8 +152,8 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
     }
 
     // invalid: tol == 0
@@ -171,12 +174,13 @@ namespace psimpl {
             simplification.begin (), simplification.end (),
             std::back_inserter (result), &valid);
 
-        ASSERT_TRUE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
 
         // last points don't match
         simplification = polyline;
         simplification [simplification.size () - 1] += 10.f;
+        result.clear ();
 
         psimpl::compute_positional_errors2 <DIM> (
             polyline.begin (), polyline.end (),
@@ -184,13 +188,134 @@ namespace psimpl {
             std::back_inserter (result), &valid);
 
         // can only be detected at the end of the algo, thus result will contain data
-        ASSERT_FALSE(result.empty ());
-        ASSERT_FALSE(valid);
+        VERIFY_FALSE(result.empty ());
+        VERIFY_FALSE(valid);
+
+        // simplification contains more points than polyline
+        simplification = polyline;
+        simplification.push_back (999);
+        simplification.push_back (999);
+        result.clear ();
+
+        psimpl::compute_positional_errors2 <DIM> (
+            polyline.begin (), polyline.end (),
+            simplification.begin (), simplification.end (),
+            std::back_inserter (result), &valid);
+
+        VERIFY_TRUE(result.empty ());
+        VERIFY_FALSE(valid);
     }
 
     // valid: tol != 0
     void TestPositionalError::TestValidLines () {
-        FAIL("TODO");
+        const unsigned DIM = 2;
+        bool valid = false;
+        double polyline [14] = {0, 0, 1, 2, 2, 1, 3, 4, 4, 5, 6, 3, 7, 0};
+
+        // all points match
+        {
+            double simplification [14] = {0, 0, 1, 2, 2, 1, 3, 4, 4, 5, 6, 3, 7, 0};
+            std::vector <double> result;
+
+            psimpl::compute_positional_errors2 <DIM> (
+                polyline, polyline + 14,
+                simplification, simplification + 14,
+                std::back_inserter (result), &valid);
+
+            VERIFY_TRUE(valid);
+            VERIFY_TRUE(14/DIM == result.size ());
+            VERIFY_TRUE(0.0 == std::accumulate (result.begin (), result.end (), 0.0));
+        }
+        // end points and one internal point match
+        {
+            double simplification [6] = {0, 0, 3, 4, 7, 0};
+            std::vector <double> result;
+
+            psimpl::compute_positional_errors2 <DIM> (
+                polyline, polyline + 14,
+                simplification, simplification + 6,
+                std::back_inserter (result), &valid);
+
+            VERIFY_TRUE(valid);
+            ASSERT_TRUE(14/DIM == result.size ());
+            ASSERT_TRUE(0.0 == result [0]);
+            ASSERT_TRUE(0.0 != result [1]);
+            ASSERT_TRUE(0.0 != result [2]);
+            ASSERT_TRUE(0.0 == result [3]);
+            ASSERT_TRUE(0.0 != result [4]);
+            ASSERT_TRUE(0.0 != result [5]);
+            ASSERT_TRUE(0.0 == result [6]);
+        }
+        // only end points match
+        {
+            double simplification [4] = {0, 0, 7, 0};
+            std::vector <double> result;
+
+            psimpl::compute_positional_errors2 <DIM> (
+                polyline, polyline + 14,
+                simplification, simplification + 4,
+                std::back_inserter (result), &valid);
+
+            VERIFY_TRUE(valid);
+            ASSERT_TRUE(14/DIM == result.size ());
+            ASSERT_TRUE(0.0  == result [0]);
+            ASSERT_TRUE(4.0  == result [1]);
+            ASSERT_TRUE(1.0  == result [2]);
+            ASSERT_TRUE(16.0 == result [3]);
+            ASSERT_TRUE(25.0 == result [4]);
+            ASSERT_TRUE(9.0  == result [5]);
+            ASSERT_TRUE(0.0  == result [6]);
+        }
+        // all points match, but polyline contains additional points
+        {
+            double simplification [10] = {0, 0, 1, 2, 2, 1, 3, 4, 4, 5};
+            std::vector <double> result;
+
+            psimpl::compute_positional_errors2 <DIM> (
+                polyline, polyline + 14,
+                simplification, simplification + 10,
+                std::back_inserter (result), &valid);
+
+            VERIFY_TRUE(valid);
+            VERIFY_TRUE(10/DIM == result.size ());
+            VERIFY_TRUE(0.0 == std::accumulate (result.begin (), result.end (), 0.0));
+        }
+        // end points and one internal point match, but polyline contains additional points
+        {
+            double simplification [6] = {0, 0, 2, 1, 4, 5};
+            std::vector <double> result;
+
+            psimpl::compute_positional_errors2 <DIM> (
+                polyline, polyline + 14,
+                simplification, simplification + 6,
+                std::back_inserter (result), &valid);
+
+            VERIFY_TRUE(valid);
+            ASSERT_TRUE(10/DIM == result.size ());
+            ASSERT_TRUE(0.0 == result [0]);
+            ASSERT_TRUE(0.0 != result [1]);
+            ASSERT_TRUE(0.0 == result [2]);
+            ASSERT_TRUE(0.0 != result [3]);
+            ASSERT_TRUE(0.0 == result [4]);
+        }
+        // only end points match, but polyline contains additional points
+        {
+            double simplification [4] = {0, 0, 4, 5};
+            std::vector <double> result;
+
+            psimpl::compute_positional_errors2 <DIM> (
+                polyline, polyline + 14,
+                simplification, simplification + 4,
+                std::back_inserter (result), &valid);
+
+            VERIFY_TRUE(valid);
+            ASSERT_TRUE(10/DIM == result.size ());
+            ASSERT_TRUE(0.0  == result [0]);
+            ASSERT_TRUE(0.0 != result [1]);
+            ASSERT_TRUE(0.0 != result [2]);
+            ASSERT_TRUE(0.0 != result [3]);
+            ASSERT_TRUE(0.0 == result [4]);
+        }
     }
 
     // different random access iterators, different value types, different dimensions
@@ -264,6 +389,10 @@ namespace psimpl {
         FAIL("TODO");
     }
 
+    void TestPositionalError::TestMixedIterators () {
+        FAIL("TODO");
+    }
+
     void TestPositionalError::TestReturnValue () {
         const unsigned DIM = 3;
         const unsigned count = 11;
@@ -276,7 +405,7 @@ namespace psimpl {
         float result [count*DIM];
 
         // invalid input
-        ASSERT_TRUE (
+        VERIFY_TRUE (
             std::distance (
                 result, 
                 psimpl::compute_positional_errors2 <DIM> (
@@ -284,7 +413,7 @@ namespace psimpl {
                     simplification, simplification,
                     result, &valid))
             == 0);
-        ASSERT_TRUE (
+        VERIFY_TRUE (
             std::distance (
                 result, 
                 psimpl::compute_positional_errors2 <DIM> (
@@ -292,10 +421,10 @@ namespace psimpl {
                     simplification, simplification,
                     result, NULL))
             == 0);
-        ASSERT_FALSE(valid);
+        VERIFY_FALSE(valid);
 
         // valid input
-        ASSERT_TRUE (
+        VERIFY_TRUE (
             std::distance (
                 result, 
                 psimpl::compute_positional_errors2 <DIM> (
@@ -303,7 +432,7 @@ namespace psimpl {
                     simplification, simplification + count*DIM,
                     result, &valid))
             == count);
-        ASSERT_TRUE (
+        VERIFY_TRUE (
             std::distance (
                 result, 
                 psimpl::compute_positional_errors2 <DIM> (
@@ -311,7 +440,64 @@ namespace psimpl {
                     simplification, simplification + count*DIM,
                     result, NULL))
             == count);
-        ASSERT_TRUE(valid);
+        VERIFY_TRUE(valid);
+    }
+
+    // --------------------------------------------------------------------------------------------
+
+    TestPositionalErrorStatistics::TestPositionalErrorStatistics () {
+        TEST_RUN("incomplete point", TestIncompletePoint ());
+        TEST_RUN("not enough points", TestNotEnoughPoints ());
+        TEST_RUN("invalid lines", TestInvalidLines ());
+        TEST_RUN("valid lines", TestValidLines ());
+        TEST_RUN("random iterator", TestRandomIterator ());
+        TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
+        TEST_DISABLED("forward iterator", TestForwardIterator ());
+        TEST_RUN("mixed iterators", TestMixedIterators ());
+        TEST_RUN("return value", TestReturnValue ());
+    }
+
+    // incomplete point: coord count % DIM > 1
+    void TestPositionalErrorStatistics::TestIncompletePoint () {
+        FAIL("TODO");
+    }
+
+    // not enough points: point count < 3
+    void TestPositionalErrorStatistics::TestNotEnoughPoints () {
+        FAIL("TODO");
+    }
+
+    // invalid: tol == 0
+    void TestPositionalErrorStatistics::TestInvalidLines () {
+        FAIL("TODO");
+    }
+
+    // valid: tol != 0
+    void TestPositionalErrorStatistics::TestValidLines () {
+        FAIL("TODO");
+    }
+
+    // different random access iterators, different value types, different dimensions
+    void TestPositionalErrorStatistics::TestRandomIterator () {
+        FAIL("TODO");
+    }
+
+    // bidirectional iterator, different value types, different dimensions
+    void TestPositionalErrorStatistics::TestBidirectionalIterator () {
+        FAIL("TODO");
+    }
+
+    // forward iterator, different value types, different dimensions
+    void TestPositionalErrorStatistics::TestForwardIterator () {
+        FAIL("TODO");
+    }
+
+    void TestPositionalErrorStatistics::TestMixedIterators () {
+        FAIL("TODO");
+    }
+
+    void TestPositionalErrorStatistics::TestReturnValue () {
+        FAIL("TODO");
     }
 
 }}

@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,8 +28,8 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 #ifndef PSIMPL_TEST_DOUGLAS_PEUCKER
@@ -41,6 +42,22 @@
 namespace psimpl {
     namespace test
 {
+	//! Tests function psimpl::simplify_douglas_peucker_classic
+    class TestDouglasPeuckerClassic
+    {
+    public:
+        TestDouglasPeuckerClassic ();
+
+    private:
+        void TestIncompletePoint ();
+        void TestNotEnoughPoints ();
+        void TestInvalidTol ();
+        void TestValidTol ();
+        void TestBasicSanity ();
+        void TestRandomIterator ();
+        void TestReturnValue ();
+    };
+
     //! Tests function psimpl::simplify_douglas_peucker
     class TestDouglasPeucker
     {
@@ -54,6 +71,8 @@ namespace psimpl {
         void TestValidTol ();
         void TestBasicSanity ();
         void TestRandomIterator ();
+		void TestBidirectionalIterator ();
+        void TestForwardIterator ();
         void TestReturnValue ();
     };
 

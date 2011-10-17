@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,8 +28,8 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 #include "TestReumannWitkam.h"
@@ -69,7 +70,7 @@ namespace psimpl {
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
-        ASSERT_TRUE(polyline == result);
+        VERIFY_TRUE(polyline == result);
 
         // 4th point complete
         polyline.push_back (4.f);
@@ -79,7 +80,7 @@ namespace psimpl {
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
-        ASSERT_FALSE(polyline == result);
+        VERIFY_FALSE(polyline == result);
     }
     
     // not enough points: point count < 3
@@ -95,7 +96,7 @@ namespace psimpl {
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
-        ASSERT_TRUE(polyline == result);
+        VERIFY_TRUE(polyline == result);
 
         // 1 point
         polyline.push_back(1.f);
@@ -106,7 +107,7 @@ namespace psimpl {
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
-        ASSERT_TRUE(polyline == result);
+        VERIFY_TRUE(polyline == result);
 
         // 2 points
         polyline.push_back(2.f);
@@ -117,7 +118,7 @@ namespace psimpl {
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
-        ASSERT_TRUE(polyline == result);
+        VERIFY_TRUE(polyline == result);
         
         // 3 points
         polyline.push_back(2.f);
@@ -128,7 +129,7 @@ namespace psimpl {
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
-        ASSERT_TRUE(polyline != result);
+        VERIFY_TRUE(polyline != result);
     }
     
     // invalid: tol == 0
@@ -145,7 +146,7 @@ namespace psimpl {
             polyline.begin (), polyline.end (), tol,
             std::back_inserter (result));
 
-        ASSERT_TRUE(polyline == result);
+        VERIFY_TRUE(polyline == result);
     }
 
     // valid: tol != 0
@@ -165,7 +166,7 @@ namespace psimpl {
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 13*DIM);
+            ASSERT_TRUE(result.size () == 13*DIM);
             int keys [] = {0, 1, 2, 3, 4, 6, 8, 10, 12, 15, 18, 21, 24};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 13)));
         }
@@ -178,7 +179,7 @@ namespace psimpl {
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 2*DIM);
+            ASSERT_TRUE(result.size () == 2*DIM);
             VERIFY_TRUE(CompareEndPoints <DIM> (polyline.begin (), polyline.end (), result.begin (), result.end ()));
         }
         // normal tol, 1 x stepsize
@@ -190,7 +191,7 @@ namespace psimpl {
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 9*DIM);
+            ASSERT_TRUE(result.size () == 9*DIM);
             int keys [] = {0, 7, 9, 11, 13, 16, 19, 22, 24};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 9)));
         }
@@ -203,7 +204,7 @@ namespace psimpl {
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 5*DIM);
+            ASSERT_TRUE(result.size () == 5*DIM);
             int keys [] = {0, 17, 20, 23, 24};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
         }
@@ -223,7 +224,7 @@ namespace psimpl {
                     polyline.begin (), polyline.end (), tol,
                     std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 2*DIM);
+            ASSERT_TRUE(result.size () == 2*DIM);
             VERIFY_TRUE(CompareEndPoints <DIM> (polyline.begin (), polyline.end (), result.begin (), result.end ()));
         }
         {
@@ -237,7 +238,7 @@ namespace psimpl {
                     polyline.begin (), polyline.end (), tol,
                     std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 2*DIM);
+            ASSERT_TRUE(result.size () == 2*DIM);
             VERIFY_TRUE(CompareEndPoints <DIM> (polyline.begin (), polyline.end (), result.begin (), result.end ()));
         }
     }
@@ -270,7 +271,7 @@ namespace psimpl {
                 polyline.begin (), polyline.end (), tol,
                 std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 5*DIM);
+            ASSERT_TRUE(result.size () == 5*DIM);
             int keys [] = {0, 17, 20, 23, 24};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
         }
@@ -284,7 +285,7 @@ namespace psimpl {
                     polyline.begin (), polyline.end (), tol,
                     std::back_inserter (result));
 
-            VERIFY_TRUE(result.size () == 5*DIM);
+            ASSERT_TRUE(result.size () == 5*DIM);
             int keys [] = {0, 17, 20, 23, 24};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
         }
@@ -303,7 +304,7 @@ namespace psimpl {
                 polyline.begin (), polyline.end (), tol,
                 std::inserter (result, result.begin ()));
 
-            VERIFY_TRUE(result.size () == 5*DIM);
+            ASSERT_TRUE(result.size () == 5*DIM);
             int keys [] = {0, 17, 20, 23, 24};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
         }
@@ -323,7 +324,7 @@ namespace psimpl {
         float result [count*DIM];
 
         // invalid input
-        ASSERT_TRUE (
+        VERIFY_TRUE (
             std::distance (
                 result, 
                 psimpl::simplify_reumann_witkam <DIM> (
@@ -332,7 +333,7 @@ namespace psimpl {
             == count*DIM);
 
         // valid input
-        ASSERT_TRUE (
+        VERIFY_TRUE (
             std::distance (
                 result, 
                 psimpl::simplify_reumann_witkam <DIM> (

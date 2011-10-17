@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,8 +28,8 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 #include "TestUtil.h"
@@ -69,7 +70,7 @@ namespace psimpl {
 
         // const access
         const psimpl::util::scoped_array <float>& a2 = a1;
-        ASSERT_TRUE(a2 [0] == 0.f);
+        VERIFY_TRUE(a2 [0] == 0.f);
 
         // swap
         psimpl::util::scoped_array <float> a3 (2);
@@ -159,7 +160,7 @@ namespace psimpl {
 		keys.push_back (true);
 		keys.push_back (true);
 		psimpl::util::copy_keys <2> (coords, coords + 8, keys.begin (), std::back_inserter (res));
-		VERIFY_TRUE(3 * 2, res.size ());
+        VERIFY_TRUE(3 * 2 == res.size ());
 		VERIFY_TRUE(0 == res [0]);
 		VERIFY_TRUE(1 == res [1]);
 		VERIFY_TRUE(4 == res [2]);
@@ -222,12 +223,18 @@ namespace psimpl {
 		VERIFY_TRUE(typeid (float) == typeid (psimpl::util::select_calculation_type <std::deque <float>::iterator>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <double>::iterator>::type));
 		// integer types are promoted
+		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <char>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <unsigned char>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::deque <signed char>::iterator>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <short>::iterator>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <unsigned short>::iterator>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::deque <signed short>::iterator>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <int>::iterator>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <unsigned int>::iterator>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <signed int>::iterator>::type));
+		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <long>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <unsigned long>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <signed long>::iterator>::type));
 		// cv qualifiers are removed before promotion
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <char*>::type));
 		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <const char*>::type));

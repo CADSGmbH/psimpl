@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,8 +28,8 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 #include "test.h"
@@ -42,8 +43,8 @@ int main (int /*argc*/, char * /*argv*/ [])
 {
     TEST_INIT();
 
-    TEST_RUN("util namspace", psimpl::test::TestUtil ());
-    TEST_RUN("math namspace", psimpl::test::TestMath ());
+    TEST_RUN("util namespace", psimpl::test::TestUtil ());
+    TEST_RUN("math namespace", psimpl::test::TestMath ());
     TEST_RUN("simplification algorithms", psimpl::test::TestSimplification ());
     TEST_RUN("error algorithms", psimpl::test::TestError ());
 
