@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,8 +28,8 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 /*!
@@ -37,7 +38,8 @@
 <pre>
     Author  - Elmar de Koning
     Support - edekoning@gmail.com
-    Website - http://psimpl.sf.net
+    Website - http://psimpl.sf.net/
+    Project - http://sf.net/projects/psimpl/
     Article - http://www.codeproject.com/KB/recipes/PolylineSimplification.aspx
     License - MPL 1.1
 </pre><br>
@@ -63,8 +65,8 @@
     + positional error - Distance of each polyline point to its simplification
 
     All the algorithms have been implemented in a header-only library using an STL-style interface
-	that operates on input and output iterators. Supported polylines can be of any dimension, and
-	defined using floating point or integer data types.
+    that operates on input and output iterators. Supported polylines can be of any dimension, and
+    defined using floating point or integer data types.
 </pre><br>
 
     \section sec_changelog changelog
@@ -86,7 +88,7 @@
                  statistics could be returned under questionable input; documented input iterator
                  requirements for each algorithm; miscellaneous refactoring of most algorithms.
     ??-??-???? - Complete rewrite; split code across multiple headers; split dp; more accurate 
-				 results with intergers; improved compute pos error now supports ...
+                 results with intergers; improved compute pos error now supports ...
 </pre>
 */
 
@@ -95,6 +97,7 @@
 
 
 #include "detail/algo.h"
+#include "detail/error.h"
 #include "detail/math.h"
 #include "detail/util.h"
 
@@ -103,7 +106,7 @@
 // results. The list below defines what integral types may be promoted to what floating point
 // types. Any type not listed here will never get promoted. Feel free to extend this list with
 // other types you want to use.
-PSIMPL_DEF_FLOATING_POINT_PROMOTION(		  char,  double)
+PSIMPL_DEF_FLOATING_POINT_PROMOTION(         char,  double)
 PSIMPL_DEF_FLOATING_POINT_PROMOTION(unsigned char,  double)
 PSIMPL_DEF_FLOATING_POINT_PROMOTION(  signed char,  double)
 PSIMPL_DEF_FLOATING_POINT_PROMOTION(unsigned short, double)
@@ -502,7 +505,7 @@ namespace psimpl
             >::simplify (first, last, tol, look_ahead, result);
     }
 
-	/*!
+    /*!
         \brief Performs Douglas-Peucker approximation (DPc).
 
         The DPc algorithm starts with a simplification that is the single edge joining the first
@@ -511,14 +514,14 @@ namespace psimpl
         computed distance that is larger than a specified tolerance, will be added to the
         simplification. This process will recurse for each edge in the current simplification,
         untill all vertices of the original polyline are within tolerance. The algorithm is O(n2)
-		in worst case and O(n log n) on average.
+        in worst case and O(n log n) on average.
 
         \image html psimpl_dp.png
 
-		DPc is applied to the range [first, last) using the specified tolerance tol. The resulting
-		simplified polyline is copied to the output range [result, result + m*DIM), where m is the
-		number of vertices of the simplified polyline. The return value is the end of the output
-		range: result + m*DIM.
+        DPc is applied to the range [first, last) using the specified tolerance tol. The resulting
+        simplified polyline is copied to the output range [result, result + m*DIM), where m is the
+        number of vertices of the simplified polyline. The return value is the end of the output
+        range: result + m*DIM.
 
         Input (Type) requirements:
         1- DIM is not 0, where DIM represents the dimension of the polyline
@@ -668,8 +671,8 @@ namespace psimpl
             >::simplify (first, last, count, result);
     }
 
-	/*!
-		\brief Computes the squared positional error between a polyline and its simplification.
+    /*!
+        \brief Computes the squared positional error between a polyline and its simplification.
 
         For each point in the range [original_first, original_last) the squared distance to the
         simplification [simplified_first, simplified_last) is calculated. Each positional error
@@ -681,17 +684,17 @@ namespace psimpl
 
         Input (Type) requirements:
         1- DIM is not 0, where DIM represents the dimension of the polyline
-        2- The ForwardIterator value type is convertible to a value type of the OutputIterator
-        3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+        2- The value type of ForwardIterator1 is convertible to the value type of ForwardIterator2
+		3- The value type of ForwardIterator2, possibly promoted to a floating point type, is convertible
+		   to the value type of OutputIterator
+        4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
            contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
            when DIM = 3
-        4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+        5- The ranges [original_first, original_last) and [simplified_first, simplified_last)
            each contain a minimum of 2 vertices
-        5- The range [simplified_first, simplified_last) represents a simplification of the
+        6- The range [simplified_first, simplified_last) represents a simplification of the
            range [original_first, original_last), meaning each point in the simplification
            has the exact same coordinates as some point from the original polyline
-
-		   TODO outputiterator value type is promoted value type of simplification iterator
 
         In case these requirements are not met, the valid flag is set to false OR
         compile errors may occur.
@@ -703,14 +706,14 @@ namespace psimpl
         \param[in] result           destination of the squared positional errors
         \param[out] valid           [optional] indicates if the computed positional errors are valid
         \return                     one beyond the last computed positional error
-	*/
-	template
-	<
-		unsigned DIM,
-		typename ForwardIterator1,
-		typename ForwardIterator2,
-		typename OutputIterator
-	>
+    */
+    template
+    <
+        unsigned DIM,
+        typename ForwardIterator1,
+        typename ForwardIterator2,
+        typename OutputIterator
+    >
     OutputIterator compute_positional_errors2 (
         ForwardIterator1 original_first,
         ForwardIterator1 original_last,
@@ -719,70 +722,72 @@ namespace psimpl
         OutputIterator result,
         bool* valid=0)
     {
-		return algo::positional_error
-			<
-				DIM,
-				ForwardIterator1,
-				ForwardIterator2,
-				OutputIterator
-			>::compute (original_first, original_last,
-						simplified_first, simplified_last,
-						result, valid);
-	}
+        return error::positional
+            <
+                DIM,
+                ForwardIterator1,
+                ForwardIterator2,
+                OutputIterator
+            >::compute (original_first, original_last,
+                        simplified_first, simplified_last,
+                        result, valid);
+    }
 
-	/*!
-		\brief Computes statistics for the positional errors between a polyline and its simplification.
+    /*!
+        \brief Computes statistics for the positional errors between a polyline and its simplification.
 
-		Various statistics (mean, max, sum, std) are calculated for the positional errors
-		between the range [original_first, original_last) and its simplification the range
-		[simplified_first, simplified_last).
+        Various statistics (mean, max, sum, std) are calculated for the positional errors
+        between the range [original_first, original_last) and its simplification the range
+        [simplified_first, simplified_last).
 
-		Input (Type) requirements:
-		1- DIM is not 0, where DIM represents the dimension of the polyline
-		2- The ForwardIterator value type is convertible to double
-		3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
-		   contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
-		   when DIM = 3
-		4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
-		   contain a minimum of 2 vertices
-		5- The range [simplified_first, simplified_last) represents a simplification of the
-		   range [original_first, original_last), meaning each point in the simplification
-		   has the exact same coordinates as some point from the original polyline
+        Input (Type) requirements:
+        1- DIM is not 0, where DIM represents the dimension of the polyline
+        2- The value type of ForwardIterator1 is convertible to the value type of ForwardIterator2
+		3- The value type of ForwardIterator2, possibly promoted to a floating point type, is convertible
+		   to double
+        3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+           contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
+           when DIM = 3
+        4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
+           contain a minimum of 2 vertices
+        5- The range [simplified_first, simplified_last) represents a simplification of the
+           range [original_first, original_last), meaning each point in the simplification
+           has the exact same coordinates as some point from the original polyline
 
-		In case these requirements are not met, the valid flag is set to false OR
-		compile errors may occur.
+        In case these requirements are not met, the valid flag is set to false OR
+        compile errors may occur.
 
-		\sa ComputePositionalErrors2
+        \sa ComputePositionalErrors2
 
-		\param[in] original_first   the first coordinate of the first polyline point
-		\param[in] original_last    one beyond the last coordinate of the last polyline point
-		\param[in] simplified_first the first coordinate of the first simplified polyline point
-		\param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
-		\param[out] valid           [optional] indicates if the computed statistics are valid
-		\return                     the computed statistics
-	*/
-	//////template
-	//////<
-	//////	unsigned DIM,
-	//////	typename ForwardIterator1,
-	//////	typename ForwardIterator2
-	//////>
- //////   math::statistics compute_positional_error_statistics (
- //////       ForwardIterator1 original_first,
- //////       ForwardIterator1 original_last,
- //////       ForwardIterator2 simplified_first,
- //////       ForwardIterator2 simplified_last,
- //////       bool* valid=0)
- //////   {
-	//////	return algo::positional_error_statistics
-	//////		<
-	//////			DIM,
-	//////			ForwardIterator1,
-	//////			ForwardIterator2
-	//////		>::compute (original_first, original_last,
-	//////					simplified_first, simplified_last,
-	//////					valid);
-	//////}
+        \param[in] original_first   the first coordinate of the first polyline point
+        \param[in] original_last    one beyond the last coordinate of the last polyline point
+        \param[in] simplified_first the first coordinate of the first simplified polyline point
+        \param[in] simplified_last  one beyond the last coordinate of the last simplified polyline point
+        \param[out] valid           [optional] indicates if the computed statistics are valid
+        \return                     the computed statistics
+    */
+    template
+    <
+        unsigned DIM,
+        typename ForwardIterator1,
+        typename ForwardIterator2
+    >
+    error::statistics compute_positional_error_statistics (
+        ForwardIterator1 original_first,
+        ForwardIterator1 original_last,
+        ForwardIterator2 simplified_first,
+        ForwardIterator2 simplified_last,
+        bool* valid=0)
+    {
+        return error::positional_statistics
+            <
+                DIM,
+                ForwardIterator1,
+                ForwardIterator2
+            >::compute (original_first, original_last,
+                        simplified_first, simplified_last,
+                        valid);
+    }
 }
 
 #endif // PSIMPL_GENERIC

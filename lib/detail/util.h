@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,8 +28,8 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 #ifndef PSIMPL_DETAIL_UTIL
@@ -42,8 +43,7 @@ namespace psimpl {
     namespace util
 {
 
-	// note: copy_n, scoped_array, and all type traits, will be removed when moving to C++0x
-
+    //! \note copy_n, scoped_array, and all type traits, will be removed when moving to C++0x.
     namespace detail
     {
         // ---------- copy_n -----------------------------------------------------------------------
@@ -83,45 +83,45 @@ namespace psimpl {
             return std::copy (first, first + n, result);
         }
 
-		// ---------- type traits ------------------------------------------------------------------------
-		template <typename T>
-		struct remove_const
-		{
-			typedef T type;
-		};
-		template <typename T>
-		struct remove_const <const T>
-		{
-			typedef T type;
-		};
+        // ---------- type traits ------------------------------------------------------------------------
+        template <typename T>
+        struct remove_const
+        {
+            typedef T type;
+        };
+        template <typename T>
+        struct remove_const <const T>
+        {
+            typedef T type;
+        };
 
-		template <typename T>
-		struct remove_volatile
-		{
-			typedef T type;
-		};
-		template <typename T>
-		struct remove_volatile <volatile T>
-		{
-			typedef T type;
-		};
+        template <typename T>
+        struct remove_volatile
+        {
+            typedef T type;
+        };
+        template <typename T>
+        struct remove_volatile <volatile T>
+        {
+            typedef T type;
+        };
 
-		template <typename T>
-		struct remove_cv
-		{
-			typedef typename remove_const <typename remove_volatile <T>::type>::type type;
-		};
+        template <typename T>
+        struct remove_cv
+        {
+            typedef typename remove_const <typename remove_volatile <T>::type>::type type;
+        };
 
-		template <typename T>
-		struct promote_to_floating_point_helper
-		{
-			typedef T type;
-		};
-		template <typename T>
-		struct promote_to_floating_point
-		{
-			typedef typename promote_to_floating_point_helper <typename remove_cv <T>::type>::type type;
-		};
+        template <typename T>
+        struct promote_to_floating_point_helper
+        {
+            typedef T type;
+        };
+        template <typename T>
+        struct promote_to_floating_point
+        {
+            typedef typename promote_to_floating_point_helper <typename remove_cv <T>::type>::type type;
+        };
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ namespace psimpl {
     */
     template
     <
-		unsigned DIM,
+        unsigned DIM,
         typename InputIterator,
         typename OutputIterator
     >
@@ -168,32 +168,32 @@ namespace psimpl {
         result = util::copy_n (first, DIM, result);
     }
 
-	/*!
-		\brief Copies all the keys from [first, last) to result.
+    /*!
+        \brief Copies all the keys from [first, last) to result.
 
-		\param[in]     first    the first coordinate of the first polyline point
-		\param[in]     last		one beyond the last coordinate of the last polyline point
-		\param[in]     keys		defines which points in [first, last) are keys
+        \param[in]     first    the first coordinate of the first polyline point
+        \param[in]     last     one beyond the last coordinate of the last polyline point
+        \param[in]     keys     defines which points in [first, last) are keys
         \param[in,out] result   destination of the copied coordinates
-	*/
-	template
+    */
+    template
     <
-		unsigned DIM,
+        unsigned DIM,
         typename ForwardIterator,
-		typename InputIterator,
+        typename InputIterator,
         typename OutputIterator
     >
     inline void copy_keys (
         ForwardIterator first,
-		ForwardIterator last,
-		InputIterator keys,
+        ForwardIterator last,
+        InputIterator keys,
         OutputIterator& result)
     {
-		while (first != last) {
+        while (first != last) {
             if (*keys++) {
-				util::copy_key <DIM> (first, result);
+                util::copy_key <DIM> (first, result);
             }
-			std::advance (first, DIM);
+            std::advance (first, DIM);
         }
     }
 
@@ -210,7 +210,7 @@ namespace psimpl {
     */
     template
     <
-		unsigned DIM,
+        unsigned DIM,
         typename InputIterator,
         typename Distance
     >
@@ -234,7 +234,7 @@ namespace psimpl {
     */
     template
     <
-		unsigned DIM,
+        unsigned DIM,
         typename BidirectionalIterator,
         typename Distance
     >
@@ -243,7 +243,7 @@ namespace psimpl {
         Distance n,
         Distance& remaining)
     {
-		typedef typename std::iterator_traits <BidirectionalIterator>::difference_type diff_type;
+        typedef typename std::iterator_traits <BidirectionalIterator>::difference_type diff_type;
 
         std::advance (it, -n * static_cast <diff_type> (DIM));
         remaining += n;
@@ -298,11 +298,11 @@ namespace psimpl {
 
     // ---------------------------------------------------------------------------------------------
 
-	//! \brief Meta function: selects a calculation type based on an interator type
+    //! \brief Meta function: selects a calculation type based on an interator type.
     template <typename Iterator>
     struct select_calculation_type
     {
-		typedef typename detail::promote_to_floating_point
+        typedef typename detail::promote_to_floating_point
                             <
                                 typename std::iterator_traits <Iterator>::value_type
                             >::type type;
@@ -311,18 +311,18 @@ namespace psimpl {
 }}
 
 /*!
-	\brief Defines a type promotion from an integer type to a floating point type
+    \brief Defines a type promotion from an integer type to a floating point type.
 
-	\note Only use this macro outside any namespace!
+    \note Only use this macro outside any namespace!
 */
-#define PSIMPL_DEF_FLOATING_POINT_PROMOTION(intType,fpType)		\
-	namespace psimpl { namespace util { namespace detail {		\
-        template <>												\
-        struct promote_to_floating_point_helper <intType>		\
-        {														\
-            typedef fpType type;								\
-        };														\
-	}}}
+#define PSIMPL_DEF_FLOATING_POINT_PROMOTION(intType,fpType)    \
+    namespace psimpl { namespace util { namespace detail {     \
+        template <>                                            \
+        struct promote_to_floating_point_helper <intType>      \
+        {                                                      \
+            typedef fpType type;                               \
+        };                                                     \
+    }}}
 
 
 #endif // PSIMPL_DETAIL_UTIL

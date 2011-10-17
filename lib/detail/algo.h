@@ -15,7 +15,8 @@
  * 'psimpl - generic n-dimensional polyline simplification'.
  *
  * The Initial Developer of the Original Code is
- * Elmar de Koning.
+ * Elmar de Koning (edekoning@gmail.com).
+ *
  * Portions created by the Initial Developer are Copyright (C) 2010-2011
  * the Initial Developer. All Rights Reserved.
  *
@@ -27,96 +28,97 @@
     psimpl - generic n-dimensional polyline simplification
     Copyright (C) 2010-2011 Elmar de Koning, edekoning@gmail.com
 
-    This file is part of psimpl, and is hosted at SourceForge:
-    http://sourceforge.net/projects/psimpl/
+    This file is part of psimpl and is hosted at SourceForge:
+    http://psimpl.sf.net/, http://sf.net/projects/psimpl/
 */
 
 #ifndef PSIMPL_DETAIL_ALGO
 #define PSIMPL_DETAIL_ALGO
 
 
-#include "math.h"
-#include "util.h"
-
 #include <queue>
 #include <stack>
+#include "math.h"
+#include "util.h"
 
 
 namespace psimpl {
     namespace algo
 {
 
-	namespace detail
-	{
-		/*!
-			\brief Key finder.
-		*/
-		template
-		<
-			unsigned DIM,
-			typename RandomAccessIterator
-		>
-		struct find_key
-		{
-			typedef typename std::iterator_traits <RandomAccessIterator>::difference_type diff_type;
-			typedef typename util::select_calculation_type <RandomAccessIterator>::type calc_type;
+    namespace detail
+    {
+        /*!
+            \brief Key finder.
+        */
+        template
+        <
+            unsigned DIM,
+            typename RandomAccessIterator
+        >
+        struct find_key
+        {
+            typedef typename std::iterator_traits <RandomAccessIterator>::difference_type diff_type;
+            typedef typename util::select_calculation_type <RandomAccessIterator>::type calc_type;
 
-			/*!
-				\brief Basic information about a single found key.
+            /*!
+                \brief Basic information about a single found key.
 
-				Note that the key is valid (found) if 0 < index.
-			*/
-			struct key {
-				key (diff_type index=0, calc_type dist2=0) :
-					index (index), dist2 (dist2) {}
+                Note that the key is valid (found) if 0 < index.
+            */
+            struct key {
+                key (diff_type index=0, calc_type dist2=0) :
+                    index (index), dist2 (dist2) {}
 
-				diff_type index;    //!< coord index of the key
-				calc_type dist2;	//!< squared distance of the key
-			};
+                diff_type index;    //!< coord index of the key
+                calc_type dist2;    //!< squared distance of the key
+            };
 
-			/*!
-				\brief Finds the key in a sub polyline.
+            /*!
+                \brief Finds the key in a sub polyline.
 
-				The key is the point which has the highest perpendicular distance to the line-segment
-				defined by the first and last point of the sub polyline.
+                The key is the point which has the highest perpendicular distance to the line-segment
+                defined by the first and last point of the sub polyline.
 
-				\param[in] poly		the first coordinate of the first polyline point
-				\param[in] first	the first coordinate index of the first point of the sub polyline
-				\param[in] last		the first coordinate index of the last point of the sub polyline
-				\return             the found key between poly [first] and poly [last]
-			*/
-			static key apply (
-				RandomAccessIterator poly,
-				diff_type first,
-				diff_type last)
-			{
-				key result;
-				// define segment S (s1, s2)
-				RandomAccessIterator s1 = poly;
-				RandomAccessIterator s2 = poly;
-				std::advance (s1, first);
-				std::advance (s2, last);
-				// (coord)index of the current test point
-				diff_type index = first + DIM;
+                \param[in] poly     the first coordinate of the first polyline point
+                \param[in] first    the first coordinate index of the first point of the sub polyline
+                \param[in] last     the first coordinate index of the last point of the sub polyline
+                \return             the found key between poly [first] and poly [last]
+            */
+            static key apply (
+                RandomAccessIterator poly,
+                diff_type first,
+                diff_type last)
+            {
+                key result;
+                // define segment S (s1, s2)
+                RandomAccessIterator s1 = poly;
+                RandomAccessIterator s2 = poly;
+                std::advance (s1, first);
+                std::advance (s2, last);
+                // (coord)index of the current test point
+                diff_type index = first + DIM;
+				std::advance (poly, first + DIM);
 
-				// test all internal points against segment S (s1, s2)
-				while (index < last) {
-					calc_type d2 = 0;//TODO math::segment_distance2 <DIM> (s1, s2, poly [index]);
+                // test all internal points against segment S (s1, s2)
+                while (index < last) {
+                    calc_type d2 = math::segment_distance2 <DIM> (s1, s2, poly);
 
-					if (result.dist2 < d2) {
-						// update maximum squared distance and the point it belongs to
-						result.index = index;
-						result.dist2 = d2;
-					}
-					index += DIM;
-				}
-				return result;
-			}
-		};
-	}
+                    if (result.dist2 <= d2) {
+                        // update maximum squared distance and the point it belongs to
+                        result.index = index;
+                        result.dist2 = d2;
+                    }
+                    index += DIM;
+					std::advance (poly, DIM);
+                }
+                return result;
+            }
+        };
+    }
 
     /*!
-        \brief Nth point simplification routine (NP).
+        \brief Nth point routine (NP).
     */
     template
     <
@@ -129,9 +131,9 @@ namespace psimpl {
     {
         typedef typename std::iterator_traits <ForwardIterator>::difference_type diff_type;
 
-		/*!
-			\brief Performs the nth point simplification routine.
-		*/
+        /*!
+            \brief Performs the nth point simplification routine.
+        */
         static OutputIterator simplify (
             ForwardIterator first,
             ForwardIterator last,
@@ -139,7 +141,7 @@ namespace psimpl {
             OutputIterator result)
         {
             diff_type coordCount = std::distance (first, last);
-            diff_type pointCount = DIM              // protect against zero DIM
+            diff_type pointCount = DIM               // protect against zero DIM
                                    ? coordCount / DIM
                                    : 0;
 
@@ -148,15 +150,15 @@ namespace psimpl {
                 return std::copy (first, last, result);
             }
 
-            diff_type remaining = pointCount - 1;	// the number of points remaining after key
-            ForwardIterator key = first;            // indicates the current key
+            diff_type remaining = pointCount - 1;    // the number of points remaining after key
+            ForwardIterator key = first;             // indicates the current key
 
             // the first point is always part of the simplification
-			util::copy_key <DIM> (key, result);
+            util::copy_key <DIM> (key, result);
 
             // copy each nth point
             while (util::forward <DIM> (key, static_cast <diff_type> (n), remaining)) {
-				util::copy_key <DIM> (key, result);
+                util::copy_key <DIM> (key, result);
             }
 
             return result;
@@ -164,7 +166,7 @@ namespace psimpl {
     };
 
     /*!
-        \brief Radial distance simplification routine (RD).
+        \brief Radial distance routine (RD).
     */
     template
     <
@@ -177,9 +179,9 @@ namespace psimpl {
     {
         typedef typename std::iterator_traits <ForwardIterator>::difference_type diff_type;
 
-		/*!
-			\brief Performs the radial distance simplification routine.
-		*/
+        /*!
+            \brief Performs the radial distance simplification routine.
+        */
         static OutputIterator simplify (
             ForwardIterator first,
             ForwardIterator last,
@@ -208,7 +210,7 @@ namespace psimpl {
             for (diff_type index = 1; index < pointCount - 1; ++index) {
                 if (tol2 <= math::point_distance2 <DIM> (current, next)) {
                     current = next;
-					util::copy_key <DIM> (next, result);
+                    util::copy_key <DIM> (next, result);
                 }
                 std::advance (next, DIM);
             }
@@ -219,7 +221,7 @@ namespace psimpl {
     };
 
     /*!
-        \brief Perpendicular distance simplification routine (PD).
+        \brief Perpendicular distance routine (PD).
     */
     template
     <
@@ -234,9 +236,9 @@ namespace psimpl {
         typedef typename std::iterator_traits <ForwardIterator>::value_type value_type;
         typedef typename util::select_calculation_type <ForwardIterator>::type calc_type;
 
-		/*!
-			\brief Performs the perpendicular distance simplification routine.
-		*/
+        /*!
+            \brief Performs the perpendicular distance simplification routine.
+        */
         static OutputIterator simplify (
             ForwardIterator first,
             ForwardIterator last,
@@ -293,7 +295,7 @@ namespace psimpl {
     };
 
     /*!
-        \brief Repeated perpendicular distance simplification routine (PD).
+        \brief Repeated perpendicular distance routine (PD).
     */
     template
     <
@@ -308,9 +310,9 @@ namespace psimpl {
         typedef typename std::iterator_traits <ForwardIterator>::value_type value_type;
         typedef typename std::iterator_traits <ForwardIterator>::difference_type diff_type;
 
-		/*!
-			\brief Repeatedly performs the perpendicular distance simplification routine.
-		*/
+        /*!
+            \brief Repeatedly performs the perpendicular distance simplification routine.
+        */
         static OutputIterator simplify (
             ForwardIterator first,
             ForwardIterator last,
@@ -405,9 +407,9 @@ namespace psimpl {
         typedef typename std::iterator_traits <ForwardIterator>::value_type value_type;
         typedef typename util::select_calculation_type <ForwardIterator>::type calc_type;
 
-		/*!
-			\brief Performs Reumann-Witkam approximation.
-		*/
+        /*!
+            \brief Performs Reumann-Witkam approximation.
+        */
         static OutputIterator simplify (
             ForwardIterator first,
             ForwardIterator last,
@@ -474,9 +476,9 @@ namespace psimpl {
         typedef typename std::iterator_traits <ForwardIterator>::value_type value_type;
         typedef typename util::select_calculation_type <ForwardIterator>::type calc_type;
 
-		/*!
-			\brief Performs Opheim approximation.
-		*/
+        /*!
+            \brief Performs Opheim approximation.
+        */
         static OutputIterator simplify (
             ForwardIterator first,
             ForwardIterator last,
@@ -559,9 +561,9 @@ namespace psimpl {
         typedef typename std::iterator_traits <BidirectionalIterator>::value_type value_type;
         typedef typename util::select_calculation_type <BidirectionalIterator>::type calc_type;
 
-		/*!
-			\brief Performs Lang approximation.
-		*/
+        /*!
+            \brief Performs Lang approximation.
+        */
         static OutputIterator simplify (
             BidirectionalIterator first,
             BidirectionalIterator last,
@@ -583,7 +585,7 @@ namespace psimpl {
             BidirectionalIterator current = first;  // indicates the current key
             BidirectionalIterator next = first;     // used to find the next key
 
-            diff_type remaining = pointCount - 1;	// the number of points remaining after current
+            diff_type remaining = pointCount - 1;   // the number of points remaining after current
             diff_type moved = util::forward <DIM> (next, static_cast <diff_type> (look_ahead), remaining);
 
             // the first point is always part of the simplification
@@ -614,7 +616,7 @@ namespace psimpl {
         }
     };
 
-	/*!
+    /*!
         \brief Douglas-Peucker approximation (DPc).
     */
     template
@@ -628,46 +630,46 @@ namespace psimpl {
     {
         typedef typename std::iterator_traits <RandomAccessIterator>::difference_type diff_type;
         typedef typename std::iterator_traits <RandomAccessIterator>::value_type value_type;
-		typedef typename util::select_calculation_type <RandomAccessIterator>::type calc_type;
-		typedef typename detail::find_key <DIM, RandomAccessIterator> key_finder;
-		typedef typename detail::find_key <DIM, RandomAccessIterator>::key key_type;
-	
-		/*!
-			\brief Performs Douglas-Peucker approximation.
-		*/
+        typedef typename util::select_calculation_type <RandomAccessIterator>::type calc_type;
+        typedef typename detail::find_key <DIM, RandomAccessIterator> key_finder;
+        typedef typename detail::find_key <DIM, RandomAccessIterator>::key key_type;
+    
+        /*!
+            \brief Performs Douglas-Peucker approximation.
+        */
         static OutputIterator simplify (
             RandomAccessIterator first,
             RandomAccessIterator last,
             Distance tol,
             OutputIterator result)
         {
-			diff_type coordCount = std::distance (first, last);
+            diff_type coordCount = std::distance (first, last);
             diff_type pointCount = DIM      // protect against zero DIM
                                    ? coordCount / DIM
                                    : 0;
-			Distance tol2 = tol * tol;		// squared distance tolerance
+            Distance tol2 = tol * tol;      // squared distance tolerance
 
             // validate input and check if simplification required
             if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
                 return std::copy (first, last, result);
             }
 
-			// keep track of what points are part of the simplification (key)
-			util::scoped_array <unsigned char> keys (pointCount);
-			std::fill_n (keys.get (), pointCount, 0);
+            // keep track of what points are part of the simplification (key)
+            util::scoped_array <unsigned char> keys (pointCount);
+            std::fill_n (keys.get (), pointCount, 0);
             keys [0] = 1;                   // the first point is always a key
             keys [pointCount - 1] = 1;      // the last point is always a key
 
-			// keep track of all sub polylines that still need to be processed
-            std::stack <sub_poly> stack;	// LIFO job-queue
-			sub_poly poly (0, coordCount-DIM);
-			stack.push (poly);				// add complete poly
+            // keep track of all sub polylines that still need to be processed
+            std::stack <sub_poly> stack;    // LIFO job-queue
+            sub_poly poly (0, coordCount-DIM);
+            stack.push (poly);              // add complete poly
 
-			while (!stack.empty ()) {
-                poly = stack.top ();	// take a sub poly
-                stack.pop ();			// and find its key
+            while (!stack.empty ()) {
+                poly = stack.top ();    // take a sub poly
+                stack.pop ();           // and find its key
 
-				key_type key = key_finder::apply (first, poly.first, poly.last);
+                key_type key = key_finder::apply (first, poly.first, poly.last);
                 if (key.index && tol2 < key.dist2) {
                     // store the key if valid
                     keys [key.index / DIM] = 1;
@@ -676,25 +678,25 @@ namespace psimpl {
                     stack.push (sub_poly (poly.first, key.index));
                 }
             }
-			// copy keys
-			util::copy_keys <DIM> (first, last, keys.get (), result);
-			return result;
-		}
+            // copy keys
+            util::copy_keys <DIM> (first, last, keys.get (), result);
+            return result;
+        }
 
-	private:
-		/*!
-			\brief Defines a sub polyline.
-		*/
+    private:
+        /*!
+            \brief Defines a sub polyline.
+        */
         struct sub_poly {
             sub_poly (diff_type first=0, diff_type last=0) :
                 first (first), last (last) {}
 
-            diff_type first;	//!< coord index of the first point
+            diff_type first;    //!< coord index of the first point
             diff_type last;     //!< coord index of the last point
         };
-	};
+    };
 
-	/*!
+    /*!
         \brief Douglas-Peucker approximation, but with RD as a preprocessing step (DP).
     */
     template
@@ -708,18 +710,18 @@ namespace psimpl {
     {
         typedef typename std::iterator_traits <ForwardIterator>::difference_type diff_type;
         typedef typename std::iterator_traits <ForwardIterator>::value_type value_type;
-		typedef typename util::select_calculation_type <ForwardIterator>::type calc_type;
+        typedef typename util::select_calculation_type <ForwardIterator>::type calc_type;
 
-		/*!
-			\brief Performs Douglas-Peucker approximation, but uses RD as a preprocessing step.
-		*/
+        /*!
+            \brief Performs Douglas-Peucker approximation, but uses RD as a preprocessing step.
+        */
         static OutputIterator simplify (
             ForwardIterator first,
             ForwardIterator last,
             Distance tol,
             OutputIterator result)
         {
-			diff_type coordCount = std::distance (first, last);
+            diff_type coordCount = std::distance (first, last);
             diff_type pointCount = DIM      // protect against zero DIM
                                    ? coordCount / DIM
                                    : 0;
@@ -728,31 +730,32 @@ namespace psimpl {
                 return std::copy (first, last, result);
             }
             // radial distance simplification routine
-            util::scoped_array <value_type> reduced (coordCount);	// radial distance results
-			diff_type reducedCoordCount = std::distance (
+            util::scoped_array <value_type> reduced (coordCount);    // radial distance results
+            diff_type reducedCoordCount = std::distance (
                 reduced.get (),
-				radial_distance
-					<
-						DIM,
-						ForwardIterator,
-						Distance,
-						value_type*
-					>::simplify (first, last, tol, reduced.get ()));
+                radial_distance
+                    <
+                        DIM,
+                        ForwardIterator,
+                        Distance,
+                        value_type*
+                    >::simplify (first, last, tol, reduced.get ()));
 
             // douglas-peucker approximation
-			douglas_peucker_classic
-				<
-					DIM,
-					value_type*,
-					Distance,
-					OutputIterator
-				>::simplify (reduced.get (), reduced.get () + reducedCoordCount, tol, result);
+            result =
+				douglas_peucker_classic
+                <
+                    DIM,
+                    value_type*,
+                    Distance,
+                    OutputIterator
+                >::simplify (reduced.get (), reduced.get () + reducedCoordCount, tol, result);
 
-			return result;
-		}
-	};
+            return result;
+        }
+    };
 
-	/*!
+    /*!
         \brief Douglas-Peucker approximation, but with a point count tolerance (DPn).
     */
     template
@@ -766,20 +769,20 @@ namespace psimpl {
     {
         typedef typename std::iterator_traits <RandomAccessIterator>::difference_type diff_type;
         typedef typename std::iterator_traits <RandomAccessIterator>::value_type value_type;
-		typedef typename util::select_calculation_type <RandomAccessIterator>::type calc_type;
-		typedef typename detail::find_key <DIM, RandomAccessIterator> key_finder;
-		typedef typename detail::find_key <DIM, RandomAccessIterator>::key key_type;
+        typedef typename util::select_calculation_type <RandomAccessIterator>::type calc_type;
+        typedef typename detail::find_key <DIM, RandomAccessIterator> key_finder;
+        typedef typename detail::find_key <DIM, RandomAccessIterator>::key key_type;
 
-		/*!
-			\brief Performs Douglas-Peucker approximation, but uses a point count tolerance.
-		*/
+        /*!
+            \brief Performs Douglas-Peucker approximation, but uses a point count tolerance.
+        */
         static OutputIterator simplify (
             RandomAccessIterator first,
             RandomAccessIterator last,
             Size tol,
             OutputIterator result)
         {
-			diff_type coordCount = std::distance (first, last);
+            diff_type coordCount = std::distance (first, last);
             diff_type pointCount = DIM      // protect against zero DIM
                                    ? coordCount / DIM
                                    : 0;
@@ -788,198 +791,67 @@ namespace psimpl {
                 return std::copy (first, last, result);
             }
 
-			// keep track of what points are part of the simplification (keys)
-			util::scoped_array <unsigned char> keys (pointCount);
-			std::fill_n (keys.get (), pointCount, 0);
+            // keep track of what points are part of the simplification (keys)
+            util::scoped_array <unsigned char> keys (pointCount);
+            std::fill_n (keys.get (), pointCount, 0);
             keys [0] = 1;                   // the first point is always a key
             keys [pointCount - 1] = 1;      // the last point is always a key
-			unsigned keyCount = 2;
+            Size keyCount = 2;
 
             if (tol == 2) {
-				util::copy_keys <DIM> (first, last, keys.get (), result);
-				return result;
-			}
+                util::copy_keys <DIM> (first, last, keys.get (), result);
+                return result;
+            }
 
-			// keep track of all sub polylines that still need to be processed
-            std::priority_queue <sub_poly> queue;	// sorted (max key dist2) job queue
-			sub_poly poly (0, coordCount-DIM);
-			poly.key = key_finder::apply (first, poly.first, poly.last);
-            queue.push (poly);						// add complete poly
+            // keep track of all sub polylines that still need to be processed
+            std::priority_queue <sub_poly> queue;    // sorted (max key dist2) job queue
+            sub_poly poly (0, coordCount-DIM);
+            poly.key = key_finder::apply (first, poly.first, poly.last);
+            queue.push (poly);                       // add complete poly
 
-			while (!queue.empty ()) {
-                poly = queue.top ();				// take a sub poly
+            while (!queue.empty ()) {
+                poly = queue.top ();                 // take a sub poly
                 queue.pop ();
                 // store the key
                 keys [poly.key.index / DIM] = 1;
                 // check point count tolerance
-                if (keyCount++ == tol) {
+                if (++keyCount == tol) {
                     break;
                 }
                 // split the polyline at the key and recurse
                 sub_poly left (poly.first, poly.key.index);
-				left.key = key_finder::apply (first, left.first, left.last);
+                left.key = key_finder::apply (first, left.first, left.last);
                 if (left.key.index) {
                     queue.push (left);
                 }
                 sub_poly right (poly.key.index, poly.last);
-				right.key = key_finder::apply (first, right.first, right.last);
+                right.key = key_finder::apply (first, right.first, right.last);
                 if (right.key.index) {
                     queue.push (right);
                 }
             }
-			// copy keys
-			util::copy_keys <DIM> (first, last, keys.get (), result);
-			return result;
-		}
+            // copy keys
+            util::copy_keys <DIM> (first, last, keys.get (), result);
+            return result;
+        }
 
-	private:
-		/*!
-			\brief Defines a sub polyline.
-		*/
+    private:
+        /*!
+            \brief Defines a sub polyline.
+        */
         struct sub_poly {
             sub_poly (diff_type first=0, diff_type last=0) :
                 first (first), last (last) {}
 
-            diff_type first;	//!< coord index of the first point
-            diff_type last;		//!< coord index of the last point
-			key_type key;		//!< key of this sub poly
+            diff_type first;    //!< coord index of the first point
+            diff_type last;     //!< coord index of the last point
+            key_type key;       //!< key of this sub poly
 
             bool operator< (const sub_poly& other) const {
                 return key.dist2 < other.key.dist2;
             }
         };
-	};
-
-	/*!
-        \brief Squared positional error between a polyline and its simplification.
-
-		todo note that calculated values are of the calc type of the simplification iterator
-    */
-    template
-    <
-        unsigned DIM,
-		typename ForwardIterator1,
-		typename ForwardIterator2,
-		typename OutputIterator
-    >
-    struct positional_error
-    {
-        typedef typename std::iterator_traits <ForwardIterator1>::difference_type diff_type1;
-		typedef typename std::iterator_traits <ForwardIterator2>::difference_type diff_type2;
-		typedef typename util::select_calculation_type <ForwardIterator2>::type calc_type;
-
-		/*!
-			\brief Computes the squared positional error between a polyline and its simplification.
-		*/
-        static OutputIterator compute (
-            ForwardIterator1 original_first,
-			ForwardIterator1 original_last,
-			ForwardIterator2 simplified_first,
-			ForwardIterator2 simplified_last,
-			OutputIterator result,
-			bool* valid=0)
-        {
-			diff_type1 original_coordCount = std::distance (original_first, original_last);
-            diff_type1 original_pointCount = DIM     // protect against zero DIM
-                                             ? original_coordCount / DIM
-                                             : 0;
-
-            diff_type2 simplified_coordCount = std::distance (simplified_first, simplified_last);
-            diff_type2 simplified_pointCount = DIM   // protect against zero DIM
-                                               ? simplified_coordCount / DIM
-                                               : 0;
-
-			// validate input
-            if (original_coordCount % DIM || original_pointCount < 2 ||
-                simplified_coordCount % DIM || simplified_pointCount < 2 ||
-                original_pointCount < simplified_pointCount ||
-                !math::equal <DIM> (simplified_first, original_first))
-            {
-                if (valid) {
-                    *valid = false;
-                }
-                return result;
-            }
-
-			// define (simplified) line segment S(simplified_prev, simplified_first)
-            ForwardIterator2 simplified_prev = simplified_first;
-            std::advance (simplified_first, DIM);
-
-            // process each simplified line segment
-            while (simplified_first != simplified_last) {
-                // process each original point until it equals the end of the line segment
-                while (original_first != original_last &&
-                       !math::equal <DIM> (simplified_first, original_first))
-                {
-                    *result = math::segment_distance2 <DIM> (simplified_prev, simplified_first,
-                                                             original_first);
-                    ++result;
-                    std::advance (original_first, DIM);
-                }
-                // update line segment S
-                simplified_prev = simplified_first;
-                std::advance (simplified_first, DIM);
-            }
-            // check if last original point matched
-            if (original_first != original_last) {
-                *result = 0;
-                ++result;
-            }
-
-            if (valid) {
-                *valid = original_first != original_last;
-            }
-            return result;
-		}
-	};
-
-	/*!
-        \brief Squared positional error statistics between a polyline and its simplification.
-
-		todo move statistics class and compute_statistics function from math to here, set statistics value type to calc type of simplification???
-    */
- //////   template
- //////   <
- //////       unsigned DIM,
-	//////	typename ForwardIterator1,
-	//////	typename ForwardIterator2
- //////   >
- //////   struct positional_error_statistics
- //////   {
-	//////	/*!
-	//////		\brief Computes the squared positional error statistics between a polyline and its simplification.
-	//////	*/
-	//////	static math::statistics compute (
-	//////		ForwardIterator1 original_first,
-	//////        ForwardIterator1 original_last,
-	//////		ForwardIterator2 simplified_first,
-	//////		ForwardIterator2 simplified_last,
-	//////		bool* valid=0)
-	//////	{
-	//////		typedef typename std::iterator_traits <ForwardIterator1>::difference_type diff_type;
-
-	//////		diff_type pointCount = std::distance (original_first, original_last) / DIM;
- //////           util::scoped_array <double> errors (pointCount);
-
-	//////		diff_type errorCount = std::distance (
- //////               errors.get (),
-	//////			positional_error
-	//////			<
-	//////				DIM,
-	//////				ForwardIterator1,
-	//////				ForwardIterator2,
-	//////				double*
-	//////			>::compute (original_first, original_last,
-	//////						simplified_first, simplified_last,
-	//////						errors.get (), valid));
-
- //////           std::transform (errors.get (), errors.get () + errorCount,
- //////                           errors.get (),
- //////                           std::ptr_fun <double, double> (std::sqrt));
-
- //////           return math::compute_statistics (errors.get (), errors.get () + errorCount);
-	//////	}
-	//////};
+    };
 
 }}
 
