@@ -70,8 +70,9 @@ namespace psimpl {
         void SimplifyRW (Container cont, QString tol);
         void SimplifyOp (Container cont, QString minTol, QString maxTol);
         void SimplifyLa (Container cont, QString tol, int size);
+        void SimplifyDP_classic (Container cont, QString tol);
         void SimplifyDP (Container cont, QString tol);
-        void SimplifyDP_variant (Container cont, int count);
+        void SimplifyDP_N (Container cont, int count);
         void SimplifyDP_reference (QString tol);
 
         int GetGeneratedPointCount () { return mGeneratedCoords.size () / 2; }

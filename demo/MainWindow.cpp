@@ -152,12 +152,16 @@ namespace psimpl {
             mWorker->SimplifyLa ((Container)ui->polyTypeComboBox->currentIndex (), ui->laLineEdit->text (), ui->laLookAheadSpinBox->value ());
             break;
 
+        case DOUGLAS_PEUCKER_CLASSIC:
+            mWorker->SimplifyDP_classic ((Container)ui->polyTypeComboBox->currentIndex (), ui->dpcLineEdit->text ());
+            break;
+
         case DOUGLAS_PEUCKER:
             mWorker->SimplifyDP ((Container)ui->polyTypeComboBox->currentIndex (), ui->dpLineEdit->text ());
             break;
 
-        case DOUGLAS_PEUCKER_VARIANT:
-            mWorker->SimplifyDP_variant ((Container)ui->polyTypeComboBox->currentIndex (), ui->dpvSpinBox->value ());
+        case DOUGLAS_PEUCKER_N:
+            mWorker->SimplifyDP_N ((Container)ui->polyTypeComboBox->currentIndex (), ui->dpvSpinBox->value ());
             break;
 
         case DOUGLAS_PEUCKER_REFERENCE:
@@ -169,7 +173,6 @@ namespace psimpl {
     void MainWindow::on_algorithmComboBox_currentIndexChanged (int index)
     {
         if (index == DOUGLAS_PEUCKER_REFERENCE) {
-            ui->polyTypeComboBox->setCurrentIndex (ARRAY_FLOAT);
             ui->polyTypeComboBox->setDisabled (true);
         }
         else {
@@ -277,6 +280,7 @@ namespace psimpl {
             out << "simplify_reumann_witkam," << ui->rwLineEdit->text () << '\n';
             out << "simplify_opheim," << ui->opMinLineEdit->text () << ',' << ui->opMaxLineEdit->text () << '\n';
             out << "simplify_lang," << ui->laLineEdit->text () << ',' << ui->laLookAheadSpinBox->value () << '\n';
+            out << "simplify_douglas_peucker_classic," << ui->dpcLineEdit->text () << '\n';
             out << "simplify_douglas_peucker," << ui->dpLineEdit->text () << '\n';
             out << "simplify_douglas_peucker_n," << ui->dpvSpinBox->value () << '\n';
             file.close ();

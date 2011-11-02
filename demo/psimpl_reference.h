@@ -31,17 +31,18 @@
     http://sourceforge.net/projects/psimpl/
 */
 
-#ifndef PSIMPL_CLASSIC_H
-#define PSIMPL_CLASSIC_H
+#ifndef PSIMPL_REFERENCE_H
+#define PSIMPL_REFERENCE_H
 
 #include <stack>
 
 namespace psimpl {
-    namespace classic {
+    namespace reference {
         // Contains a minimal modified version of the Douglas-Peucker recursive simplification
         // routine as available from www.softsurfer.com. Modifications include:
         // - Removed recursion by using a stack
         // - Added minimal Point, Vector, and Segment classes as needed by the algorithm
+        // - Replaced all occurences of float with double
 
 
         // minimal point class
@@ -52,12 +53,12 @@ namespace psimpl {
                 y (0.f)
             {}
 
-            Point (float x, float y) :
+            Point (double x, double y) :
                 x (x),
                 y (y)
             {}
 
-            float x, y;
+            double x, y;
         };
 
         // reuse the point class for a vector
@@ -102,7 +103,7 @@ namespace psimpl {
 
         // Assume that classes are already given for the objects:
         //    Point and Vector with
-        //        coordinates {float x, y, z;}    // as many as are needed
+        //        coordinates {double x, y, z;}    // as many as are needed
         //        operators for:
         //            == to test equality
         //            != to test inequality
@@ -131,15 +132,15 @@ namespace psimpl {
         //            j,k = indices for the subchain v[j] to v[k]
         //    Output: mk[] = array of markers matching vertex array v[]
         void
-        simplifyDP( Stack& stack, float tol, Point* v, int j, int k, int* mk )
+        simplifyDP( Stack& stack, double tol, Point* v, int j, int k, int* mk )
         {
             if (k <= j+1) // there is nothing to simplify
                 return;
 
             // check for adequate approximation by segment S from v[j] to v[k]
             int     maxi = j;          // index of vertex farthest from S
-            float   maxd2 = 0;         // distance squared of farthest vertex
-            float   tol2 = tol * tol;  // tolerance squared
+            double   maxd2 = 0;        // distance squared of farthest vertex
+            double   tol2 = tol * tol; // tolerance squared
             Segment S (v[j], v[k]);  // segment from v[j] to v[k]
             Vector  u = S.P1 - S.P0;   // segment direction vector
             double  cu = __dot(u,u);     // segment length squared
@@ -191,10 +192,10 @@ namespace psimpl {
         //    Output: sV[]= simplified polyline vertices (max is n)
         //    Return: m   = the number of points in sV[]
         int
-        poly_simplify(float tol, Point* V, int n, Point* sV )
+        poly_simplify(double tol, Point* V, int n, Point* sV )
         {
             int    i, k, m, pv;            // misc counters
-            float  tol2 = tol * tol;       // tolerance squared
+            double  tol2 = tol * tol;      // tolerance squared
             Point* vt = new Point[n];      // vertex buffer
             int*   mk = new int[n];        // marker buffer
             for (i=0; i<n; i++) {
@@ -235,4 +236,4 @@ namespace psimpl {
     }
 }
 
-#endif // PSIMPL_CLASSIC_H
+#endif // PSIMPL_REFERENCE_H

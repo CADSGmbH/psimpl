@@ -55,8 +55,9 @@ namespace psimpl {
         REUMANN_WITKAM,
         OPHEIM,
         LANG,
+        DOUGLAS_PEUCKER_CLASSIC,
         DOUGLAS_PEUCKER,
-        DOUGLAS_PEUCKER_VARIANT,
+        DOUGLAS_PEUCKER_N,
         DOUGLAS_PEUCKER_REFERENCE,
     } Algorithm;
 

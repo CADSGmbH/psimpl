@@ -571,6 +571,87 @@ namespace psimpl {
         DoSignalSimplifiedPolyline (duration);
     }
 
+    void DPWorker::SimplifyDP_classic (Container cont, QString tol) {
+        QTime t;
+        int duration = 0;
+
+        mSimplifiedCoords.clear ();
+
+        switch (cont) {
+        case ARRAY_FLOAT:
+        {
+            // convert
+            emit SignalConvertingPolyline ();
+            float* generatedPoints = new float [mGeneratedCoords.size ()];
+            for (int c=0; c<mGeneratedCoords.size (); c++) {
+                generatedPoints [c] = mGeneratedCoords [c];
+            }
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            const float* begin = generatedPoints;
+            const float* end = generatedPoints + mGeneratedCoords.size ();
+            t.start ();
+            simplify_douglas_peucker_classic <2> (begin, end, tol.toFloat(),
+                                                  std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            // done
+            emit SignalCleaningConvertedPolyline ();
+            delete [] generatedPoints;
+            break;
+        }
+        case QVECTOR_DOUBLE:
+        {
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            QVector <qreal>::const_iterator begin = mGeneratedCoords.constBegin ();
+            QVector <qreal>::const_iterator end = mGeneratedCoords.constEnd ();
+            t.start ();
+            simplify_douglas_peucker_classic <2> (begin, end, tol.toDouble (),
+                                                  std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            break;
+        }
+        case VECTOR_DOUBLE:
+        {
+            // convert
+            emit SignalConvertingPolyline ();
+            std::vector <double> generatedPoints = mGeneratedCoords.toStdVector ();
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            std::vector <double>::const_iterator begin = generatedPoints.begin ();
+            std::vector <double>::const_iterator end = generatedPoints.end ();
+            t.start ();
+            simplify_douglas_peucker_classic <2> (begin, end, tol.toDouble (),
+                                                  std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            emit SignalCleaningConvertedPolyline ();
+            break;
+        }
+        case LIST_LONGLONG:
+        {
+            // convert
+            emit SignalConvertingPolyline ();
+            std::list <long long> generatedPoints;
+            foreach (double coord, mGeneratedCoords) {
+                generatedPoints.push_back (coord);
+            }
+            // simplify
+            emit SignalSimplifyingPolyline ();
+            std::list <long long>::const_iterator begin = generatedPoints.begin ();
+            std::list <long long>::const_iterator end = generatedPoints.end ();
+            t.start ();
+            simplify_douglas_peucker_classic <2> (begin, end, tol.toLongLong (),
+                                                  std::back_inserter (mSimplifiedCoords));
+            duration = t.elapsed ();
+            emit SignalCleaningConvertedPolyline ();
+            break;
+        }
+        default:
+            break;
+        }
+        DoSignalSimplifiedPolyline (duration);
+    }
+
     void DPWorker::SimplifyDP (Container cont, QString tol) {
         QTime t;
         int duration = 0;
@@ -652,7 +733,7 @@ namespace psimpl {
         DoSignalSimplifiedPolyline (duration);
     }
 
-    void DPWorker::SimplifyDP_variant (Container cont, int count) {
+    void DPWorker::SimplifyDP_N (Container cont, int count) {
         QTime t;
         int duration = 0;
 
@@ -738,8 +819,8 @@ namespace psimpl {
         // convert generated polyline to Point array
         emit SignalConvertingPolyline ();
         int pointCount = mGeneratedCoords.size () / 2;
-        classic::Point* generatedPoints = new classic::Point [pointCount];
-        classic::Point* simplifiedPoints = new classic::Point [pointCount];
+        reference::Point* generatedPoints = new reference::Point [pointCount];
+        reference::Point* simplifiedPoints = new reference::Point [pointCount];
         for (int i=0; i<pointCount; i++) {
             generatedPoints [i].x = mGeneratedCoords [i*2];
             generatedPoints [i].y = mGeneratedCoords [i*2+1];
@@ -748,7 +829,7 @@ namespace psimpl {
         QTime t;
         t.start ();
         // simplify
-        int simplCount = classic::poly_simplify (tol.toFloat (), generatedPoints,
+        int simplCount = reference::poly_simplify (tol.toDouble (), generatedPoints,
                                                  pointCount, simplifiedPoints);
         int duration = t.elapsed ();
         // convert simplified Point array to simplified polyline
@@ -767,7 +848,7 @@ namespace psimpl {
     void DPWorker::DoSignalSimplifiedPolyline (qreal duration) {
         bool validStatistics = false;
 
-        math::Statistics stats = 
+        error::statistics stats = 
             compute_positional_error_statistics <2> (
                 mGeneratedCoords.constBegin (), mGeneratedCoords.constEnd (),
                 mSimplifiedCoords.constBegin (), mSimplifiedCoords.constEnd (), &validStatistics);
