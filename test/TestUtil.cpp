@@ -46,15 +46,15 @@ namespace psimpl {
 {
     TestUtil::TestUtil () {
         TEST_RUN("scoped_array", TestScopedArray ());
-		TEST_RUN("copy_n", TestCopyN ());
-		TEST_RUN("copy_key", TestCopyKey ());
-		TEST_RUN("copy_keys", TestCopyKeys ());
-		TEST_RUN("forward", TestForward ());
-		TEST_RUN("backward", TestBackward ());
-		TEST_RUN("select_calculation_type", TestSelectCalculationType ());
+        TEST_RUN("copy_n", TestCopyN ());
+        TEST_RUN("copy_key", TestCopyKey ());
+        TEST_RUN("copy_keys", TestCopyKeys ());
+        TEST_RUN("forward", TestForward ());
+        TEST_RUN("backward", TestBackward ());
+        TEST_RUN("select_calculation_type", TestSelectCalculationType ());
     }
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
     void TestUtil::TestScopedArray () {
         // construction
@@ -100,158 +100,158 @@ namespace psimpl {
         VERIFY_TRUE(a3 [1] == 654.f);
     }
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-	void TestUtil::TestCopyN () {
-		{
-		// test random access iterators
-		float vec [10] = { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f };
-		float res [5];
-		ASSERT_TRUE(5 == std::distance (res, psimpl::util::copy_n (vec, 5, res)));
-		VERIFY_TRUE(res [0] == vec [0]);
-		VERIFY_TRUE(res [1] == vec [1]);
-		VERIFY_TRUE(res [2] == vec [2]);
-		VERIFY_TRUE(res [3] == vec [3]);
-		VERIFY_TRUE(res [4] == vec [4]);
-		}
-		{
-		// test non-random access iterators
-		std::list <short> vec;
-		vec.push_back (0);
-		vec.push_back (1);
-		vec.push_back (2);
-		vec.push_back (3);
-		vec.push_back (4);
-		std::set <int> res;
-		psimpl::util::copy_n (vec.begin (), 5, std::inserter (res, res.begin ()));
-		ASSERT_TRUE(5 == res.size ());
-		VERIFY_TRUE(*res.begin () == *vec.begin ());
-		VERIFY_TRUE(*(--res.end ()) == *(--vec.end ()));
-		}
-	}
+    void TestUtil::TestCopyN () {
+        {
+        // test random access iterators
+        float vec [10] = { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f };
+        float res [5];
+        ASSERT_TRUE(5 == std::distance (res, psimpl::util::copy_n (vec, 5, res)));
+        VERIFY_TRUE(res [0] == vec [0]);
+        VERIFY_TRUE(res [1] == vec [1]);
+        VERIFY_TRUE(res [2] == vec [2]);
+        VERIFY_TRUE(res [3] == vec [3]);
+        VERIFY_TRUE(res [4] == vec [4]);
+        }
+        {
+        // test non-random access iterators
+        std::list <short> vec;
+        vec.push_back (0);
+        vec.push_back (1);
+        vec.push_back (2);
+        vec.push_back (3);
+        vec.push_back (4);
+        std::set <int> res;
+        psimpl::util::copy_n (vec.begin (), 5, std::inserter (res, res.begin ()));
+        ASSERT_TRUE(5 == res.size ());
+        VERIFY_TRUE(*res.begin () == *vec.begin ());
+        VERIFY_TRUE(*(--res.end ()) == *(--vec.end ()));
+        }
+    }
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-	void TestUtil::TestCopyKey () {
-		float vec [10] = { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f };
-		float res [5];
-		float* it = res;
-		psimpl::util::copy_key <5> (vec, it);
-		ASSERT_TRUE(5 == std::distance (res, it));
-		VERIFY_TRUE(res [0] == vec [0]);
-		VERIFY_TRUE(res [1] == vec [1]);
-		VERIFY_TRUE(res [2] == vec [2]);
-		VERIFY_TRUE(res [3] == vec [3]);
-		VERIFY_TRUE(res [4] == vec [4]);
-	}
+    void TestUtil::TestCopyKey () {
+        float vec [10] = { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f };
+        float res [5];
+        float* it = res;
+        psimpl::util::copy_key <5> (vec, it);
+        ASSERT_TRUE(5 == std::distance (res, it));
+        VERIFY_TRUE(res [0] == vec [0]);
+        VERIFY_TRUE(res [1] == vec [1]);
+        VERIFY_TRUE(res [2] == vec [2]);
+        VERIFY_TRUE(res [3] == vec [3]);
+        VERIFY_TRUE(res [4] == vec [4]);
+    }
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-	void TestUtil::TestCopyKeys () {
-		short coords [10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-		std::vector <bool> keys (5, false);
-		std::deque <short> res;
-		psimpl::util::copy_keys <2> (coords, coords + 8, keys.begin (), std::back_inserter (res));
-		VERIFY_TRUE(res.empty ());
+    void TestUtil::TestCopyKeys () {
+        short coords [10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        std::vector <bool> keys (5, false);
+        std::deque <short> res;
+        psimpl::util::copy_keys <2> (coords, coords + 8, keys.begin (), std::back_inserter (res));
+        VERIFY_TRUE(res.empty ());
 
-		keys.clear ();
-		keys.push_back (true);
-		keys.push_back (false);
-		keys.push_back (true);
-		keys.push_back (true);
-		psimpl::util::copy_keys <2> (coords, coords + 8, keys.begin (), std::back_inserter (res));
+        keys.clear ();
+        keys.push_back (true);
+        keys.push_back (false);
+        keys.push_back (true);
+        keys.push_back (true);
+        psimpl::util::copy_keys <2> (coords, coords + 8, keys.begin (), std::back_inserter (res));
         VERIFY_TRUE(3 * 2 == res.size ());
-		VERIFY_TRUE(0 == res [0]);
-		VERIFY_TRUE(1 == res [1]);
-		VERIFY_TRUE(4 == res [2]);
-		VERIFY_TRUE(5 == res [3]);
-		VERIFY_TRUE(6 == res [4]);
-		VERIFY_TRUE(7 == res [5]);
-	}
+        VERIFY_TRUE(0 == res [0]);
+        VERIFY_TRUE(1 == res [1]);
+        VERIFY_TRUE(4 == res [2]);
+        VERIFY_TRUE(5 == res [3]);
+        VERIFY_TRUE(6 == res [4]);
+        VERIFY_TRUE(7 == res [5]);
+    }
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-	void TestUtil::TestForward () {
-		std::vector <double> values;
-		values.push_back (0.0);
-		values.push_back (1.0);
-		values.push_back (2.0);
-		values.push_back (3.0);
-		values.push_back (4.0);
-		values.push_back (5.0);
+    void TestUtil::TestForward () {
+        std::vector <double> values;
+        values.push_back (0.0);
+        values.push_back (1.0);
+        values.push_back (2.0);
+        values.push_back (3.0);
+        values.push_back (4.0);
+        values.push_back (5.0);
 
-		std::vector <double>::iterator it = values.begin ();
-		int remaining = 3;
-		VERIFY_TRUE(2 == psimpl::util::forward <2> (it, 2, remaining));
-		VERIFY_TRUE(1 == remaining);
-		VERIFY_TRUE(2 * 2 == std::distance (values.begin (), it));
-		
-		VERIFY_TRUE(1 == psimpl::util::forward <2> (it, 2, remaining));
-		VERIFY_TRUE(0 == remaining);
-		VERIFY_TRUE(3 * 2 == std::distance (values.begin (), it));
-		
-		VERIFY_TRUE(0 == psimpl::util::forward <2> (it, 2, remaining));
-		VERIFY_TRUE(0 == remaining);
-		VERIFY_TRUE(3 * 2 == std::distance (values.begin (), it));
-	}
+        std::vector <double>::iterator it = values.begin ();
+        int remaining = 3;
+        VERIFY_TRUE(2 == psimpl::util::forward <2> (it, 2, remaining));
+        VERIFY_TRUE(1 == remaining);
+        VERIFY_TRUE(2 * 2 == std::distance (values.begin (), it));
+        
+        VERIFY_TRUE(1 == psimpl::util::forward <2> (it, 2, remaining));
+        VERIFY_TRUE(0 == remaining);
+        VERIFY_TRUE(3 * 2 == std::distance (values.begin (), it));
+        
+        VERIFY_TRUE(0 == psimpl::util::forward <2> (it, 2, remaining));
+        VERIFY_TRUE(0 == remaining);
+        VERIFY_TRUE(3 * 2 == std::distance (values.begin (), it));
+    }
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-	void TestUtil::TestBackward() {
-		std::list <float> values;
-		values.push_back (0.0);
-		values.push_back (1.0);
-		values.push_back (2.0);
-		values.push_back (3.0);
-		values.push_back (4.0);
-		values.push_back (5.0);
+    void TestUtil::TestBackward() {
+        std::list <float> values;
+        values.push_back (0.0);
+        values.push_back (1.0);
+        values.push_back (2.0);
+        values.push_back (3.0);
+        values.push_back (4.0);
+        values.push_back (5.0);
 
-		std::list <float>::iterator it = values.begin ();
-		std::advance (it, 3);
-		int remaining = 2;
+        std::list <float>::iterator it = values.begin ();
+        std::advance (it, 3);
+        int remaining = 2;
 
-		psimpl::util::backward <2> (it, 1, remaining);
-		VERIFY_TRUE(2 + 1 == remaining);
-		VERIFY_TRUE(1.0 == *it);
-	}
+        psimpl::util::backward <2> (it, 1, remaining);
+        VERIFY_TRUE(2 + 1 == remaining);
+        VERIFY_TRUE(1.0 == *it);
+    }
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-	void TestUtil::TestSelectCalculationType ()
-	{
-		// floating point types are not promoted
-		VERIFY_TRUE(typeid (float) == typeid (psimpl::util::select_calculation_type <std::deque <float>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <double>::iterator>::type));
-		// integer types are promoted
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <char>::iterator>::type));
+    void TestUtil::TestSelectCalculationType ()
+    {
+        // floating point types are not promoted
+        VERIFY_TRUE(typeid (float) == typeid (psimpl::util::select_calculation_type <std::deque <float>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <double>::iterator>::type));
+        // integer types are promoted
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <char>::iterator>::type));
         VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <unsigned char>::iterator>::type));
         VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::deque <signed char>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <short>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <unsigned short>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::deque <signed short>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <int>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <unsigned int>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <signed int>::iterator>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <long>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <short>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <unsigned short>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::deque <signed short>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <int>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <unsigned int>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <signed int>::iterator>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::set <long>::iterator>::type));
         VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::list <unsigned long>::iterator>::type));
         VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <std::vector <signed long>::iterator>::type));
-		// cv qualifiers are removed before promotion
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <const char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <volatile char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <const volatile char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed const char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed volatile char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed const volatile char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned const char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned volatile char*>::type));
-		VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned const volatile char*>::type));
-		// custom types are not promoted
-		typedef std::pair <std::vector <int>, char***> CustomType;
-		VERIFY_TRUE(typeid (CustomType) == typeid (psimpl::util::select_calculation_type <std::set <CustomType>::iterator>::type));
-	}
+        // cv qualifiers are removed before promotion
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <const char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <volatile char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <const volatile char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed const char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed volatile char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <signed const volatile char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned const char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned volatile char*>::type));
+        VERIFY_TRUE(typeid (double) == typeid (psimpl::util::select_calculation_type <unsigned const volatile char*>::type));
+        // custom types are not promoted
+        typedef std::pair <std::vector <int>, char***> CustomType;
+        VERIFY_TRUE(typeid (CustomType) == typeid (psimpl::util::select_calculation_type <std::set <CustomType>::iterator>::type));
+    }
 
 }}
 

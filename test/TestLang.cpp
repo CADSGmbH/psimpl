@@ -55,6 +55,7 @@ namespace psimpl {
         TEST_RUN("random iterator", TestRandomIterator ());
         TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
         TEST_RUN("return value", TestReturnValue ());
+        TEST_RUN("signed/unsigned integers", TestIntegers ());
     }
 
     // incomplete point: coord count % DIM > 1
@@ -527,4 +528,55 @@ namespace psimpl {
                     result))
             == 2*DIM);
     }
+
+    void TestLang::TestIntegers () {
+        const unsigned DIM = 3;
+        const double tol = 3;
+        const short look_ahead = 7;
+
+        std::vector <double> polyline, expected, rexpected;
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        // simplify -> result = expected
+        psimpl::simplify_lang <DIM> (
+                    polyline.begin (), polyline.end (),
+                    tol, look_ahead, std::back_inserter (expected));
+        // simplify reverse -> result = rexpected
+        psimpl::simplify_lang <DIM> (
+                    polyline.rbegin (), polyline.rend (),
+                    tol, look_ahead, std::back_inserter (rexpected));
+        {
+            // integers
+            std::vector <int> intPolyline, intResult, intExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (intPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (intExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_lang <DIM> (
+                        intPolyline.begin (), intPolyline.end (),
+                        tol, look_ahead, std::back_inserter (intResult));
+            VERIFY_TRUE(intResult == intExpected);
+        }
+        {
+            // unsigned integers
+            std::vector <unsigned> uintPolyline, uintResult, uintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (uintExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_lang <DIM> (
+                        uintPolyline.begin (), uintPolyline.end (),
+                        tol, look_ahead, std::back_inserter (uintResult));
+            VERIFY_TRUE(uintResult == uintExpected);
+        }
+        {
+            // unsigned integers (reverse)
+            std::vector <unsigned> uintPolyline, ruintResult, ruintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (rexpected.begin (), rexpected.end (), std::back_inserter (ruintExpected));
+            // simplify reverse -> result should match rexpected
+            psimpl::simplify_lang <DIM> (
+                        uintPolyline.rbegin (), uintPolyline.rend (),
+                        tol, look_ahead, std::back_inserter (ruintResult));
+            VERIFY_TRUE(ruintResult == ruintExpected);
+        }
+    }    
 }}

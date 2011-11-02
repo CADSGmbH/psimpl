@@ -48,29 +48,29 @@ namespace psimpl {
         void TestEqual_RandomIterator ();
         void TestEqual_BidirectionalIterator ();
         void TestEqual_ForwardIterator ();
-		void TestEqual_MixedIterators ();
+        void TestEqual_MixedIterators ();
 
-		void TestAdd_RandomIterator ();
+        void TestAdd_RandomIterator ();
         void TestAdd_BidirectionalIterator ();
         void TestAdd_ForwardIterator ();
 
-		void TestSubtract_RandomIterator ();
+        void TestSubtract_RandomIterator ();
         void TestSubtract_BidirectionalIterator ();
         void TestSubtract_ForwardIterator ();
-		void TestSubtract_MixedIterators ();
-		void TestSubtract_Unsigned ();
+        void TestSubtract_MixedIterators ();
+        void TestSubtract_Unsigned ();
 
         void TestMultiply ();
 
         void TestDot ();
-		void TestDot_Unsigned ();
+        void TestDot_Unsigned ();
 
         void TestPointDistance ();
         void TestPointDistance_RandomIterator ();
         void TestPointDistance_BidirectionalIterator ();
         void TestPointDistance_ForwardIterator ();
         void TestPointDistance_MixedIterators ();
-		void TestPointDistance_Unsigned ();
+        void TestPointDistance_Unsigned ();
 
         void TestLineDistance ();
         void TestLineDistance_RandomIterator ();
@@ -82,14 +82,14 @@ namespace psimpl {
         void TestSegmentDistance_RandomIterator ();
         void TestSegmentDistance_BidirectionalIterator ();
         void TestSegmentDistance_ForwardIterator ();
-		void TestSegmentDistance_MixedIterators ();
-		void TestSegmentDistance_Unsigned ();
+        void TestSegmentDistance_MixedIterators ();
+        void TestSegmentDistance_Unsigned ();
 
         void TestRayDistance ();
         void TestRayDistance_RandomIterator ();
         void TestRayDistance_BidirectionalIterator ();
         void TestRayDistance_ForwardIterator ();
-		void TestRayDistance_Unsigned  ();
+        void TestRayDistance_Unsigned  ();
     };
 }}
 

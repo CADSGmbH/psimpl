@@ -56,11 +56,11 @@ namespace psimpl {
         void TestRandomIterator ();
         void TestBidirectionalIterator ();
         void TestForwardIterator ();
-		void TestMixedIterators ();
+        void TestMixedIterators ();
         void TestReturnValue ();
     };
 
-	//! Tests function psimpl::compute_positional_error_statistics
+    //! Tests function psimpl::compute_positional_error_statistics
     class TestPositionalErrorStatistics
     {
     public:
@@ -74,8 +74,7 @@ namespace psimpl {
         void TestRandomIterator ();
         void TestBidirectionalIterator ();
         void TestForwardIterator ();
-		void TestMixedIterators ();
-        void TestReturnValue ();
+        void TestMixedIterators ();
     };
 }}
 

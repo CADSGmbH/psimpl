@@ -685,8 +685,8 @@ namespace psimpl
         Input (Type) requirements:
         1- DIM is not 0, where DIM represents the dimension of the polyline
         2- The value type of ForwardIterator1 is convertible to the value type of ForwardIterator2
-		3- The value type of ForwardIterator2, possibly promoted to a floating point type, is convertible
-		   to the value type of OutputIterator
+        3- The value type of ForwardIterator2, possibly promoted to a floating point type, is convertible
+           to the value type of OutputIterator
         4- The ranges [original_first, original_last) and [simplified_first, simplified_last)
            contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
            when DIM = 3
@@ -743,8 +743,8 @@ namespace psimpl
         Input (Type) requirements:
         1- DIM is not 0, where DIM represents the dimension of the polyline
         2- The value type of ForwardIterator1 is convertible to the value type of ForwardIterator2
-		3- The value type of ForwardIterator2, possibly promoted to a floating point type, is convertible
-		   to double
+        3- The value type of ForwardIterator2, possibly promoted to a floating point type, is convertible
+           to double
         3- The ranges [original_first, original_last) and [simplified_first, simplified_last)
            contain vertex coordinates in multiples of DIM, f.e.: x, y, z, x, y, z, x, y, z
            when DIM = 3

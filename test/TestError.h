@@ -48,7 +48,7 @@ namespace psimpl {
     public:
         TestError () {
             TEST_RUN("positional error", TestPositionalError ());
-			TEST_RUN("positional error statistics", TestPositionalErrorStatistics ());
+            TEST_RUN("positional error statistics", TestPositionalErrorStatistics ());
         }
     };
 }}

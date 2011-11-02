@@ -45,11 +45,16 @@ namespace psimpl {
     int TestRun::sExceptions = 0;
     int TestRun::sTestsDisabled = 0;
 
-    TestRun::TestRun (const std::string& name) :
+    TestRun::TestRun (const std::string& name, bool disabled) :
         mCount (sErrors + sExceptions),
-        mDisabled (false)
+        mDisabled (disabled)
     {
+        if (mDisabled) {
+            std::cout << Offset () << "- " << name << " (disabled)" << std::endl;
+        }
+        else {
         std::cout << Offset () << "- " << name << std::endl;
+        }
         ++sDepth;
     }
     
@@ -63,11 +68,6 @@ namespace psimpl {
             ++sTestsPassed;
         else
             ++sTestsFailed;
-    }
-
-    void TestRun::Disable () {
-        std::cout << Offset () << "- DISABLED!!!" << std::endl;
-        mDisabled = true;
     }
 
     //! \brief returns a whitespace string used for log indentation

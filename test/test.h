@@ -55,8 +55,7 @@
 //! \brief disables a specific test run; replace with TEST_RUN to enable
 #define TEST_DISABLED(name, function)                   \
     {                                                   \
-        psimpl::test::TestRun run (name);               \
-        run.Disable ();                                 \
+        psimpl::test::TestRun run (name, true);         \
     }
 
 //! \brief outputs the results of the root level test run
@@ -80,10 +79,8 @@ namespace psimpl {
     class TestRun
     {
     public:
-        TestRun (const std::string& name);
+        TestRun (const std::string& name, bool disabled=false);
         ~TestRun ();
-
-        void Disable ();
 
         static void Error (const char* file, int line, const char* condition);
         static void Exception (const std::string& msg);

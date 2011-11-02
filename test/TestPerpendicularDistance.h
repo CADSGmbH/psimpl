@@ -58,6 +58,7 @@ namespace psimpl {
         void TestBidirectionalIterator_sp ();
         void TestForwardIterator_sp ();
         void TestReturnValue_sp ();
+        void TestIntegers_sp ();
 
         void TestIncompletePoint_mp ();
         void TestNotEnoughPoints_mp ();
@@ -66,6 +67,7 @@ namespace psimpl {
         void TestInvalidRepeat_mp ();
         void TestValidRepeat_mp ();
         void TestReturnValue_mp ();
+        void TestIntegers_mp ();
     };
 }}
 

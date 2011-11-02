@@ -42,7 +42,7 @@
 namespace psimpl {
     namespace test
 {
-	//! Tests function psimpl::simplify_douglas_peucker_classic
+    //! Tests function psimpl::simplify_douglas_peucker_classic
     class TestDouglasPeuckerClassic
     {
     public:
@@ -56,6 +56,7 @@ namespace psimpl {
         void TestBasicSanity ();
         void TestRandomIterator ();
         void TestReturnValue ();
+        void TestIntegers ();
     };
 
     //! Tests function psimpl::simplify_douglas_peucker
@@ -71,9 +72,10 @@ namespace psimpl {
         void TestValidTol ();
         void TestBasicSanity ();
         void TestRandomIterator ();
-		void TestBidirectionalIterator ();
+        void TestBidirectionalIterator ();
         void TestForwardIterator ();
         void TestReturnValue ();
+        void TestIntegers ();
     };
 
     //! Tests function psimpl::simplify_douglas_peucker_n
@@ -90,6 +92,7 @@ namespace psimpl {
         void TestBasicSanity ();
         void TestRandomIterator ();
         void TestReturnValue ();
+        void TestIntegers ();
     };
 }}
 

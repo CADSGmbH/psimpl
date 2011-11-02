@@ -195,7 +195,7 @@ namespace psimpl {
         typename ForwardIterator1,
         typename ForwardIterator2
     >
-    struct positional_error_statistics
+    struct positional_statistics
     {
         /*!
             \brief Computes the squared positional error statistics between a polyline and its simplification.
@@ -214,7 +214,7 @@ namespace psimpl {
 
             diff_type errorCount = std::distance (
                 errors.get (),
-                positional_error
+                positional
                 <
                     DIM,
                     ForwardIterator1,

@@ -44,7 +44,7 @@
 namespace psimpl {
     namespace test
 {
-	TestDouglasPeuckerClassic::TestDouglasPeuckerClassic () {
+    TestDouglasPeuckerClassic::TestDouglasPeuckerClassic () {
         TEST_RUN("incomplete point", TestIncompletePoint ());
         TEST_RUN("not enough points", TestNotEnoughPoints ());
         TEST_RUN("invalid tol", TestInvalidTol ());
@@ -52,9 +52,10 @@ namespace psimpl {
         TEST_RUN("basic sanity", TestBasicSanity ());
         TEST_RUN("random iterator", TestRandomIterator ());
         TEST_RUN("return value", TestReturnValue ());
+        TEST_RUN("signed/unsigned integers", TestIntegers ());
     }
 
-	// incomplete point: coord count % DIM > 1
+    // incomplete point: coord count % DIM > 1
     void TestDouglasPeuckerClassic::TestIncompletePoint () {
         const unsigned DIM = 2;
         const float tol = 2.f;
@@ -81,7 +82,7 @@ namespace psimpl {
         VERIFY_FALSE(polyline == result);
     }
 
-	// not enough points: point count < 3
+    // not enough points: point count < 3
     void TestDouglasPeuckerClassic::TestNotEnoughPoints () {
         const unsigned DIM = 2;
         const float tol = 2.f;
@@ -119,7 +120,7 @@ namespace psimpl {
         VERIFY_TRUE(polyline == result);
     }
 
-	// invalid: tol == 0
+    // invalid: tol == 0
     void TestDouglasPeuckerClassic::TestInvalidTol () {
         const unsigned DIM = 3;
         const unsigned count = 10;
@@ -136,7 +137,7 @@ namespace psimpl {
         VERIFY_TRUE(polyline == result);
     }
 
-	// valid: tol != 0
+    // valid: tol != 0
     void TestDouglasPeuckerClassic::TestValidTol () {
         const unsigned DIM = 2;
         const unsigned count = 11;
@@ -181,6 +182,18 @@ namespace psimpl {
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 3)));
         }
         {
+            float tol = 3.1f;
+            std::vector <float> result;
+
+            psimpl::simplify_douglas_peucker_classic <DIM> (
+                polyline.begin (), polyline.end (), tol,
+                std::back_inserter (result));
+
+            ASSERT_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 7, 8, 9, 10};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+        }
+        {
             float tol = 2.1f;
             std::vector <float> result;
 
@@ -194,7 +207,7 @@ namespace psimpl {
         }
     }
 
-	void TestDouglasPeuckerClassic::TestBasicSanity () {
+    void TestDouglasPeuckerClassic::TestBasicSanity () {
         const unsigned DIM = 3;
         const unsigned count = 10;
         float tol = 0.1f;
@@ -211,7 +224,7 @@ namespace psimpl {
         VERIFY_TRUE(CompareEndPoints <DIM> (polyline.begin (), polyline.end (), result.begin (), result.end ()));
     }
 
-	// different random access iterators, different value types, different dimensions
+    // different random access iterators, different value types, different dimensions
     void TestDouglasPeuckerClassic::TestRandomIterator () {
         const unsigned count = 11;
         {
@@ -229,6 +242,20 @@ namespace psimpl {
             VERIFY_TRUE(ComparePoints <DIM> (polyline, result, std::vector <int> (keys, keys + 3)));
         }
         {
+            const unsigned DIM = 5;
+            std::deque <int> polyline, result;
+            std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <int, DIM> ());
+            float tol = 3.1f;
+
+            psimpl::simplify_douglas_peucker_classic <DIM> (
+                    polyline.begin (), polyline.end (), tol,
+                    std::back_inserter (result));
+
+            ASSERT_TRUE(result.size () == 5*DIM);
+            int keys [] = {0, 7, 8, 9, 10};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 5)));
+        }
+        {
             const unsigned DIM = 4;
             std::vector <double> polyline, result;
             std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <double, DIM> ());
@@ -242,23 +269,9 @@ namespace psimpl {
             int keys [] = {0, 5, 6, 7, 8, 9, 10};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 7)));
         }
-        {
-            const unsigned DIM = 5;
-            std::deque <int> polyline, result;
-            std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <int, DIM> ());
-            float tol = 3.1f;
-
-            psimpl::simplify_douglas_peucker_classic <DIM> (
-                    polyline.begin (), polyline.end (), tol,
-                    std::back_inserter (result));
-
-            ASSERT_TRUE(result.size () == 6*DIM);
-            int keys [] = {0, 6, 7, 8, 9, 10};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 6)));
-        }
     }
 
-	void TestDouglasPeuckerClassic::TestReturnValue () {
+    void TestDouglasPeuckerClassic::TestReturnValue () {
         const unsigned DIM = 3;
         const unsigned count = 11;
 
@@ -285,7 +298,57 @@ namespace psimpl {
             == 2*DIM);
     }
 
-	// --------------------------------------------------------------------------------------------
+    void TestDouglasPeuckerClassic::TestIntegers () {
+        const unsigned DIM = 3;
+        const double tol = 3;
+
+        std::vector <double> polyline, expected, rexpected;
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        // simplify -> result = expected
+        psimpl::simplify_douglas_peucker_classic <DIM> (
+                    polyline.begin (), polyline.end (),
+                    tol, std::back_inserter (expected));
+        // simplify reverse -> result = rexpected
+        psimpl::simplify_douglas_peucker_classic <DIM> (
+                    polyline.rbegin (), polyline.rend (),
+                    tol, std::back_inserter (rexpected));
+        {
+            // integers
+            std::vector <int> intPolyline, intResult, intExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (intPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (intExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_douglas_peucker_classic <DIM> (
+                        intPolyline.begin (), intPolyline.end (),
+                        tol, std::back_inserter (intResult));
+            VERIFY_TRUE(intResult == intExpected);
+        }
+        {
+            // unsigned integers
+            std::vector <unsigned> uintPolyline, uintResult, uintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (uintExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_douglas_peucker_classic <DIM> (
+                        uintPolyline.begin (), uintPolyline.end (),
+                        tol, std::back_inserter (uintResult));
+            VERIFY_TRUE(uintResult == uintExpected);
+        }
+        {
+            // unsigned integers (reverse)
+            std::vector <unsigned> uintPolyline, ruintResult, ruintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (rexpected.begin (), rexpected.end (), std::back_inserter (ruintExpected));
+            // simplify reverse -> result should match rexpected
+            psimpl::simplify_douglas_peucker_classic <DIM> (
+                        uintPolyline.rbegin (), uintPolyline.rend (),
+                        tol, std::back_inserter (ruintResult));
+            VERIFY_TRUE(ruintResult == ruintExpected);
+        }
+    }    
+
+    // --------------------------------------------------------------------------------------------
 
     TestDouglasPeucker::TestDouglasPeucker () {
         TEST_RUN("incomplete point", TestIncompletePoint ());
@@ -294,9 +357,10 @@ namespace psimpl {
         TEST_RUN("valid tol", TestValidTol ());
         TEST_RUN("basic sanity", TestBasicSanity ());
         TEST_RUN("random iterator", TestRandomIterator ());
-		TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
-		TEST_DISABLED("forward iterator", TestForwardIterator ());
+        TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
+        TEST_DISABLED("forward iterator", TestForwardIterator ());
         TEST_RUN("return value", TestReturnValue ());
+        TEST_RUN("signed/unsigned integers", TestIntegers ());
     }
 
     // incomplete point: coord count % DIM > 1
@@ -428,6 +492,18 @@ namespace psimpl {
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
         }
         {
+            float tol = 3.1f;
+            std::vector <float> result;
+
+            psimpl::simplify_douglas_peucker <DIM> (
+                polyline.begin (), polyline.end (), tol,
+                std::back_inserter (result));
+
+            ASSERT_TRUE(result.size () == 6*DIM);
+            int keys [] = {0, 6, 7, 8, 9, 10};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 6)));
+        }
+        {
             float tol = 2.1f;
             std::vector <float> result;
 
@@ -478,6 +554,20 @@ namespace psimpl {
             VERIFY_TRUE(ComparePoints <DIM> (polyline, result, std::vector <int> (keys, keys + 4)));
         }
         {
+            const unsigned DIM = 5;
+            std::deque <int> polyline, result;
+            std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <int, DIM> (10));
+            float tol = 3.1f;
+
+            psimpl::simplify_douglas_peucker <DIM> (
+                    polyline.begin (), polyline.end (), tol,
+                    std::back_inserter (result));
+
+            ASSERT_TRUE(result.size () == 6*DIM);
+            int keys [] = {0, 6, 7, 8, 9, 10};
+            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 6)));
+        }
+        {
             const unsigned DIM = 4;
             std::vector <double> polyline, result;
             std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <double, DIM> (10));
@@ -491,25 +581,11 @@ namespace psimpl {
             int keys [] = {0, 4, 5, 6, 7, 8, 9, 10};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 8)));
         }
-        {
-            const unsigned DIM = 5;
-            std::deque <int> polyline, result;
-            std::generate_n (std::back_inserter (polyline), count*DIM, SawToothLine <int, DIM> (10));
-            float tol = 3.1f;
-
-            psimpl::simplify_douglas_peucker <DIM> (
-                    polyline.begin (), polyline.end (), tol,
-                    std::back_inserter (result));
-
-            ASSERT_TRUE(result.size () == 7*DIM);
-            int keys [] = {0, 5, 6, 7, 8, 9, 10};
-            VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 7)));
-        }
     }
 
-	// bidirectional iterator, different value types, different dimensions
+    // bidirectional iterator, different value types, different dimensions
     void TestDouglasPeucker::TestBidirectionalIterator () {
-		const unsigned count = 11;
+        const unsigned count = 11;
         {
             const unsigned DIM = 2;
             std::list <float> polyline, result;
@@ -524,9 +600,9 @@ namespace psimpl {
             int keys [] = {0, 8, 9, 10};
             VERIFY_TRUE(ComparePoints <DIM> (polyline.begin (), result.begin (), std::vector <int> (keys, keys + 4)));
         }
-	}
+    }
 
-	// forward iterator, different value types, different dimensions
+    // forward iterator, different value types, different dimensions
     void TestDouglasPeucker::TestForwardIterator () {
         FAIL("TODO");
     }
@@ -558,6 +634,56 @@ namespace psimpl {
             == 2*DIM);
     }
 
+    void TestDouglasPeucker::TestIntegers () {
+        const unsigned DIM = 4;
+        const float tol = 10;
+
+        std::vector <float> polyline, expected, rexpected;
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <float, DIM> ());
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <float, DIM> ());
+        // simplify -> result = expected
+        psimpl::simplify_douglas_peucker <DIM> (
+                    polyline.begin (), polyline.end (),
+                    tol, std::back_inserter (expected));
+        // simplify reverse -> result = rexpected
+        psimpl::simplify_douglas_peucker <DIM> (
+                    polyline.rbegin (), polyline.rend (),
+                    tol, std::back_inserter (rexpected));
+        {
+            // integers
+            std::vector <int> intPolyline, intResult, intExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (intPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (intExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_douglas_peucker <DIM> (
+                        intPolyline.begin (), intPolyline.end (),
+                        tol, std::back_inserter (intResult));
+            VERIFY_TRUE(intResult == intExpected);
+        }
+        {
+            // unsigned integers
+            std::vector <unsigned> uintPolyline, uintResult, uintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (uintExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_douglas_peucker <DIM> (
+                        uintPolyline.begin (), uintPolyline.end (),
+                        tol, std::back_inserter (uintResult));
+            VERIFY_TRUE(uintResult == uintExpected);
+        }
+        {
+            // unsigned integers (reverse)
+            std::vector <unsigned> uintPolyline, ruintResult, ruintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (rexpected.begin (), rexpected.end (), std::back_inserter (ruintExpected));
+            // simplify reverse -> result should match rexpected
+            psimpl::simplify_douglas_peucker <DIM> (
+                        uintPolyline.rbegin (), uintPolyline.rend (),
+                        tol, std::back_inserter (ruintResult));
+            VERIFY_TRUE(ruintResult == ruintExpected);
+        }
+    }
+
     // --------------------------------------------------------------------------------------------
 
     TestDouglasPeuckerN::TestDouglasPeuckerN () {
@@ -568,6 +694,7 @@ namespace psimpl {
         TEST_RUN("basic sanity", TestBasicSanity ());
         TEST_RUN("random iterator", TestRandomIterator ());
         TEST_RUN("return value", TestReturnValue ());
+        TEST_RUN("signed/unsigned integers", TestIntegers ());
     }
 
     // incomplete point: coord count % DIM > 1
@@ -900,4 +1027,55 @@ namespace psimpl {
                     result))
             == 5*DIM);
     }
+
+    void TestDouglasPeuckerN::TestIntegers () {
+        const unsigned DIM = 2;
+        const short tol = 50;
+
+        std::vector <double> polyline, expected, rexpected;
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        // simplify -> result = expected
+        psimpl::simplify_douglas_peucker_n <DIM> (
+                    polyline.begin (), polyline.end (),
+                    tol, std::back_inserter (expected));
+        // simplify reverse -> result = rexpected
+        psimpl::simplify_douglas_peucker_n <DIM> (
+                    polyline.rbegin (), polyline.rend (),
+                    tol, std::back_inserter (rexpected));
+        {
+            // integers
+            std::vector <int> intPolyline, intResult, intExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (intPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (intExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_douglas_peucker_n <DIM> (
+                        intPolyline.begin (), intPolyline.end (),
+                        tol, std::back_inserter (intResult));
+            VERIFY_TRUE(intResult == intExpected);
+        }
+        {
+            // unsigned integers
+            std::vector <unsigned> uintPolyline, uintResult, uintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (uintExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_douglas_peucker_n <DIM> (
+                        uintPolyline.begin (), uintPolyline.end (),
+                        tol, std::back_inserter (uintResult));
+            VERIFY_TRUE(uintResult == uintExpected);
+        }
+        {
+            // unsigned integers (reverse)
+            std::vector <unsigned> uintPolyline, ruintResult, ruintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (rexpected.begin (), rexpected.end (), std::back_inserter (ruintExpected));
+            // simplify reverse -> result should match rexpected
+            psimpl::simplify_douglas_peucker_n <DIM> (
+                        uintPolyline.rbegin (), uintPolyline.rend (),
+                        tol, std::back_inserter (ruintResult));
+            VERIFY_TRUE(ruintResult == ruintExpected);
+        }
+    }
+
 }}

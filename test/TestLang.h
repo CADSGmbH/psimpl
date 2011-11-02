@@ -59,6 +59,7 @@ namespace psimpl {
         void TestRandomIterator ();
         void TestBidirectionalIterator ();
         void TestReturnValue ();
+        void TestIntegers ();
     };
 }}
 

@@ -54,6 +54,7 @@ namespace psimpl {
         TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
         TEST_DISABLED("forward iterator", TestForwardIterator ());
         TEST_RUN("return value", TestReturnValue ());
+        TEST_RUN("signed/unsigned integers", TestIntegers ());
     }
     
     // incomplete point: coord count % DIM > 1
@@ -430,6 +431,57 @@ namespace psimpl {
                     polyline, polyline + count*DIM, 1.f, 100.f,
                     result))
             == 2*DIM);
+    }
+
+    void TestOpheim::TestIntegers () {
+        const unsigned DIM = 2;
+        const double minTol = 5;
+        const double maxTol = 10;
+
+        std::vector <double> polyline, expected, rexpected;
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        // simplify -> result = expected
+        psimpl::simplify_opheim <DIM> (
+                    polyline.begin (), polyline.end (),
+                    minTol, maxTol, std::back_inserter (expected));
+        // simplify reverse -> result = rexpected
+        psimpl::simplify_opheim <DIM> (
+                    polyline.rbegin (), polyline.rend (),
+                    minTol, maxTol, std::back_inserter (rexpected));
+        {
+            // integers
+            std::vector <int> intPolyline, intResult, intExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (intPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (intExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_opheim <DIM> (
+                        intPolyline.begin (), intPolyline.end (),
+                        minTol, maxTol, std::back_inserter (intResult));
+            VERIFY_TRUE(intResult == intExpected);
+        }
+        {
+            // unsigned integers
+            std::vector <unsigned> uintPolyline, uintResult, uintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (uintExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_opheim <DIM> (
+                        uintPolyline.begin (), uintPolyline.end (),
+                        minTol, maxTol, std::back_inserter (uintResult));
+            VERIFY_TRUE(uintResult == uintExpected);
+        }
+        {
+            // unsigned integers (reverse)
+            std::vector <unsigned> uintPolyline, ruintResult, ruintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (rexpected.begin (), rexpected.end (), std::back_inserter (ruintExpected));
+            // simplify reverse -> result should match rexpected
+            psimpl::simplify_opheim <DIM> (
+                        uintPolyline.rbegin (), uintPolyline.rend (),
+                        minTol, maxTol, std::back_inserter (ruintResult));
+            VERIFY_TRUE(ruintResult == ruintExpected);
+        }
     }
 
 }}

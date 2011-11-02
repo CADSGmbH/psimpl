@@ -54,6 +54,7 @@ namespace psimpl {
         TEST_RUN("bidirectional iterator", TestBidirectionalIterator ());
         TEST_DISABLED("forward iterator", TestForwardIterator ());
         TEST_RUN("return value", TestReturnValue ());
+        TEST_RUN("signed/unsigned integers", TestIntegers ());
     }
     
     // incomplete point: coord count % DIM > 1
@@ -340,6 +341,56 @@ namespace psimpl {
                     polyline, polyline + count*DIM, 1.5f,
                     result))
             == 2*DIM);
+    }
+
+    void TestReumannWitkam::TestIntegers () {
+        const unsigned DIM = 2;
+        const float tol = 4;
+
+        std::vector <double> polyline, expected, rexpected;
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        std::generate_n (std::back_inserter (polyline), 100*DIM, SquareToothLine <double, DIM> ());
+        // simplify -> result = expected
+        psimpl::simplify_reumann_witkam <DIM> (
+                    polyline.begin (), polyline.end (),
+                    tol, std::back_inserter (expected));
+        // simplify reverse -> result = rexpected
+        psimpl::simplify_reumann_witkam <DIM> (
+                    polyline.rbegin (), polyline.rend (),
+                    tol, std::back_inserter (rexpected));
+        {
+            // integers
+            std::vector <int> intPolyline, intResult, intExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (intPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (intExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_reumann_witkam <DIM> (
+                        intPolyline.begin (), intPolyline.end (),
+                        tol, std::back_inserter (intResult));
+            VERIFY_TRUE(intResult == intExpected);
+        }
+        {
+            // unsigned integers
+            std::vector <unsigned> uintPolyline, uintResult, uintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (expected.begin (), expected.end (), std::back_inserter (uintExpected));
+            // simplify -> result should match expected
+            psimpl::simplify_reumann_witkam <DIM> (
+                        uintPolyline.begin (), uintPolyline.end (),
+                        tol, std::back_inserter (uintResult));
+            VERIFY_TRUE(uintResult == uintExpected);
+        }
+        {
+            // unsigned integers (reverse)
+            std::vector <unsigned> uintPolyline, ruintResult, ruintExpected;
+            std::copy (polyline.begin (), polyline.end (), std::back_inserter (uintPolyline));
+            std::copy (rexpected.begin (), rexpected.end (), std::back_inserter (ruintExpected));
+            // simplify reverse -> result should match rexpected
+            psimpl::simplify_reumann_witkam <DIM> (
+                        uintPolyline.rbegin (), uintPolyline.rend (),
+                        tol, std::back_inserter (ruintResult));
+            VERIFY_TRUE(ruintResult == ruintExpected);
+        }
     }
 
 }}
