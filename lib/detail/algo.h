@@ -98,7 +98,7 @@ namespace psimpl {
                 std::advance (s2, last);
                 // (coord)index of the current test point
                 diff_type index = first + DIM;
-				std::advance (poly, first + DIM);
+                std::advance (poly, first + DIM);
 
                 // test all internal points against segment S (s1, s2)
                 while (index < last) {
@@ -110,7 +110,7 @@ namespace psimpl {
                         result.dist2 = d2;
                     }
                     index += DIM;
-					std::advance (poly, DIM);
+                    std::advance (poly, DIM);
                 }
                 return result;
             }
@@ -743,7 +743,7 @@ namespace psimpl {
 
             // douglas-peucker approximation
             result =
-				douglas_peucker_classic
+                douglas_peucker_classic
                 <
                     DIM,
                     value_type*,

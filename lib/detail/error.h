@@ -36,13 +36,14 @@
 #define PSIMPL_DETAIL_ERROR
 
 
+#include <numeric>
 #include "math.h"
 
 
 namespace psimpl {
     namespace error
 {
-	/*!
+    /*!
         \brief POD structure for storing statistical values.
     */
     struct statistics
@@ -60,11 +61,11 @@ namespace psimpl {
         double std;     //! standard deviation
     };
 
-	// ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
     namespace detail
     {
-		/*!
+        /*!
             \brief Computes various statistics for the range [first, last)
 
             \param[in] first   the first value
@@ -72,9 +73,9 @@ namespace psimpl {
             \return            the calculated statistics
         */
         template
-		<
-			class InputIterator
-		>
+        <
+            class InputIterator
+        >
         inline statistics compute_statistics (
             InputIterator first,
             InputIterator last)
@@ -101,7 +102,7 @@ namespace psimpl {
 
     // ---------------------------------------------------------------------------------------------
 
-	
+    
     /*!
         \brief Squared positional error between a polyline and its simplification.
 
@@ -132,13 +133,13 @@ namespace psimpl {
         {
             ori_diff_type original_coordCount = std::distance (original_first, original_last);
             ori_diff_type original_pointCount = DIM     // protect against zero DIM
-												? original_coordCount / DIM
-												: 0;
+                                                ? original_coordCount / DIM
+                                                : 0;
 
             sim_diff_type simplified_coordCount = std::distance (simplified_first, simplified_last);
             sim_diff_type simplified_pointCount = DIM   // protect against zero DIM
-												? simplified_coordCount / DIM
-												: 0;
+                                                ? simplified_coordCount / DIM
+                                                : 0;
 
             // validate input
             if (original_coordCount % DIM || original_pointCount < 2 ||
