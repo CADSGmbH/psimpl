@@ -37,7 +37,7 @@
 
 
 #include <numeric>
-#include "math.h"
+#include <cmath>
 
 
 namespace psimpl {
@@ -102,7 +102,7 @@ namespace psimpl {
 
     // ---------------------------------------------------------------------------------------------
 
-    
+
     /*!
         \brief Squared positional error between a polyline and its simplification.
 

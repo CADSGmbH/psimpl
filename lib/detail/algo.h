@@ -633,7 +633,7 @@ namespace psimpl {
         typedef typename util::select_calculation_type <RandomAccessIterator>::type calc_type;
         typedef typename detail::find_key <DIM, RandomAccessIterator> key_finder;
         typedef typename detail::find_key <DIM, RandomAccessIterator>::key key_type;
-    
+
         /*!
             \brief Performs Douglas-Peucker approximation.
         */

@@ -14,5 +14,5 @@ HEADERS += \
     ../lib/old_psimpl.h \
     ../lib/detail/util.h \
     ../lib/detail/math.h \
-    ../lib/detail/algo.h
-
+    ../lib/detail/algo.h \
+    psimpl_prev.h

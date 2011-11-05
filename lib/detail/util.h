@@ -165,7 +165,13 @@ namespace psimpl {
         InputIterator first,
         OutputIterator& result)
     {
-        result = util::copy_n (first, DIM, result);
+		//result = util::copy_n (first, DIM, result);
+
+        for (unsigned d = 0; d < DIM; ++d) {
+            *result = *first;
+            ++first;
+            ++result;
+        }
     }
 
     /*!

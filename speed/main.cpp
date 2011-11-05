@@ -32,6 +32,7 @@
 */
 
 #include "../lib/psimpl.h"
+#include "psimpl_prev.h"
 #include "../demo/psimpl_reference.h"
 #include "cycle_p.h"
 
@@ -52,7 +53,7 @@ typedef QVector <Setting> Settings;
 
 
 const unsigned DIM = 2;
-      unsigned repeat = 25;
+      unsigned repeat = 5;
 
 // -----------------------------------------------------------------------------
 
@@ -95,82 +96,315 @@ private:
 // -----------------------------------------------------------------------------
 
 template <class Iterator>
-void Benchmark (const std::string& container, double* tmpFirst, double* tmpLast, Iterator first, Iterator last, const Settings& settings)
+void Benchmark_Ran (const std::string& container, Iterator first, Iterator last, const Settings& settings)
 {
-    // tmpFirst, tmpLast are the same as first, last; they provide a workaround for a limitation of
-    // compute_positional_error_statistics, where all iterators must be of the same type
+    // benchmark all algorithms that support at least random iterators
     int polylineSize = std::distance (first, last);
+    unsigned newElapsed = 0;
+    unsigned oldElapsed = 0;
+
+    foreach (const Setting& setting, settings)
+    {
+        psimpl::util::scoped_array <double> newSimplification (polylineSize);
+        psimpl::error::statistics newStats;
+        int newSimplificationSize = 0;
+
+        psimpl::util::scoped_array <double> oldSimplification (polylineSize);
+        psimpl::error::statistics oldStats;
+        int oldSimplificationSize = 0;
+
+        if (setting.first == "simplify_nth_point") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_nth_point <DIM> (first, last, setting.second [0].toUInt (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_nth_point <DIM> (first, last, setting.second [0].toUInt (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_radial_distance") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_radial_distance <DIM> (first, last, setting.second [0].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_radial_distance <DIM> (first, last, setting.second [0].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_perpendicular_distance") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_perpendicular_distance <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_perpendicular_distance <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_reumann_witkam") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                   psimpl::simplify_reumann_witkam <DIM> (first, last, setting.second [0].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                   psimpl_prev::simplify_reumann_witkam <DIM> (first, last, setting.second [0].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_opheim") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_opheim <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_opheim <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_lang") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_lang <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_lang <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_douglas_peucker_classic") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_douglas_peucker_classic <DIM> (first, last, setting.second [0].toDouble (), newSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_douglas_peucker") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_douglas_peucker <DIM> (first, last, setting.second [0].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_douglas_peucker <DIM> (first, last, setting.second [0].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_douglas_peucker_n") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_douglas_peucker_n <DIM> (first, last, setting.second [0].toUInt (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_douglas_peucker_n <DIM> (first, last, setting.second [0].toUInt (), oldSimplification.get ()));
+            }
+        }
+        else {
+            continue;
+        }
+
+        newStats = psimpl::compute_positional_error_statistics <DIM> (first, last, newSimplification.get (), newSimplification.get () + newSimplificationSize);
+        oldStats = psimpl::compute_positional_error_statistics <DIM> (first, last, oldSimplification.get (), oldSimplification.get () + oldSimplificationSize);
+
+        std::cout << container << "," << setting.first.toStdString () << ",";
+        std::cout << newSimplificationSize / DIM << "," << (int) (((float) newSimplificationSize / (float) polylineSize) * 100.f) << "%,";
+        std::cout << newElapsed << "," << newStats.mean << "," << newStats.std << "," << newStats.max << "," << newStats.sum << ",";
+        if (oldElapsed) {
+            std::cout << oldElapsed << "," << oldStats.mean << "," << oldStats.std << "," << oldStats.max << "," << oldStats.sum << ",";
+            std::cout << (int) ((((float) oldElapsed - (float) newElapsed) / (float) oldElapsed) * 100.f) << "%";
+        }
+        std::cout << std::endl;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+template <class Iterator>
+void Benchmark_Bid (const std::string& container, Iterator first, Iterator last, const Settings& settings)
+{
+    // benchmark all algorithms that support at least bidirectional iterators
+    int polylineSize = std::distance (first, last);
+    unsigned newElapsed = 0;
+    unsigned oldElapsed = 0;
+
+    foreach (const Setting& setting, settings)
+    {
+        psimpl::util::scoped_array <double> newSimplification (polylineSize);
+        psimpl::error::statistics newStats;
+        int newSimplificationSize = 0;
+
+        psimpl::util::scoped_array <double> oldSimplification (polylineSize);
+        psimpl::error::statistics oldStats;
+        int oldSimplificationSize = 0;
+
+        if (setting.first == "simplify_nth_point") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_nth_point <DIM> (first, last, setting.second [0].toUInt (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_nth_point <DIM> (first, last, setting.second [0].toUInt (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_radial_distance") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_radial_distance <DIM> (first, last, setting.second [0].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_radial_distance <DIM> (first, last, setting.second [0].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_perpendicular_distance") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_perpendicular_distance <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_perpendicular_distance <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_reumann_witkam") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                   psimpl::simplify_reumann_witkam <DIM> (first, last, setting.second [0].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                   psimpl_prev::simplify_reumann_witkam <DIM> (first, last, setting.second [0].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_opheim") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_opheim <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_opheim <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_lang") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_lang <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_lang <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), oldSimplification.get ()));
+            }
+        }
+        else if (setting.first == "simplify_douglas_peucker") {
+            BENCHMARK(newElapsed) {
+                newSimplificationSize =  std::distance (newSimplification.get (),
+                    psimpl::simplify_douglas_peucker <DIM> (first, last, setting.second [0].toDouble (), newSimplification.get ()));
+            }
+            BENCHMARK(oldElapsed) {
+                oldSimplificationSize =  std::distance (oldSimplification.get (),
+                    psimpl_prev::simplify_douglas_peucker <DIM> (first, last, setting.second [0].toDouble (), oldSimplification.get ()));
+            }
+        }
+        else {
+            continue;
+        }
+
+        newStats = psimpl::compute_positional_error_statistics <DIM> (first, last, newSimplification.get (), newSimplification.get () + newSimplificationSize);
+        oldStats = psimpl::compute_positional_error_statistics <DIM> (first, last, oldSimplification.get (), oldSimplification.get () + oldSimplificationSize);
+
+        std::cout << container << "," << setting.first.toStdString () << ",";
+        std::cout << newSimplificationSize / DIM << "," << (int) (((float) newSimplificationSize / (float) polylineSize) * 100.f) << "%,";
+        std::cout << newElapsed << "," << newStats.mean << "," << newStats.std << "," << newStats.max << "," << newStats.sum << ",";
+        std::cout << oldElapsed << "," << oldStats.mean << "," << oldStats.std << "," << oldStats.max << "," << oldStats.sum << ",";
+        std::cout << (int) ((((float) oldElapsed - (float) newElapsed) / (float) oldElapsed) * 100.f) << "%" << std::endl;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+template <class Iterator>
+void Benchmark_Ref (const std::string& container, Iterator first, Iterator last, const Settings& settings)
+{
+    // benchmark all reference algorithms
+    int polylineSize = std::distance (first, last);
+    int pointCount = polylineSize / DIM;
+    int simplificationPointCount = 0;
     unsigned elapsed = 0;
 
     foreach (const Setting& setting, settings)
     {
+        if (setting.first != "simplify_douglas_peucker_reference") {
+            continue;
+        }
+
         psimpl::util::scoped_array <double> simplification (polylineSize);
         int simplificationSize = 0;
-        psimpl::math::Statistics stats;
+        psimpl::error::statistics newStats;
+
+        psimpl::util::scoped_array <psimpl::reference::Point> polylinePoints (pointCount);
+        psimpl::util::scoped_array <psimpl::reference::Point> simplifiedPoints (pointCount);
+
+        // convert polyline coords to points
+        Iterator curr = first;
+        for (int i=0; i<pointCount; i++) {
+            polylinePoints [i].x = *curr++;
+            polylinePoints [i].y = *curr++;
+        }
+
+        BENCHMARK(elapsed) {
+            simplificationPointCount =
+                psimpl::reference::poly_simplify (setting.second [0].toDouble (), polylinePoints.get (), pointCount, simplifiedPoints.get ());
+        }
+
+        // convert simplification points to soords
+        simplificationSize = simplificationPointCount * DIM;
+        for (int j=0; j<simplificationPointCount; j++) {
+            simplification [j*2] = simplifiedPoints [j].x;
+            simplification [j*2+1] = simplifiedPoints [j].y;
+        }
+
+        newStats = psimpl::compute_positional_error_statistics <DIM> (first, last, simplification.get (), simplification.get () + simplificationSize);
 
         std::cout << container << "," << setting.first.toStdString () << ",";
-
-        if (setting.first == "simplify_nth_point") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                    psimpl::simplify_nth_point <DIM> (first, last, setting.second [0].toUInt (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "simplify_radial_distance") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                    psimpl::simplify_radial_distance <DIM> (first, last, setting.second [0].toDouble (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "simplify_perpendicular_distance") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                    psimpl::simplify_perpendicular_distance <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "simplify_reumann_witkam") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                   psimpl::simplify_reumann_witkam <DIM> (first, last, setting.second [0].toDouble (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "simplify_opheim") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                    psimpl::simplify_opheim <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toDouble (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "simplify_lang") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                    psimpl::simplify_lang <DIM> (first, last, setting.second [0].toDouble (), setting.second [1].toUInt (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "simplify_douglas_peucker") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                    psimpl::simplify_douglas_peucker <DIM> (first, last, setting.second [0].toDouble (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-        else if (setting.first == "simplify_douglas_peucker_n") {
-            BENCHMARK(elapsed) {
-                simplificationSize =  std::distance (simplification.get (),
-                    psimpl::simplify_douglas_peucker_n <DIM> (first, last, setting.second [0].toUInt (), simplification.get ()));
-            }
-            stats = psimpl::compute_positional_error_statistics <DIM> (tmpFirst, tmpLast, simplification.get (), simplification.get () + simplificationSize);
-        }
-
-        std::cout << simplificationSize / DIM << "," << (int) (((float) simplificationSize / (float) polylineSize) * 100.f) << "%," << elapsed << ",";
-        std::cout << stats.mean << "," << stats.std << "," << stats.max << ", " << stats.sum << std::endl;
+        std::cout << simplificationPointCount << "," << (int) (((float) simplificationPointCount / (float) pointCount) * 100.f) << "%," << elapsed << ",";
+        std::cout << newStats.mean << "," << newStats.std << "," << newStats.max << "," << newStats.sum << std::endl;
     }
 }
+
+// -----------------------------------------------------------------------------
+
+//////template <class Iterator>
+//////void Benchmark_Boost (const std::string& container, Iterator first, Iterator last, const Settings& settings)
+//////{
+//////    // benchmark all boost algorithms
+//////    int polylineSize = std::distance (first, last);
+//////    int pointCount = polylineSize / DIM;
+//////    unsigned elapsed = 0;
+//////
+//////    foreach (const Setting& setting, settings)
+//////    {
+//////        if (setting.first != "simplify_douglas_peucker_boost") {
+//////            continue;
+//////        }
+//////
+//////        psimpl::util::scoped_array <double> simplification (polylineSize);
+//////        int simplificationSize = 0;
+//////        psimpl::error::statistics newStats;
+//////
+//////        std::cout << container << "," << setting.first.toStdString () << ",";
+//////
+//////        // convert polyline coords to points
+//////        // benchmark
+//////        // convert result from points to coords
+//////
+//////        newStats = psimpl::compute_positional_error_statistics <DIM> (first, last, simplification.get (), simplification.get () + simplificationSize);
+//////
+//////        std::cout << simplificationPointCount << "," << (int) (((float) simplificationPointCount / (float) pointCount) * 100.f) << "%," << elapsed << ",";
+//////        std::cout << newStats.mean << "," << newStats.std << "," << newStats.max << "," << newStats.sum << std::endl;
+//////    }
+//////}
 
 // -----------------------------------------------------------------------------
 
@@ -216,33 +450,47 @@ void Benchmark (const QString& polylinePath, const QString& settingsPath)
                 return;
             }
             settings.push_back (qMakePair (algo, params));
+            if (algo == "simplify_douglas_peucker") {
+                settings.push_back (qMakePair (QString ("simplify_douglas_peucker_reference"), params));
+            }
+            else if (algo == "simplify_douglas_peucker_classic") {
+                settings.push_back (qMakePair (QString ("simplify_douglas_peucker_boost"), params));
+            }
         }
         std::cout << ", " << settings.size () << " algorithms" << std::endl;
     }
     std::cout << "--------------------------------------------------------------------------------" << std::endl;
-    std::cout << "cont, algo, size, ratio, ticks, error mean, error std, error max, error sum" << std::endl;
-    double* first = polyline.begin ();
-    double* last = polyline.end ();
+    std::cout << "cont,algo,size,ratio,ticks,error mean,error std,error max,error sum,ticks,error mean,error std,error max,error sum,diff" << std::endl;
     // test with double[]
     {
         const double* poly = polyline.constData ();
-        Benchmark ("double []", first, last, poly, poly + polyline.size (), settings);
+        Benchmark_Ran ("double []", poly, poly + polyline.size (), settings);
     }
     // test with std::vector <double>
     {
         std::vector <double> poly (polyline.constBegin (), polyline.constEnd ());
-        Benchmark ("std::vector <double>", first, last, poly.begin (), poly.end (), settings);
+        Benchmark_Ran ("std::vector <double>", poly.begin (), poly.end (), settings);
     }
     // test with std::deque <double>
     {
         std::deque <double> poly (polyline.constBegin (), polyline.constEnd ());
-        Benchmark ("std::deque <double>", first, last, poly.begin (), poly.end (), settings);
+        Benchmark_Ran ("std::deque <double>", poly.begin (), poly.end (), settings);
     }
     // test with std::list <double>
     {
         std::list <double> poly (polyline.constBegin (), polyline.constEnd ());
-        Benchmark ("std::list <double>", first, last, poly.begin (), poly.end (), settings);
+        Benchmark_Bid ("std::list <double>", poly.begin (), poly.end (), settings);
     }
+    // test with reference::Point[]
+    {
+        const double* poly = polyline.constData ();
+        Benchmark_Ref ("reference::Point[]", poly, poly + polyline.size (), settings);
+    }
+    //////// test with boost
+    //////{
+    //////    std::list <double> poly (polyline.constBegin (), polyline.constEnd ());
+    //////    Benchmark_Boost ("boost", poly.begin (), poly.end (), settings);
+    //////}
 }
 
 // -----------------------------------------------------------------------------
