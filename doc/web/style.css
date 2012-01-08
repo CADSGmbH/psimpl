@@ -227,7 +227,10 @@ div#footer a {
 
 div.news {
     padding: 10px;
-    margin: 0px 0px 25px 0px;
+    margin: 0px 0px 20px 0px;
+    #background-color: #eeeeee;
+    border: 2px solid #cccccc;
+    border-radius: 15px 15px 15px 15px;
 }
 
 div.news div.title {
@@ -242,6 +245,10 @@ div.news hr {
     height: 2px;
     padding: 0;
     margin: 0;
+}
+
+div.news ul {
+    margin: 0px 0px 0px 20px;
 }
 
 div.news div.date {
