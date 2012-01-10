@@ -32,8 +32,8 @@
 */
 
 #include "../lib/psimpl.h"
-#include "psimpl_prev.h"
 #include "../demo/psimpl_reference.h"
+#include "prev/psimpl.h"
 #include "cycle_p.h"
 
 #include <iostream>

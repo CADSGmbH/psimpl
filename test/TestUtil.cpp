@@ -39,6 +39,7 @@
 #include <list>
 #include <set>
 #include <iterator>
+#include <typeinfo>
 
 
 namespace psimpl {
@@ -46,7 +47,6 @@ namespace psimpl {
 {
     TestUtil::TestUtil () {
         TEST_RUN("scoped_array", TestScopedArray ());
-        TEST_RUN("copy_n", TestCopyN ());
         TEST_RUN("copy_key", TestCopyKey ());
         TEST_RUN("copy_keys", TestCopyKeys ());
         TEST_RUN("forward", TestForward ());
@@ -98,36 +98,6 @@ namespace psimpl {
         VERIFY_TRUE(a1 [4] == 4.f);
         VERIFY_TRUE(a3 [0] == 321.f);
         VERIFY_TRUE(a3 [1] == 654.f);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    void TestUtil::TestCopyN () {
-        {
-        // test random access iterators
-        float vec [10] = { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f };
-        float res [5];
-        ASSERT_TRUE(5 == std::distance (res, psimpl::util::copy_n (vec, 5, res)));
-        VERIFY_TRUE(res [0] == vec [0]);
-        VERIFY_TRUE(res [1] == vec [1]);
-        VERIFY_TRUE(res [2] == vec [2]);
-        VERIFY_TRUE(res [3] == vec [3]);
-        VERIFY_TRUE(res [4] == vec [4]);
-        }
-        {
-        // test non-random access iterators
-        std::list <short> vec;
-        vec.push_back (0);
-        vec.push_back (1);
-        vec.push_back (2);
-        vec.push_back (3);
-        vec.push_back (4);
-        std::set <int> res;
-        psimpl::util::copy_n (vec.begin (), 5, std::inserter (res, res.begin ()));
-        ASSERT_TRUE(5 == res.size ());
-        VERIFY_TRUE(*res.begin () == *vec.begin ());
-        VERIFY_TRUE(*(--res.end ()) == *(--vec.end ()));
-        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -185,11 +155,11 @@ namespace psimpl {
         VERIFY_TRUE(2 == psimpl::util::forward <2> (it, 2, remaining));
         VERIFY_TRUE(1 == remaining);
         VERIFY_TRUE(2 * 2 == std::distance (values.begin (), it));
-        
+
         VERIFY_TRUE(1 == psimpl::util::forward <2> (it, 2, remaining));
         VERIFY_TRUE(0 == remaining);
         VERIFY_TRUE(3 * 2 == std::distance (values.begin (), it));
-        
+
         VERIFY_TRUE(0 == psimpl::util::forward <2> (it, 2, remaining));
         VERIFY_TRUE(0 == remaining);
         VERIFY_TRUE(3 * 2 == std::distance (values.begin (), it));

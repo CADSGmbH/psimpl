@@ -195,7 +195,7 @@ namespace psimpl {
             Distance tol2 = tol * tol;          // squared distance tolerance
 
             // validate input and check if simplification required
-            if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
+            if (coordCount % DIM || pointCount < 3 || tol2 <= 0) {
                 return std::copy (first, last, result);
             }
 
@@ -203,8 +203,7 @@ namespace psimpl {
             ForwardIterator next = first;       // used to find the next key
 
             // the first point is always part of the simplification
-            util::copy_key <DIM> (next, result);
-            std::advance (next, DIM);
+            util::copy_key_advance <DIM> (next, result);
 
             // Skip first and last point, because they are always part of the simplification
             for (diff_type index = 1; index < pointCount - 1; ++index) {
@@ -252,7 +251,7 @@ namespace psimpl {
             Distance tol2 = tol * tol;      // squared distance tolerance
 
             // validate input and check if simplification required
-            if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
+            if (coordCount % DIM || pointCount < 3 || tol2 <= 0) {
                 return std::copy (first, last, result);
             }
 
@@ -423,7 +422,7 @@ namespace psimpl {
             Distance tol2 = tol * tol;      // squared distance tolerance
 
             // validate input and check if simplification required
-            if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
+            if (coordCount % DIM || pointCount < 3 || tol2 <= 0) {
                 return std::copy (first, last, result);
             }
 
@@ -494,7 +493,7 @@ namespace psimpl {
             Distance max_tol2 = max_tol * max_tol;  // squared maximum distance tolerance
 
             // validate input and check if simplification required
-            if (coordCount % DIM || pointCount < 3 || min_tol2 == 0 || max_tol2 == 0) {
+            if (coordCount % DIM || pointCount < 3 || min_tol2 <= 0 || max_tol2 <= 0) {
                 return std::copy (first, last, result);
             }
 
@@ -578,7 +577,7 @@ namespace psimpl {
             Distance tol2 = tol * tol;              // squared minimum distance tolerance
 
             // validate input and check if simplification required
-            if (coordCount % DIM || pointCount < 3 || look_ahead < 2 || tol2 == 0) {
+            if (coordCount % DIM || pointCount < 3 || look_ahead < 2 || tol2 <= 0) {
                 return std::copy (first, last, result);
             }
 
@@ -650,7 +649,7 @@ namespace psimpl {
             Distance tol2 = tol * tol;      // squared distance tolerance
 
             // validate input and check if simplification required
-            if (coordCount % DIM || pointCount < 3 || tol2 == 0) {
+            if (coordCount % DIM || pointCount < 3 || tol2 <= 0) {
                 return std::copy (first, last, result);
             }
 
@@ -726,7 +725,7 @@ namespace psimpl {
                                    ? coordCount / DIM
                                    : 0;
             // validate input and check if simplification required
-            if (coordCount % DIM || pointCount < 3 || tol == 0) {
+            if (coordCount % DIM || pointCount < 3 || tol <= 0) {
                 return std::copy (first, last, result);
             }
             // radial distance simplification routine

@@ -87,7 +87,7 @@
                  to be the same; fixed a bug in compute_positional_error_statistics where invalid
                  statistics could be returned under questionable input; documented input iterator
                  requirements for each algorithm; miscellaneous refactoring of most algorithms.
-    ??-??-???? - Complete rewrite; split code across multiple headers; split dp; more accurate 
+    ??-??-???? - Complete rewrite; split code across multiple headers; split dp; more accurate
                  results with intergers; improved compute pos error now supports ...
 </pre>
 */
@@ -232,9 +232,9 @@ namespace psimpl
 
         PD is an O(n) algorithm for polyline simplification. It computes the perpendicular
         distance of each point pi to the line segment S(pi-1, pi+1). Only when this distance is
-        larger than the given tolerance will pi be part of the simpification. Note that the
+        larger than the given tolerance will point pi be part of the simpification. Note that the
         original polyline can only be reduced by a maximum of 50%. Multiple passes are required
-        to achieve higher points reductions.
+        to achieve higher point reductions.
 
         \image html psimpl_pd.png
 
@@ -256,7 +256,7 @@ namespace psimpl
 
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
-        \param[in] tol      perpendicular (segment-to-point) distance tolerance
+        \param[in] tol      perpendicular (point-to-segment) distance tolerance
         \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline
     */
@@ -291,7 +291,7 @@ namespace psimpl
 
         \param[in] first    the first coordinate of the first polyline point
         \param[in] last     one beyond the last coordinate of the last polyline point
-        \param[in] tol      perpendicular (segment-to-point) distance tolerance
+        \param[in] tol      perpendicular (point-to-segment) distance tolerance
         \param[in] repeat   the number of times to successively apply the PD routine
         \param[in] result   destination of the simplified polyline
         \return             one beyond the last coordinate of the simplified polyline

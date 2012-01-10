@@ -203,7 +203,8 @@ namespace psimpl {
         calc_type result = 0;
 
         for (unsigned d = 0; d < DIM; ++d, ++p1, ++p2) {
-            result += (static_cast <calc_type> (*p1) - *p2) * (static_cast <calc_type> (*p1) - *p2);
+            result += (static_cast <calc_type> (*p1) - *p2) *
+                      (static_cast <calc_type> (*p1) - *p2);
         }
         return result;
     }

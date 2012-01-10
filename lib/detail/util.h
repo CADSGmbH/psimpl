@@ -43,47 +43,10 @@ namespace psimpl {
     namespace util
 {
 
-    //! \note copy_n, scoped_array, and all type traits, will be removed when moving to C++0x.
+    //! \note scoped_array, and all type traits, will be removed when moving to C++0x.
     namespace detail
     {
-        // ---------- copy_n -----------------------------------------------------------------------
-        template
-        <
-            typename InputIterator,
-            typename Size,
-            typename OutputIterator
-        >
-        inline OutputIterator copy_n (
-            InputIterator first,
-            Size n,
-            OutputIterator result,
-            std::input_iterator_tag)
-        {
-            for (; n > 0; --n)
-            {
-                *result = *first;
-                ++first;
-                ++result;
-            }
-            return result;
-        }
-
-        template
-        <
-            typename InputIterator,
-            typename Size,
-            typename OutputIterator
-        >
-        inline OutputIterator copy_n (
-            InputIterator first,
-            Size n,
-            OutputIterator result,
-            std::random_access_iterator_tag)
-        {
-            return std::copy (first, first + n, result);
-        }
-
-        // ---------- type traits ------------------------------------------------------------------------
+        // ---------- type traits ------------------------------------------------------------------
         template <typename T>
         struct remove_const
         {
@@ -127,26 +90,26 @@ namespace psimpl {
     // ---------------------------------------------------------------------------------------------
 
     /*!
-        \brief Copies the range [first, first+n) to [result, result+n).
+        \brief Copies and advances the key from [first, first+DIM) to [result, result+DIM).
 
-        \param[in] first    the first element to copy
-        \param[in] n        the number of elements to copy
-        \param[in] result   destination of the copied elements
-        \return             one beyond the last copied element
+        \param[in,out] first    the first coordinate of the key
+        \param[in,out] result   destination of the copied coordinates
     */
     template
     <
+        unsigned DIM,
         typename InputIterator,
-        typename Size,
         typename OutputIterator
     >
-    inline OutputIterator copy_n (
-        InputIterator first,
-        Size n,
-        OutputIterator result)
+    inline void copy_key_advance (
+        InputIterator& first,
+        OutputIterator& result)
     {
-        return detail::copy_n (
-            first, n, result, std::iterator_traits <InputIterator>::iterator_category ());
+        for (unsigned d = 0; d < DIM; ++d) {
+            *result = *first;
+            ++first;
+            ++result;
+        }
     }
 
     /*!
@@ -165,13 +128,7 @@ namespace psimpl {
         InputIterator first,
         OutputIterator& result)
     {
-		//result = util::copy_n (first, DIM, result);
-
-        for (unsigned d = 0; d < DIM; ++d) {
-            *result = *first;
-            ++first;
-            ++result;
-        }
+        copy_key_advance <DIM> (first, result);
     }
 
     /*!
