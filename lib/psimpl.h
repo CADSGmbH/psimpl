@@ -1334,7 +1334,7 @@ namespace psimpl
 
             std::transform (errors.get (), errors.get () + errorCount,
                             errors.get (),
-                            std::ptr_fun <double, double> (std::sqrt));
+                            std::invoke(std::sqrt, std::placeholder::_1));
 
             return math::compute_statistics (errors.get (), errors.get () + errorCount);
         }
