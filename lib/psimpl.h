@@ -98,6 +98,7 @@
 #include <numeric>
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 
 /*!
@@ -1334,7 +1335,7 @@ namespace psimpl
 
             std::transform (errors.get (), errors.get () + errorCount,
                             errors.get (),
-                            std::invoke(std::sqrt, std::placeholder::_1));
+                            std::bind(static_cast<double(*)(double)>(std::sqrt), std::placeholders::_1));
 
             return math::compute_statistics (errors.get (), errors.get () + errorCount);
         }
